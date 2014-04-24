@@ -13,6 +13,11 @@
     [(- (* x cos-a) (* y sin-a))
      (+ (* x sin-a) (* y cos-a))]))
 
+(defn wobble-point "add some noise to a point, qx and qy are the x and y ranges of noise"
+  [[qx qy]  [x y]]
+  (let [wob (fn [n qn] (+ n (- (rand qn) (/ qn 2))))]
+     [(wob x qx) (wob y qy)]  ) )
+
 ;; Shapes
 ;; Shape is a list of points
 
@@ -36,10 +41,9 @@
 (defn points-to-polars [points] (into [] (map rec-to-pol points)))
 (defn polars-to-points [polars] (into [] (map pol-to-rec polars)))
 
-
-
 (defn rotate-shape [da shape] (map (partial rotate-point da) shape))
 
+(defn wobble-shape [noise shape] (map (partial wobble-point noise) shape))
 
 ;; SShape (styled shape)
 ;; SShape, is a shape with a style attached ({:points points :style style}
@@ -65,6 +69,7 @@
 (defn stretch-sshape [sx sy {:keys [style points]}] {:style style :points (stretch-shape sx sy points)})
 
 (defn rotate-sshape [da {:keys [style points]}] {:style style :points (rotate-shape da points)} )
+(defn wobble-sshape [noise {:keys [style points]}] {:style style :points (wobble-shape noise points)} )
 
 ;;; Some actual sshapes
 (defn angles [number]  (take number (iterate (fn [a] (+ a (float (/ (* 2 PI) number)))) (- PI))) )
@@ -113,11 +118,16 @@
 (defn stretch-group [sx sy group] (into [] (map (partial stretch-sshape sx sy) group)))
 (defn rotate-group [da group] (into [] (map (partial rotate-sshape da) group)))
 
+(defn wobble-group [noise group] (into [] (map (partial wobble-sshape noise) group)))
+
+(defn over-style-group "Changes the style of a group" [style group]
+  (into [] (map (partial add-style style) group)))
+
 (defn cross-group "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
   [colour x y] (group (colour-sshape colour (horizontal-sshape y)) (colour-sshape colour (vertical-sshape  x)))  )
 
 ;; Layouts
-(defn superimpose-pattern "simplest layout, two groups lacated on top of each other "
+(defn superimpose-pattern "simplest layout, two groups located on top of each other "
   [group1 group2] (into [] (concat group1 group2))   )
 
 
@@ -127,7 +137,7 @@
     (for [x (first colls) more (cart (rest colls))]
       (cons x more))))
 
-(defn grid-pattern-positions "calculates the positions for a gid pattern"
+(defn grid-pattern-positions "calculates the positions for a grid pattern"
   [number]
   (let [
       offset (/ 2 number)
@@ -143,13 +153,19 @@
 (defn apply-positions "Takes a group and a list of positions and puts a copy of the group at each position"
   [group positions] (concat ( mapcat (fn [[x y]] (translate-group x y group)) positions) )) 
 
+(defn place-groups-at-positions "Takes a list of groups and a list of positions and puts one of the groups at each position"
+  [groups positions]
+  (concat ( mapcat (fn [[ [x y] group]] (translate-group x y group)) (map vector positions groups) ) )) 
 
-(defn grid-pattern "Takes a group and a number of repetitions n and returns that group repeated in an n X n grid "
-  [number group]
-  (let [scaler (/ 1 number)
-       scaled (scale-group scaler group) ]
-    (apply-positions scaled (grid-pattern-positions number)) )
+(defn grid-layout "Takes an n and a group-stream and returns items from the group-stream in an n X n grid "
+  [n groups]
+  (let [scaler (/ 1 n)
+        scaled-groups (into [] (map (partial scale-group scaler) groups))
+        ]    
+    (place-groups-at-positions scaled-groups (grid-pattern-positions n)) )
   )
+
+
 
 (defn drop-every [n xs] (lazy-seq (if (seq xs) (concat (take (dec n) xs) (drop-every n (drop n xs))))))
 
@@ -204,15 +220,36 @@
     (concat (mapcat (fn [a] (rotate-group a group)) angs )) 
    ))
 
+
+(defn q1-rot-group [group] (rotate-group (float (/ PI 2)) group ) )
+(defn q2-rot-group [group] (rotate-group PI group))
+(defn q3-rot-group [group] (rotate-group (-  (float (/ PI 2))) group))
+
 (defn four-round "Four squares rotated" [group]
   (let [scaled (scale-group (float (/ 1 2)) group)
-        p2 (+  (float (/ PI 2)))
+        p2 (float (/ PI 2))
         nw (translate-group (- 0.5) (- 0.5) scaled )
-        ne (translate-group 0.5 (- 0.5) (rotate-group (* p2 1) scaled)) 
-        se (translate-group (- 0.5) 0.5 (rotate-group (* p2 3) scaled))
-        sw (translate-group 0.5 0.5 (rotate-group (* p2 2) scaled) )
+        ne (translate-group 0.5 (- 0.5) (q1-rot-group scaled)) 
+        se (translate-group (- 0.5) 0.5 (q3-rot-group scaled))
+        sw (translate-group 0.5 0.5 (q2-rot-group scaled) )
         ]
     (concat nw ne se sw )  )  )
+
+
+(defn random-grid-pattern "Takes a group and returns a grid with random quarter rotations"
+  [number group]
+  (let [scaler (/ 1 number)
+        scaled (scale-group scaler group)
+        random-turn (fn [group]
+                      (case (rand-int 4)
+                        0 group
+                        1 (q1-rot-group group)
+                        2 (q2-rot-group group)
+                        3 (q3-rot-group group)  ) )
+        groups (into [] (map random-turn (repeat (* number number) scaled)))
+        ]
+    (place-groups-at-positions groups (grid-pattern-positions number)) )
+  )
 
 
 (defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
@@ -301,7 +338,7 @@
   (no-loop)
 
   (let [
-        my-green (color 100 200 100)
+        my-green (color 100 200 100 100)
         my-purple (color 150 100 200)
         my-blue (color 100 100 200 150)
         my-red (color 200 100 100)
@@ -311,9 +348,9 @@
         
         square (group  {:style {:colour my-yellow} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
         basic (superimpose-pattern  (group                  
-                                     (fill-sshape my-red (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.7 3) )))
+                                     (fill-sshape my-red (hide-sshape (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.7 3) ))))
                                      (fill-sshape my-yellow (colour-sshape my-yellow (poly 0.3 0.6 0.5 7) )) )
-                                    (clock-rotate 6 (group  (hide-sshape (colour-sshape my-purple (poly (- 0.3) (- 0.5) 0.3 4) ))))
+                                    (clock-rotate 6 (group  ( colour-sshape my-purple (poly (- 0.3) (- 0.5) 0.3 4) )))
                                     )
         cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 200 100) 0 0))
         blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0))
@@ -322,14 +359,15 @@
         flake (spoke-flake-group {:colour my-cyan :stroke-weight 2})
         face (scale-group 0.8 (face-group [20 my-cream] [5 my-blue] [3 my-purple]  [8 my-red]))
 
-        red-ball (group (add-style {:colour my-red :fill my-red} (poly 0 -0.7 0.02 10)))
+        red-ball (group (add-style {:colour my-purple :fill my-red} (poly 0 -0.82 0.05 3)))
         simple-clock (clock-rotate 8 (group (add-style {:colour my-green :fill my-cyan } (poly 0.5 0 0.2 8))))
 
         
         test-shape (group
-                     (add-style {:colour my-red :fill my-yellow :stroke-weight 2} (poly 0 0 0.8 3))
-                     (add-style {:colour my-blue :fill my-blue :stroke-weight 2} (poly 0 (- 0.5) 0.2 8))
-                     (sshape {:colour my-green :stroke-weight 3} [[0 0] [0 (- 1)]])
+;;                     (add-style {:colour my-red :fill my-yellow :stroke-weight 2} (poly 0 0 0.8 3))
+;;                     (add-style {:colour my-blue :fill my-blue :stroke-weight 2} (poly 0 (- 0.5) 0.2 8))
+;;                     (sshape {:colour my-green :stroke-weight 3} [[0 0] [0 (- 1)]])
+                    (sshape {:color (color 255) :fill (color 255)} [[-1 -1] [-1 1] [1 1]] )
                     )
         txpt (make-txpt [-1 -1 1 1] [0 0 (width) (height)])
         ]
@@ -339,12 +377,11 @@
         (no-fill)
         (background 0)
         (draw-group txpt
-;;                   (four-mirror (clock-rotate 8 test-shape) )
-
-                    (superimpose-pattern
-                     (four-round  (clock-rotate 16 (superimpose-pattern blue-cross red-ball) ))
-                     (one-col-pattern 4 2 (four-round ( clock-rotate 3 test-shape) ) flake)
-                     ) )
+                    (superimpose-pattern 
+                     (grid-layout 8 (repeat 64 test-shape))
+                     (group (empty-sshape)) ) 
+                    
+                    )
         (smooth)
         (smooth)) 
   )  
