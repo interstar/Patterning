@@ -8,6 +8,11 @@
 (defn pol-to-rec [[r a]] [(* r (cos a)) (* r (sin a))])
 (defn add-points [[x1 y1] [x2 y2]] [(+ x1 x2) (+ y1 y2)])
 
+(defn rotate-point [a [x y]]
+  (let [cos-a (cos a) sin-a (sin a)]  
+    [(- (* x cos-a) (* y sin-a))
+     (+ (* x sin-a) (* y cos-a))]))
+
 ;; Shapes
 ;; Shape is a list of points
 
@@ -31,10 +36,7 @@
 (defn points-to-polars [points] (into [] (map rec-to-pol points)))
 (defn polars-to-points [polars] (into [] (map pol-to-rec polars)))
 
-(defn rotate-point [a [x y]]
-  (let [cos-a (cos a) sin-a (sin a)]  
-    [(- (* x cos-a) (* y sin-a))
-     (+ (* x sin-a) (* y cos-a))]))
+
 
 (defn rotate-shape [da shape] (map (partial rotate-point da) shape))
 
