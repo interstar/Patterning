@@ -127,7 +127,9 @@
   [colour x y] (group (colour-sshape colour (horizontal-sshape y)) (colour-sshape colour (vertical-sshape  x)))  )
 
 ;; Layouts
-(defn superimpose-pattern "simplest layout, two groups located on top of each other "
+;; Note layouts combine and multiply groups to make larger groups
+
+(defn superimpose-layout "simplest layout, two groups located on top of each other "
   [group1 group2] (into [] (concat group1 group2))   )
 
 
@@ -137,7 +139,7 @@
     (for [x (first colls) more (cart (rest colls))]
       (cons x more))))
 
-(defn grid-pattern-positions "calculates the positions for a grid pattern"
+(defn grid-layout-positions "calculates the positions for a grid layout"
   [number]
   (let [
       offset (/ 2 number)
@@ -162,7 +164,7 @@
   (let [scaler (/ 1 n)
         scaled-groups (into [] (map (partial scale-group scaler) groups))
         ]    
-    (place-groups-at-positions scaled-groups (grid-pattern-positions n)) )
+    (place-groups-at-positions scaled-groups (grid-layout-positions n)) )
   )
 
 
@@ -173,7 +175,7 @@
   (let [scaler (/ 1 number)] 
     [scaler (scale-group scaler group1) (scale-group scaler group2) ]))
 
-(defn check-seq "returns the appropriate lazy seq of patterns for constructing a checker-pattern"
+(defn check-seq "returns the appropriate lazy seq of groups for constructing a checker-layout"
   [number group1 group2]
   (let [ [scaler scaled1 scaled2] (scale-pair number group1 group2) ]
     (if (= 0 (mod number 2))
@@ -181,29 +183,29 @@
       (cycle [scaled1 scaled2]) ) ) )
 
 
-(defn checker-pattern "takes number n and two groups and lays out alternating copies of the groups on an n X n checkerboard"
+(defn checker-layout "takes number n and two groups and lays out alternating copies of the groups on an n X n checkerboard"
   [number group1 group2]
   (let [c-seq (check-seq number group1 group2)
-        pattern-positions (map vector c-seq (grid-pattern-positions number))]
-    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) pattern-positions )) ) )
+        layout-positions (map vector c-seq (grid-layout-positions number))]
+    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) layout-positions )) ) )
 
 
-(defn one-x-pattern
+(defn one-x-layout
   "takes a total number of rows, an index i and two groups.
    Makes an n X n square where row or col i is group 2 and everything else is group1"
   [n i f group1 group2]
   (let [[scaler scaled1 scaled2] (scale-pair n group1 group2)        
         the-seq (concat (repeat (* n i) scaled1) (repeat n scaled2) (repeat (* n (- n i)) scaled1) )
-        pattern-positions (map vector the-seq (grid-pattern-positions n)) ]       
-    (concat (mapcat f pattern-positions))
+        layout-positions (map vector the-seq (grid-layout-positions n)) ]       
+    (concat (mapcat f layout-positions))
     )
   )
 
-(defn one-row-pattern "uses one-x-pattern with rows"
-  [n i group1 group2] (one-x-pattern n i (fn [[group [x y]]] (translate-group y x group)) group1 group2  ))
+(defn one-row-layout "uses one-x-layout with rows"
+  [n i group1 group2] (one-x-layout n i (fn [[group [x y]]] (translate-group y x group)) group1 group2  ))
 
-(defn one-col-pattern "uses one-x-pattern with rows"
-  [n i group1 group2] (one-x-pattern n i (fn [[group [x y]]] (translate-group x y group)) group1 group2 ) )
+(defn one-col-layout "uses one-x-layout with rows"
+  [n i group1 group2] (one-x-layout n i (fn [[group [x y]]] (translate-group x y group)) group1 group2 ) )
 
 
 
@@ -236,7 +238,7 @@
     (concat nw ne se sw )  )  )
 
 
-(defn random-grid-pattern "Takes a group and returns a grid with random quarter rotations"
+(defn random-grid-layout "Takes a group and returns a grid with random quarter rotations"
   [number group]
   (let [scaler (/ 1 number)
         scaled (scale-group scaler group)
@@ -248,7 +250,7 @@
                         3 (q3-rot-group group)  ) )
         groups (into [] (map random-turn (repeat (* number number) scaled)))
         ]
-    (place-groups-at-positions groups (grid-pattern-positions number)) )
+    (place-groups-at-positions groups (grid-layout-positions number)) )
   )
 
 
@@ -347,7 +349,7 @@
         my-cream (color 220 210 180)
         
         square (group  {:style {:colour my-yellow} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
-        basic (superimpose-pattern  (group                  
+        basic (superimpose-layout  (group                  
                                      (fill-sshape my-red (hide-sshape (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.7 3) ))))
                                      (fill-sshape my-yellow (colour-sshape my-yellow (poly 0.3 0.6 0.5 7) )) )
                                     (clock-rotate 6 (group  ( colour-sshape my-purple (poly (- 0.3) (- 0.5) 0.3 4) )))
@@ -377,9 +379,9 @@
         (no-fill)
         (background 0)
         (draw-group txpt
-                    (superimpose-pattern 
+                    (superimpose-layout 
                      (grid-layout 8 (repeat 64 test-shape))
-                     (group (empty-sshape)) ) 
+                     basic ) 
                     
                     )
         (smooth)
