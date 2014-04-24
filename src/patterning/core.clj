@@ -17,6 +17,9 @@
 (defn translate-shape [dx dy shape]
   (into [] (map (fn [[x y]] [(+ dx x) (+ dy y)]) shape ))  )
 
+(defn stretch-shape [sx sy shape]
+  (into [] (map (fn [[x y]] [(* sx x) (* sy y)]) shape ))  )
+
 (defn h-reflect-shape [shape]
   (into [] (map (fn [[x y]] [(- x) y]) shape )) )
 
@@ -28,10 +31,13 @@
 (defn points-to-polars [points] (into [] (map rec-to-pol points)))
 (defn polars-to-points [polars] (into [] (map pol-to-rec polars)))
 
-(defn rotate-shape [da shape]
-  (let [polars (points-to-polars shape)
-        rotated (map (fn [[rad a]] [rad (+ da a)]) polars )
-        ] (polars-to-points rotated) ) )
+(defn rotate-point [a [x y]]
+  (let [cos-a (cos a) sin-a (sin a)]  
+    [(- (* x cos-a) (* y sin-a))
+     (+ (* x sin-a) (* y cos-a))]))
+
+(defn rotate-shape [da shape] (map (partial rotate-point da) shape))
+
 
 ;; SShape (styled shape)
 ;; SShape, is a shape with a style attached ({:points points :style style}
@@ -45,14 +51,16 @@
 
 (defn colour-sshape "Give new colour to a sshape " [colour sshape] (add-style {:colour colour} sshape))
 (defn weight-sshape "Give new strokeWeight to a sshape" [weight sshape] (add-style {:stroke-weight weight} sshape))
-
+(defn fill-sshape "Give a fill-colour to a sshape" [fill sshape] (add-style {:fill fill} sshape))
+(defn hide-sshape "Keep this sshape in the pattern but disable it from rendering" [sshape] (add-style {:hidden true} sshape))
+(defn show-sshape "Remove the hidden label from a sshape, so it's shown" [sshape] (dissoc sshape :hidden))
+(defn sshape-hidden? "Test if a sshape is hidden" [{:keys [style points]}] (contains? style :hidden) )
 
 (defn scale-sshape [val {:keys [style points]}]   {:style style :points (scale-shape val points) } )
-
 (defn translate-sshape [dx dy {:keys [style points]}] {:style style :points (translate-shape dx dy points)})
-
 (defn h-reflect-sshape [{:keys [style points]}] {:style style :points (h-reflect-shape points)})
 (defn v-reflect-sshape [{:keys [style points]}] {:style style :points (v-reflect-shape points)})
+(defn stretch-sshape [sx sy {:keys [style points]}] {:style style :points (stretch-shape sx sy points)})
 
 (defn rotate-sshape [da {:keys [style points]}] {:style style :points (rotate-shape da points)} )
 
@@ -70,7 +78,6 @@
 (defn horizontal-sshape "horizontal line" [y] (sshape {} [[(- 1) y] [1 y] [(- 1 ) y] [1 y]]) )
 (defn vertical-sshape "vertical line" [x] (sshape {} [[x (- 1)] [x 1] [x (- 1)] [x 1]]))
 
-
 (defn rand-angle [seed]  (lazy-seq (cons seed (rand-angle (+ seed (- (rand (/ PI 2))) (/ PI 4) )))))
 
 (defn drunk-line "drunkard's walk line" [steps stepsize]
@@ -83,48 +90,44 @@
       ) ) 
     ) )
 
+
+
 ;; Groups
 (defn group "a vector of sshapes"
   [& sshapes]
   (into [] sshapes) ) 
 
+(defn empty-group [] (empty-sshape))
 
-(defn scale-group
-  ([val group] (into [] (map (partial scale-sshape val) group )))   )
+(defn scale-group ([val group] (into [] (map (partial scale-sshape val) group )))   )
 
-(defn translate-group
-  [dx dy group] (into [] (map (partial translate-sshape dx dy) group))  )
+(defn translate-group  [dx dy group] (into [] (map (partial translate-sshape dx dy) group))  )
 
-(defn translate-group-to
-  [x y group]
-  (translate-group (- x) (- y) group) )  
+(defn translate-group-to [x y group] (translate-group (- x) (- y) group) )  
 
 (defn h-reflect-group [group] (into [] (map h-reflect-sshape group) ) )
 (defn v-reflect-group [group] (into [] (map v-reflect-sshape group) ) )
 
+(defn stretch-group [sx sy group] (into [] (map (partial stretch-sshape sx sy) group)))
 (defn rotate-group [da group] (into [] (map (partial rotate-sshape da) group)))
 
 (defn cross-group "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
-  [colour x y]
-  (group (colour-sshape colour (horizontal-sshape y)) (colour-sshape colour (vertical-sshape  x)))  )
-
+  [colour x y] (group (colour-sshape colour (horizontal-sshape y)) (colour-sshape colour (vertical-sshape  x)))  )
 
 ;; Layouts
 (defn superimpose-pattern "simplest layout, two groups lacated on top of each other "
-  [group1 group2]
-  (into [] (concat group1 group2))   )
+  [group1 group2] (into [] (concat group1 group2))   )
 
 
 (defn cart "Cartesian Product of two collections" [colls]
   (if (empty? colls)
     '(())
-    (for [x (first colls)
-          more (cart (rest colls))]
+    (for [x (first colls) more (cart (rest colls))]
       (cons x more))))
 
 (defn grid-pattern-positions "calculates the positions for a gid pattern"
-[number]
-(let [
+  [number]
+  (let [
       offset (/ 2 number)
       inc (fn [x] (+ offset x))
       ino (float (/ offset 2))
@@ -136,8 +139,7 @@
 
 
 (defn apply-positions "Takes a group and a list of positions and puts a copy of the group at each position"
-  [group positions]  
-  (concat ( mapcat (fn [[x y]] (translate-group x y group)) positions) )) 
+  [group positions] (concat ( mapcat (fn [[x y]] (translate-group x y group)) positions) )) 
 
 
 (defn grid-pattern "Takes a group and a number of repetitions n and returns that group repeated in an n X n grid "
@@ -147,14 +149,15 @@
     (apply-positions scaled (grid-pattern-positions number)) )
   )
 
-(defn drop-every [n xs]
-  (lazy-seq (if (seq xs) (concat (take (dec n) xs) (drop-every n (drop n xs))))))
+(defn drop-every [n xs] (lazy-seq (if (seq xs) (concat (take (dec n) xs) (drop-every n (drop n xs))))))
+
+(defn scale-pair "returns [scaler scaled1 scaled2] " [number group1 group2]
+  (let [scaler (/ 1 number)] 
+    [scaler (scale-group scaler group1) (scale-group scaler group2) ]))
 
 (defn check-seq "returns the appropriate lazy seq of patterns for constructing a checker-pattern"
   [number group1 group2]
-  (let [scaler (/ 1 number)
-        scaled1 (scale-group scaler group1)
-        scaled2 (scale-group scaler group2)]
+  (let [ [scaler scaled1 scaled2] (scale-pair number group1 group2) ]
     (if (= 0 (mod number 2))
       (drop-every (+ 1 number) (cycle [scaled1 scaled2]))
       (cycle [scaled1 scaled2]) ) ) )
@@ -164,24 +167,30 @@
   [number group1 group2]
   (let [c-seq (check-seq number group1 group2)
         pattern-positions (map vector c-seq (grid-pattern-positions number))]
-    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) pattern-positions ))
+    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) pattern-positions )) ) )
+
+
+(defn one-x-pattern
+  "takes a total number of rows, an index i and two groups.
+   Makes an n X n square where row or col i is group 2 and everything else is group1"
+  [n i f group1 group2]
+  (let [[scaler scaled1 scaled2] (scale-pair n group1 group2)        
+        the-seq (concat (repeat (* n i) scaled1) (repeat n scaled2) (repeat (* n (- n i)) scaled1) )
+        pattern-positions (map vector the-seq (grid-pattern-positions n)) ]       
+    (concat (mapcat f pattern-positions))
     )
   )
 
+(defn one-row-pattern "uses one-x-pattern with rows"
+  [n i group1 group2] (one-x-pattern n i (fn [[group [x y]]] (translate-group y x group)) group1 group2  ))
 
-(defn one-row "takes a total number of rows, an index i and two groups. Makes an n X n square where row i is group 2 and everything else is group1"
-  [n i group1 group2]
-  (let [scaler (/ 1 n)
-        scaled1 (scale-group scaler group1)
-        scaled2 (scale-group scaler group2)
-        the-seq ( ())
-        ]
-    ())
-  )
+(defn one-col-pattern "uses one-x-pattern with rows"
+  [n i group1 group2] (one-x-pattern n i (fn [[group [x y]]] (translate-group x y group)) group1 group2 ) )
+
+
 
 (defn four-mirror "Four-way mirroring. Returns the group repeated four times reflected vertically and horizontall" [group]
-  (let [
-        nw (translate-group (- 0.5) (- 0.5) (scale-group (float (/ 1 2)) group))
+  (let [nw (translate-group (- 0.5) (- 0.5) (scale-group (float (/ 1 2)) group))
         ne (h-reflect-group nw)
         sw (v-reflect-group nw)
         se (h-reflect-group sw) ]
@@ -192,6 +201,54 @@
   (let [angs (angles n)]
     (concat (mapcat (fn [a] (rotate-group a group)) angs )) 
    ))
+
+(defn four-round "Four squares rotated" [group]
+  (let [scaled (scale-group (float (/ 1 2)) group)
+        p2 (+  (float (/ PI 2)))
+        nw (translate-group (- 0.5) (- 0.5) scaled )
+        ne (translate-group 0.5 (- 0.5) (rotate-group (* p2 1) scaled)) 
+        se (translate-group (- 0.5) 0.5 (rotate-group (* p2 3) scaled))
+        sw (translate-group 0.5 0.5 (rotate-group (* p2 2) scaled) )
+        ]
+    (concat nw ne se sw )  )  )
+
+
+(defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
+  [style]
+  (let [outer-radius 0.05
+        inner-radius (* 2.01 outer-radius)
+        arm-radius (* 4.2 inner-radius)
+
+        inner-circle (add-style style (poly 0 0 inner-radius 30))
+        sp1 [0 inner-radius]
+        sp2 [0 (+ inner-radius arm-radius)]
+      
+        one-spoke (group (sshape style [sp1 sp2 sp1 sp2])
+                         (add-style style (poly 0 (+ outer-radius (last sp2)) outer-radius 25)))
+      ]
+    (into [] (concat (group (add-style style (poly 0 0 inner-radius 35)))
+                     (clock-rotate 8 one-spoke)       ) ) ) )
+
+
+(defn polyflower-group "number of polygons rotated and superimosed"
+  ( [sides-per-poly no-polies radius style]
+      (clock-rotate no-polies (group (add-style style (poly 0 0 radius sides-per-poly)))))
+  ( [sides-per-poly no-polies radius] (polyflower-group sides-per-poly no-polies radius {})))
+
+(defn face-group "[head, eyes, nose and mouth] each argument is a pair to describe a poly [no-sides colour]"
+  ( [[ head-sides head-colour] [ eye-sides eye-colour] [ nose-sides nose-colour] [ mouth-sides mouth-colour]] 
+      (let [left-eye (stretch-sshape 1.3 1 (add-style { :colour eye-colour :fill eye-colour} (poly -0.3 -0.1 0.1 eye-sides)))
+            right-eye (h-reflect-sshape left-eye)
+            ]
+                
+        (group (add-style {:colour head-colour :fill head-colour} (poly 0 0 0.8 head-sides))
+               (stretch-sshape 1.3 0.4 (add-style {:colour mouth-colour :fill mouth-colour} (poly 0 1.3 0.2 mouth-sides)))
+               (translate-sshape 0 0.1
+                                 (stretch-sshape 0.6 1.1 (rotate-sshape (/ PI 2)
+                                 (add-style {:colour nose-colour :fill nose-colour} (poly 0 0 0.2 nose-sides)))))
+               left-eye
+               right-eye) ) ) )
+
 
 ;; Viewing pipeline
 
@@ -212,44 +269,26 @@
   ([viewport window points] (map (make-txpt viewport window) points) )  )
 
 
-(defn points-to-segments "turns a vector of points to a vector of segments"
-  [points]
-  (if (< (count points) 2)
-    []
-    (loop [p (first points) ps (rest points) acc [] ]  
-      (let [nxt [p (first ps)]]
-        (if (< (count ps) 2)
-          (conj acc nxt)
-          (recur (first  ps) (rest ps) (conj acc nxt))
-          )
-        )
-      )
-    )
-  )
-
-
 (defn transformed-sshape [txpt {:keys [style points]}]
-  {:style style :points (points-to-segments (project-points txpt points)) } )
-
+  {:style style :points (project-points txpt points) } )
 
 
 ;; Interactive Bit. Only this bit should be Quil / Processing dependent. 
 
-(defn draw-seg "draws a segment"
-  [[[x1 y1][x2 y2]]]
-  (line x1 y1 x2 y2)  )
-
-(defn draw-sshape "a sshape has a list of points, here's where we project it to window and turn it into a segment list "
+(defn draw-sshape "using vertices"
   [txpt {:keys [style points] :as sshape}]
-  (let [tsshape (transformed-sshape txpt sshape)]
-    (push-style)
-    (if (contains? style :colour) (stroke (get style :colour)) )
-    (if (contains? style :stroke-weight) (stroke-weight (get style :stroke-weight)))
-    (dorun (map draw-seg (get tsshape :points) ) )
-    (pop-style)
-    )
+  (if (sshape-hidden? sshape) ()
+      (let [tsshape (transformed-sshape txpt sshape)]    
+        (push-style)
+        (if (contains? style :colour) (stroke (get style :colour)))
+        (if (contains? style :fill) (fill (get style :fill)))
+        (if (contains? style :stroke-weight) (stroke-weight (get style :stroke-weight)))
+        (begin-shape)
+        (dorun (map (fn [[x y]] (vertex x y)) (get tsshape :points)))
+        (end-shape )
+        (pop-style)
+        ))
   )
-
 
 (defn draw-group 
   [txpt group]
@@ -257,42 +296,58 @@
 
 
 (defn setup []
-  (frame-rate 1)      
-  (background 0)) 
+  (no-loop)
 
-(defn draw []
-  (stroke-weight 1)
-  (color 255)
-  (fill 0)
-  (background 0)
-
-  (let [txpt (make-txpt [-1 -1 1 1] [0 0 (width) (height)])
+  (let [
         my-green (color 100 200 100)
         my-purple (color 150 100 200)
         my-blue (color 100 100 200 150)
         my-red (color 200 100 100)
-        my-yellow (color 250 250 150 150)
+        my-yellow (color 250 250 150 200)
+        my-cyan (color 150 250 250)
+        my-cream (color 220 210 180)
+        
         square (group  {:style {:colour my-yellow} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
-        basic (group                  
-               (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.7 3) ))
-               (colour-sshape my-yellow (poly 0.3 0.6 0.5 7) )                 
-               (clock-rotate 6 (group  (colour-sshape my-purple (poly -0.3 0.5 0.1 12) )))
-        )
+        basic (superimpose-pattern  (group                  
+                                     (fill-sshape my-red (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.7 3) )))
+                                     (fill-sshape my-yellow (colour-sshape my-yellow (poly 0.3 0.6 0.5 7) )) )
+                                    (clock-rotate 6 (group  (hide-sshape (colour-sshape my-purple (poly (- 0.3) (- 0.5) 0.3 4) ))))
+                                    )
         cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 200 100) 0 0))
-        clock (clock-rotate 12 (group  (colour-sshape my-yellow (poly (rand 1) (rand 1)  0.06 4))
-                                       (colour-sshape my-blue (drunk-line 9 0.2))))
+        blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0))
+        clock (clock-rotate 12 (group  (fill-sshape my-blue (weight-sshape 2 (colour-sshape my-blue (poly (rand 1) (rand 1)  0.12 4))))
+                                       (fill-sshape my-yellow (weight-sshape 2 (colour-sshape my-yellow (drunk-line 9 0.2))))))
+        flake (spoke-flake-group {:colour my-cyan :stroke-weight 2})
+        face (scale-group 0.8 (face-group [20 my-cream] [5 my-blue] [3 my-purple]  [8 my-red]))
 
+        red-ball (group (add-style {:colour my-red :fill my-red} (poly 0 -0.7 0.02 10)))
+        simple-clock (clock-rotate 8 (group (add-style {:colour my-green :fill my-cyan } (poly 0.5 0 0.2 8))))
+
+        
+        test-shape (group
+                     (add-style {:colour my-red :fill my-yellow :stroke-weight 2} (poly 0 0 0.8 3))
+                     (add-style {:colour my-blue :fill my-blue :stroke-weight 2} (poly 0 (- 0.5) 0.2 8))
+                     (sshape {:colour my-green :stroke-weight 3} [[0 0] [0 (- 1)]])
+                    )
+        txpt (make-txpt [-1 -1 1 1] [0 0 (width) (height)])
         ]
 
-    
-    (draw-group txpt (checker-pattern 4
-                                      (superimpose-pattern square (checker-pattern 3 clock cross))
-                                      (four-mirror (rotate-group (/ PI (+ 1 (rand 10)))  basic))
-                                      )
-                ) )
-   (smooth)
-   (smooth) 
-  )
+        (stroke-weight 1)
+        (color 255)
+        (no-fill)
+        (background 0)
+        (draw-group txpt
+;;                   (four-mirror (clock-rotate 8 test-shape) )
+
+                    (superimpose-pattern
+                     (four-round  (clock-rotate 16 (superimpose-pattern blue-cross red-ball) ))
+                     (one-col-pattern 4 2 (four-round ( clock-rotate 3 test-shape) ) flake)
+                     ) )
+        (smooth)
+        (smooth)) 
+  )  
+
+(defn draw [])
 
 
 (defn -main [& args]
