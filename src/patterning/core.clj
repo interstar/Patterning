@@ -380,7 +380,7 @@
         (background 0)
         (draw-group txpt
                     (superimpose-layout 
-                     (grid-layout 8 (repeat 64 test-shape))
+                     (random-grid-layout 8 (repeat 64 test-shape))
                      basic ) 
                     
                     )
