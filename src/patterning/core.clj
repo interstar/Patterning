@@ -168,6 +168,26 @@
   )
 
 
+(defn q1-rot-group [group] (rotate-group (float (/ PI 2)) group ) )
+(defn q2-rot-group [group] (rotate-group PI group))
+(defn q3-rot-group [group] (rotate-group (-  (float (/ PI 2))) group))
+
+
+(defn random-grid-layout "Takes a group and returns a grid with random quarter rotations"
+  [number groups]
+  (let [scaler (/ 1 number)
+        random-turn (fn [group]
+                      (case (rand-int 4)
+                        0 group
+                        1 (q1-rot-group group)
+                        2 (q2-rot-group group)
+                        3 (q3-rot-group group)  ) )
+        scaled-groups (into [] (map random-turn (map (partial scale-group scaler ) groups)))
+        ]
+    (place-groups-at-positions scaled-groups (grid-layout-positions number)) )
+  )
+
+
 
 (defn drop-every [n xs] (lazy-seq (if (seq xs) (concat (take (dec n) xs) (drop-every n (drop n xs))))))
 
@@ -191,21 +211,23 @@
 
 
 (defn one-x-layout
-  "takes a total number of rows, an index i and two groups.
-   Makes an n X n square where row or col i is group 2 and everything else is group1"
-  [n i f group1 group2]
-  (let [[scaler scaled1 scaled2] (scale-pair n group1 group2)        
-        the-seq (concat (repeat (* n i) scaled1) (repeat n scaled2) (repeat (* n (- n i)) scaled1) )
-        layout-positions (map vector the-seq (grid-layout-positions n)) ]       
-    (concat (mapcat f layout-positions))
+  "Takes a total number of rows, an index i and two group-streams.
+   Makes an n X n square where row or col i is from group-stream2 and everything else is group-stream1"
+  [n i f groups1 groups2]
+  (let [scale-fn (fn [group] (scale-group (/ 1 n) group))
+        the-seq (concat (take (* n i) groups1) (take n groups2) (take (* n (- n i)) groups1) )
+        scaled-seq (into [] (map scale-fn the-seq))
+        layout-positions (map vector scaled-seq (grid-layout-positions n))        
+        ]
+     (concat (mapcat f layout-positions))
     )
   )
 
 (defn one-row-layout "uses one-x-layout with rows"
-  [n i group1 group2] (one-x-layout n i (fn [[group [x y]]] (translate-group y x group)) group1 group2  ))
+  [n i groups1 groups2] (one-x-layout n i (fn [[group [x y]]] (translate-group y x group)) groups1 groups2  ))
 
 (defn one-col-layout "uses one-x-layout with rows"
-  [n i group1 group2] (one-x-layout n i (fn [[group [x y]]] (translate-group x y group)) group1 group2 ) )
+  [n i groups1 groups2] (one-x-layout n i (fn [[group [x y]]] (translate-group x y group)) groups1 groups2 ) )
 
 
 
@@ -223,10 +245,6 @@
    ))
 
 
-(defn q1-rot-group [group] (rotate-group (float (/ PI 2)) group ) )
-(defn q2-rot-group [group] (rotate-group PI group))
-(defn q3-rot-group [group] (rotate-group (-  (float (/ PI 2))) group))
-
 (defn four-round "Four squares rotated" [group]
   (let [scaled (scale-group (float (/ 1 2)) group)
         p2 (float (/ PI 2))
@@ -238,20 +256,6 @@
     (concat nw ne se sw )  )  )
 
 
-(defn random-grid-layout "Takes a group and returns a grid with random quarter rotations"
-  [number group]
-  (let [scaler (/ 1 number)
-        scaled (scale-group scaler group)
-        random-turn (fn [group]
-                      (case (rand-int 4)
-                        0 group
-                        1 (q1-rot-group group)
-                        2 (q2-rot-group group)
-                        3 (q3-rot-group group)  ) )
-        groups (into [] (map random-turn (repeat (* number number) scaled)))
-        ]
-    (place-groups-at-positions groups (grid-layout-positions number)) )
-  )
 
 
 (defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
@@ -351,8 +355,8 @@
         square (group  {:style {:colour my-yellow} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
         basic (superimpose-layout  (group                  
                                      (fill-sshape my-red (hide-sshape (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.7 3) ))))
-                                     (fill-sshape my-yellow (colour-sshape my-yellow (poly 0.3 0.6 0.5 7) )) )
-                                    (clock-rotate 6 (group  ( colour-sshape my-purple (poly (- 0.3) (- 0.5) 0.3 4) )))
+                                     (hide-sshape (fill-sshape my-yellow (colour-sshape my-cream (poly 0.3 0.6 0.2 7) ))) )
+                                   (clock-rotate 6 (group  (add-style {:colour my-purple :fill my-purple} (poly (- 0.3) (- 0.5) 0.3 4) )))
                                     )
         cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 200 100) 0 0))
         blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0))
@@ -379,9 +383,9 @@
         (no-fill)
         (background 0)
         (draw-group txpt
-                    (superimpose-layout 
-                     (random-grid-layout 8 (repeat 64 test-shape))
-                     basic ) 
+                    (one-row-layout 4 2
+                                     (repeat (random-grid-layout 8 (repeat 64 test-shape)))
+                                     (cycle  [ basic flake]) ) 
                     
                     )
         (smooth)
