@@ -97,6 +97,9 @@
       ) ) 
     ) )
 
+(defn rect-sshape [x y w h] (sshape {} [[x y] [(+ x w) h] [(+ x w) (+ y h)] [x (+ y h)] [x y]] ))
+
+(defn random-rect [style]  (let [ rr (fn [] (+ (- 1) (rand 2) ))] (add-style style (rect-sshape (rr) (rr) (rr) (rr)) )))
 
 
 ;; Groups
@@ -187,7 +190,14 @@
     (place-groups-at-positions scaled-groups (grid-layout-positions number)) )
   )
 
-
+(defn random-turn-groups [groups]
+  (let [random-turn (fn [group]
+                      (case (rand-int 4)
+                        0 group
+                        1 (q1-rot-group group)
+                        2 (q2-rot-group group)
+                        3 (q3-rot-group group)  ) ) ]
+    (map random-turn groups) ))
 
 (defn drop-every [n xs] (lazy-seq (if (seq xs) (concat (take (dec n) xs) (drop-every n (drop n xs))))))
 
@@ -195,19 +205,19 @@
   (let [scaler (/ 1 number)] 
     [scaler (scale-group scaler group1) (scale-group scaler group2) ]))
 
-(defn check-seq "returns the appropriate lazy seq of groups for constructing a checker-layout"
-  [number group1 group2]
-  (let [ [scaler scaled1 scaled2] (scale-pair number group1 group2) ]
-    (if (= 0 (mod number 2))
-      (drop-every (+ 1 number) (cycle [scaled1 scaled2]))
-      (cycle [scaled1 scaled2]) ) ) )
+(defn check-seq "returns the appropriate lazy seq of groups for constructing a checked-layout"
+  [n groups1 groups2]
+  (let [ together (map (partial scale-group (/ 1 n)) (interleave groups1 groups2) )  ]
+    (if (= 0 (mod n 2))
+      (drop-every (+ 1 n) together)
+      together ) ) )
 
 
-(defn checker-layout "takes number n and two groups and lays out alternating copies of the groups on an n X n checkerboard"
-  [number group1 group2]
-  (let [c-seq (check-seq number group1 group2)
-        layout-positions (map vector c-seq (grid-layout-positions number))]
-    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) layout-positions )) ) )
+(defn checked-layout "takes number n and two group-streams and lays out alternating copies of the groups on an n X n checkerboard"
+  [number groups1 groups2]
+  (let [c-seq (check-seq number groups1 groups2)
+        layout (map vector c-seq (grid-layout-positions number)  )]
+    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) layout )) ) )
 
 
 (defn one-x-layout
@@ -354,26 +364,32 @@
         
         square (group  {:style {:colour my-yellow} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
         basic (superimpose-layout  (group                  
-                                     (fill-sshape my-red (hide-sshape (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.7 3) ))))
-                                     (hide-sshape (fill-sshape my-yellow (colour-sshape my-cream (poly 0.3 0.6 0.2 7) ))) )
-                                   (clock-rotate 6 (group  (add-style {:colour my-purple :fill my-purple} (poly (- 0.3) (- 0.5) 0.3 4) )))
+                                     (fill-sshape my-red (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.5 3) )))
+                                     (fill-sshape my-yellow (colour-sshape my-yellow (poly 0.3 0.6 0.2 7) )) )
+                                     (clock-rotate 6 (group  (add-style {:colour my-purple :stroke-weight 2 } (poly (- 0.3) (- 0.5) 0.3 4) )))
                                     )
-        cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 200 100) 0 0))
-        blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0))
-        clock (clock-rotate 12 (group  (fill-sshape my-blue (weight-sshape 2 (colour-sshape my-blue (poly (rand 1) (rand 1)  0.12 4))))
-                                       (fill-sshape my-yellow (weight-sshape 2 (colour-sshape my-yellow (drunk-line 9 0.2))))))
-        flake (spoke-flake-group {:colour my-cyan :stroke-weight 2})
+        cross ( rotate-group (- (rand (/ PI 2)) (/ PI 4)) ( cross-group my-red 0 0))
+        blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0)) 
+        clock (clock-rotate 12 (group  (fill-sshape my-yellow (weight-sshape 2 (colour-sshape my-yellow (poly (rand 1) (rand 1)  0.12 4))))
+                                       (fill-sshape my-blue (weight-sshape 2 (colour-sshape my-blue (drunk-line 9 0.2))))))
+        flake (spoke-flake-group {:colour my-cream :fill my-cyan })
         face (scale-group 0.8 (face-group [20 my-cream] [5 my-blue] [3 my-purple]  [8 my-red]))
 
         red-ball (group (add-style {:colour my-purple :fill my-red} (poly 0 -0.82 0.05 3)))
-        simple-clock (clock-rotate 8 (group (add-style {:colour my-green :fill my-cyan } (poly 0.5 0 0.2 8))))
+        simple-clock (clock-rotate 8 (group (add-style {:colour my-green :fill my-red } (poly 0.5 0 0.2 8))))
 
         
         test-shape (group
 ;;                     (add-style {:colour my-red :fill my-yellow :stroke-weight 2} (poly 0 0 0.8 3))
 ;;                     (add-style {:colour my-blue :fill my-blue :stroke-weight 2} (poly 0 (- 0.5) 0.2 8))
 ;;                     (sshape {:colour my-green :stroke-weight 3} [[0 0] [0 (- 1)]])
-                    (sshape {:color (color 255) :fill (color 255)} [[-1 -1] [-1 1] [1 1]] )
+                    (sshape {:colour (color 200 250 200) :fill (color 160 240 160)} [[-1 -1] [-1 1] [1 1]] )
+                    (sshape {:colour (color 100 100 200) :fill (color 50 50 150) } [[-1 -1] [1 -1] [1 1]])
+                    (random-rect {:fill (color 0)})
+                    (random-rect {:fill (color 0)})
+                    (random-rect {:fill (color 0)})
+                    (random-rect {:fill (color 0)})
+                    
                     )
         txpt (make-txpt [-1 -1 1 1] [0 0 (width) (height)])
         ]
@@ -383,9 +399,9 @@
         (no-fill)
         (background 0)
         (draw-group txpt
-                    (one-row-layout 4 2
-                                     (repeat (random-grid-layout 8 (repeat 64 test-shape)))
-                                     (cycle  [ basic flake]) ) 
+                    (checked-layout 6
+                                     (cycle [(four-mirror test-shape) simple-clock]  )
+                                     (random-turn-groups (cycle  [(four-mirror  test-shape) clock] )) ) 
                     
                     )
         (smooth)
