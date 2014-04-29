@@ -1,10 +1,13 @@
 (ns patterning.geometry
  (:require [quil.core :refer :all])
+ (:require [clojure.math.numeric-tower :as math])
+
   )
+  
 
 ;; Point geometry
 
-(defn rec-to-pol [[x y]] [(sqrt (+ (* x x) (* y y))) (atan2 x y)])
+(defn rec-to-pol [[x y]] [(math/sqrt (+ (* x x) (* y y))) (atan2 x y)])
 (defn pol-to-rec [[r a]] [(* r (cos a)) (* r (sin a))])
 (defn add-points [[x1 y1] [x2 y2]] [(+ x1 x2) (+ y1 y2)])
 
@@ -213,3 +216,112 @@
     (map random-turn groups) ))
 
 (defn drop-every [n xs] (lazy-seq (if (seq xs) (concat (take (dec n) xs) (drop-every n (drop n xs))))))
+
+
+
+(defn scale-pair "returns [scaler scaled1 scaled2] " [number group1 group2]
+  (let [scaler (/ 1 number)] 
+    [scaler (scale-group scaler group1) (scale-group scaler group2) ]))
+
+(defn check-seq "returns the appropriate lazy seq of groups for constructing a checked-layout"
+  [n groups1 groups2]
+  (let [ together (map (partial scale-group (/ 1 n)) (interleave groups1 groups2) )  ]
+    (if (= 0 (mod n 2))
+      (drop-every (+ 1 n) together)
+      together ) ) )
+
+
+(defn checked-layout "takes number n and two group-streams and lays out alternating copies of the groups on an n X n checkerboard"
+  [number groups1 groups2]
+  (let [c-seq (check-seq number groups1 groups2)
+        layout (map vector c-seq (grid-layout-positions number)  )]
+    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) layout )) ) )
+
+
+(defn one-x-layout
+  "Takes a total number of rows, an index i and two group-streams.
+   Makes an n X n square where row or col i is from group-stream2 and everything else is group-stream1"
+  [n i f groups1 groups2]
+  (let [scale-fn (fn [group] (scale-group (/ 1 n) group))
+        the-seq (concat (take (* n i) groups1) (take n groups2) (take (* n (- n i)) groups1) )
+        scaled-seq (into [] (map scale-fn the-seq))
+        layout-positions (map vector scaled-seq (grid-layout-positions n))        
+        ]
+     (concat (mapcat f layout-positions))
+    )
+  )
+
+(defn one-row-layout "uses one-x-layout with rows"
+  [n i groups1 groups2] (one-x-layout n i (fn [[group [x y]]] (translate-group y x group)) groups1 groups2  ))
+
+(defn one-col-layout "uses one-x-layout with rows"
+  [n i groups1 groups2] (one-x-layout n i (fn [[group [x y]]] (translate-group x y group)) groups1 groups2 ) )
+
+
+
+(defn four-mirror "Four-way mirroring. Returns the group repeated four times reflected vertically and horizontall" [group]
+  (let [nw (translate-group (- 0.5) (- 0.5) (scale-group (float (/ 1 2)) group))
+        ne (h-reflect-group nw)
+        sw (v-reflect-group nw)
+        se (h-reflect-group sw) ]
+    (concat nw ne sw se)))
+
+
+
+(defn clock-rotate "Circular layout. Returns n copies in a rotation"
+  [n group]
+  (let [angs (angles n)]
+    (concat (mapcat (fn [a] (rotate-group a group)) angs )) 
+   ))
+
+
+(defn four-round "Four squares rotated" [group]
+  (let [scaled (scale-group (float (/ 1 2)) group)
+        p2 (float (/ PI 2))
+        nw (translate-group (- 0.5) (- 0.5) scaled )
+        ne (translate-group 0.5 (- 0.5) (q1-rot-group scaled)) 
+        se (translate-group (- 0.5) 0.5 (q3-rot-group scaled))
+        sw (translate-group 0.5 0.5 (q2-rot-group scaled) )
+        ]
+    (concat nw ne se sw )  )  )
+
+
+
+(defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
+  [style]
+  (let [outer-radius 0.05
+        inner-radius (* 2.01 outer-radius)
+        arm-radius (* 4.2 inner-radius)
+
+        inner-circle (add-style style (poly 0 0 inner-radius 30))
+        sp1 [0 inner-radius]
+        sp2 [0 (+ inner-radius arm-radius)]
+      
+        one-spoke (group (sshape style [sp1 sp2 sp1 sp2])
+                         (add-style style (poly 0 (+ outer-radius (last sp2)) outer-radius 25)))
+      ]
+    (into [] (concat (group (add-style style (poly 0 0 inner-radius 35)))
+                     (clock-rotate 8 one-spoke)       ) ) ) )
+
+
+(defn polyflower-group "number of polygons rotated and superimosed"
+  ( [sides-per-poly no-polies radius style]
+      (clock-rotate no-polies (group (add-style style (poly 0 0 radius sides-per-poly)))))
+  
+  ( [sides-per-poly no-polies radius] (polyflower-group sides-per-poly no-polies radius {})))
+
+
+
+(defn face-group "[head, eyes, nose and mouth] each argument is a pair to describe a poly [no-sides colour]"
+  ( [[ head-sides head-colour] [ eye-sides eye-colour] [ nose-sides nose-colour] [ mouth-sides mouth-colour]] 
+      (let [left-eye (stretch-sshape 1.3 1 (add-style { :colour eye-colour } (poly -0.3 -0.1 0.1 eye-sides)))
+            right-eye (h-reflect-sshape left-eye)
+            ]
+                
+        (group (add-style {:colour head-colour } (poly 0 0 0.8 head-sides))
+               (stretch-sshape 1.3 0.4 (add-style {:colour mouth-colour } (poly 0 1.3 0.2 mouth-sides)))
+               (translate-sshape 0 0.1
+                                 (stretch-sshape 0.6 1.1 (rotate-sshape (/ PI 2)
+                                 (add-style {:colour nose-colour } (poly 0 0 0.2 nose-sides)))))
+               left-eye
+               right-eye) ) ) )
