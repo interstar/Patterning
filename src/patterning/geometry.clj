@@ -115,6 +115,20 @@
                              (add-style style (rect-sshape (m1 (rr 1)) (m1 (rr 1)) (rr 1) (rr 1)  ) )))
 
 
+(defn h-sin-sshape [style] (sshape style (into [] (map (fn [a] [a (sin (* PI a))]  ) (range (- 1) 1 0.05)) )))
+
+(defn h-glue-shape "repeats a shape horizontally" [shape1 shape2]
+  (let [e1 (last shape1)
+        add (fn [[x y]] [(+ 1 (first e1) x) y])]
+    (concat shape1 (into [] (map add shape2)))))
+
+(defn zig-zag-sshape [freq style]
+  (let [tri (into [] (map (fn [x] [x (abs x)]) (range (- 1) 1 0.1) ))
+        down (translate-shape (- (- 1 (float (/ 1 freq))) ) (- 0.25) (stretch-shape (float (/ 1 freq)) 0.5 tri))
+        all (reduce h-glue-shape (repeat freq down))
+        ]
+    (sshape style all)))
+
 
 ;; Groups
 (defn group "a vector of sshapes"
@@ -158,53 +172,51 @@
 
 (defn grid-layout-positions "calculates the positions for a grid layout"
   [number]
-  (let [
-      offset (/ 2 number)
-      inc (fn [x] (+ offset x))
-      ino (float (/ offset 2))
-      init (- ino 1)
-      h-iterator (take number (iterate inc init))
-      v-iterator (take number (iterate inc init))
-      ]
+  (let [ offset (/ 2 number)
+         inc (fn [x] (+ offset x))
+         ino (float (/ offset 2))
+         init (- ino 1)
+         h-iterator (take number (iterate inc init))
+         v-iterator (take number (iterate inc init)) ]
   (cart [h-iterator v-iterator])  ) )
 
-
-(defn apply-positions "Takes a group and a list of positions and puts a copy of the group at each position"
-  [group positions] (concat ( mapcat (fn [[x y]] (translate-group x y group)) positions) )) 
-
-
+(defn half-drop-grid-layout-positions "Like a grid but with a half-drop every other column"
+  [number]
+  (let [ offset (/ 2 number)
+        n2 (int  (/ number 2))
+        inc-x (fn [x] (+ (* 2 offset) x))
+        inc-y (fn [y] (+ offset y))
+        in-x (float (/ offset 2))
+        in-y (float (/ offset 2))
+        
+        init-x1 (- in-x 1)
+        init-x2 (- in-x (- 1 offset))
+        init-y1 (- in-y 1)
+        init-y2 (- in-y (+ 1 ( / offset 2)))
+        
+        h1-iterator (take n2 (iterate inc-x init-x1))
+        v1-iterator (take number (iterate inc-y init-y1))
+        h2-iterator (take n2 (iterate inc-x init-x2))
+        v2-iterator (take (+ 1 number) (iterate inc-y init-y2))
+        ]
+    (concat (cart [h1-iterator v1-iterator]) (cart [h2-iterator v2-iterator]))))
 
 (defn place-groups-at-positions "Takes a list of groups and a list of positions and puts one of the groups at each position"
   [groups positions]
   (concat ( mapcat (fn [[ [x y] group]] (translate-group x y group)) (map vector positions groups) ) )) 
 
-(defn grid-layout "Takes an n and a group-stream and returns items from the group-stream in an n X n grid "
-  [n groups]
-  (let [scaler (/ 1 n)
-        scaled-groups (into [] (map (partial scale-group scaler) groups))
-        ]    
-    (place-groups-at-positions scaled-groups (grid-layout-positions n)) )
-  )
+(defn scale-group-stream [n groups] (map (partial scale-group (/ 1 n)) groups))
 
+(defn grid-layout "Takes an n and a group-stream and returns items from the group-stream in an n X n grid "
+  [n groups] (place-groups-at-positions (scale-group-stream n groups) (grid-layout-positions n))  )
+
+(defn half-drop-grid-layout "Like grid but with half-drop"
+  [n groups] (place-groups-at-positions (scale-group-stream n groups) (half-drop-grid-layout-positions n)))
 
 (defn q1-rot-group [group] (rotate-group (float (/ PI 2)) group ) )
 (defn q2-rot-group [group] (rotate-group PI group))
 (defn q3-rot-group [group] (rotate-group (-  (float (/ PI 2))) group))
 
-
-(defn random-grid-layout "Takes a group and returns a grid with random quarter rotations"
-  [number groups]
-  (let [scaler (/ 1 number)
-        random-turn (fn [group]
-                      (case (rand-int 4)
-                        0 group
-                        1 (q1-rot-group group)
-                        2 (q2-rot-group group)
-                        3 (q3-rot-group group)  ) )
-        scaled-groups (into [] (map random-turn (map (partial scale-group scaler ) groups)))
-        ]
-    (place-groups-at-positions scaled-groups (grid-layout-positions number)) )
-  )
 
 (defn random-turn-groups [groups]
   (let [random-turn (fn [group]
@@ -215,17 +227,16 @@
                         3 (q3-rot-group group)  ) ) ]
     (map random-turn groups) ))
 
+(defn random-grid-layout  "Takes a group and returns a grid with random quarter rotations"
+  [n groups] (grid-layout n (random-turn-groups groups)))
+
+
 (defn drop-every [n xs] (lazy-seq (if (seq xs) (concat (take (dec n) xs) (drop-every n (drop n xs))))))
 
 
-
-(defn scale-pair "returns [scaler scaled1 scaled2] " [number group1 group2]
-  (let [scaler (/ 1 number)] 
-    [scaler (scale-group scaler group1) (scale-group scaler group2) ]))
-
 (defn check-seq "returns the appropriate lazy seq of groups for constructing a checked-layout"
   [n groups1 groups2]
-  (let [ together (map (partial scale-group (/ 1 n)) (interleave groups1 groups2) )  ]
+  (let [ together (scale-group-stream n (interleave groups1 groups2) ) ]
     (if (= 0 (mod n 2))
       (drop-every (+ 1 n) together)
       together ) ) )
@@ -238,14 +249,13 @@
     (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) layout )) ) )
 
 
+
 (defn one-x-layout
   "Takes a total number of rows, an index i and two group-streams.
    Makes an n X n square where row or col i is from group-stream2 and everything else is group-stream1"
   [n i f groups1 groups2]
-  (let [scale-fn (fn [group] (scale-group (/ 1 n) group))
-        the-seq (concat (take (* n i) groups1) (take n groups2) (take (* n (- n i)) groups1) )
-        scaled-seq (into [] (map scale-fn the-seq))
-        layout-positions (map vector scaled-seq (grid-layout-positions n))        
+  (let [the-seq (concat (take (* n i) groups1) (take n groups2) (take (* n (- n i)) groups1) )
+        layout-positions (map vector (scale-group-stream n the-seq) (grid-layout-positions n))        
         ]
      (concat (mapcat f layout-positions))
     )
@@ -258,6 +268,19 @@
   [n i groups1 groups2] (one-x-layout n i (fn [[group [x y]]] (translate-group x y group)) groups1 groups2 ) )
 
 
+(defn alt-cols "Fills a group-stream with cols from alternative group-streams"
+  [n groups1 groups2]
+  (cycle (concat (take n groups1) (take n groups2)))  )
+
+(defn alt-rows "Fills a group-stream with rows from alternative group-streams"
+  [n groups1 groups2]
+  (interleave groups1 groups2))
+
+(defn alt-cols-grid-layout "Every other column from two streams" [n groups1 groups2]
+  (grid-layout n (alt-cols n groups1 groups2)))
+
+(defn alt-rows-grid-layout "Every other row from two streams" [n groups1 groups2]
+  (grid-layout n (alt-rows n groups1 groups2)))
 
 (defn four-mirror "Four-way mirroring. Returns the group repeated four times reflected vertically and horizontall" [group]
   (let [nw (translate-group (- 0.5) (- 0.5) (scale-group (float (/ 1 2)) group))

@@ -37,7 +37,7 @@
         p (first points)
         s1 (str "M " (first p) " " (last p) )
         strung (cons s1 (mapcat stringify (rest points)))
-        col (colour-to-web (get style :colour))]
+        col (if (contains? style :colour) (colour-to-web (get style :colour)) (colour-to-web (color 0)) )]
     
     (str (format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' fill='none' stroke='%s' " col)
          "d='"
