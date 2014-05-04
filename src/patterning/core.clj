@@ -1,6 +1,7 @@
 (ns patterning.core
   (:require [quil.core :refer :all])
   (:require [patterning.geometry :refer :all])
+  (:require [patterning.complex_elements :refer :all])
   (:require [patterning.view :refer :all])
   (:gen-class))
 
@@ -10,17 +11,18 @@
   (no-loop)
 
   (let [
-        my-green (color 150 220 150 )
+        my-green (color 180 240 180 )
         my-purple (color 150 100 200)
         my-blue (color 160 160 250 )
-        my-red (color 200 100 100)
+        my-red (color 255 150 150)
         my-yellow (color 220 200 150)
         my-orange (color 255 128 64)
         my-cyan (color 150 250 250)
-        my-cream (color 220 210 180)
+        my-cream (color 252 251 227)
+        my-burgundy (color 160 0 23)
         my-pink (color 250 100 180)
         
-        square (group  {:style {:colour my-pink :stroke-weight 3} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
+        square (group  {:style {:colour (color 255) :fill my-cream :stroke-weight 4} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
         basic (superimpose-layout  (group                  
                                     (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.5 3) ))
                                      (colour-sshape my-yellow (poly 0.3 0.6 0.2 7) ) )
@@ -28,8 +30,8 @@
                                     )
         cross ( rotate-group (- (rand (/ PI 2)) (/ PI 4)) ( cross-group my-red 0 0))
         blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0)) 
-        clock (clock-rotate 12 (group  (weight-sshape 2 (colour-sshape my-yellow (poly (rand 1) (rand 1)  0.12 4)))
-                                       (weight-sshape 2 (colour-sshape my-green (drunk-line 9 0.2)))))
+        clock (clock-rotate 12 (group  (weight-sshape 1 (colour-sshape my-cyan (poly (rand 1) (rand 1)  0.12 4)))
+                                       (weight-sshape 2 (colour-sshape my-red (drunk-line 9 0.2)))))
         flake (spoke-flake-group {:colour my-orange :stroke-weight 1 })
         face (scale-group 0.8 (face-group [20 my-cream] [5 my-blue] [3 my-purple]  [8 my-red]))
 
@@ -39,9 +41,9 @@
         bird (group half-bird (h-reflect-sshape half-bird ))
         
         test-shape (group
-                   (add-style {:colour my-red  :stroke-weight 2} (poly 0 0 0.8 3))                     
-                   (sshape {:colour my-green :stroke-weight 3} [[0 0] [0 (- 1)]])
-                   (rotate-sshape (/ PI 2)  (stretch-sshape 1 0.5 (h-sin-sshape {:colour my-pink :stroke-weight 1})))
+                   (add-style {:colour my-burgundy :fill my-burgundy :stroke-weight 2} (poly 0 0 0.8 3))                     
+                   (sshape {:colour my-green :stroke-weight 3} [[0 0] [(-  0.25) (- 1)]])
+;;                   (rotate-sshape (/ PI 2)  (stretch-sshape 1 0.5 (h-sin-sshape {:colour my-pink :stroke-weight 1})))
 ;;                    (zig-zag-sshape 4 {:colour my-blue} )
 
 ;;                     (sshape {:colour (color 100 100 200) :fill my-green} [[-1 -1] [1 -1] [1 1] [-1 -1]] )
@@ -50,12 +52,11 @@
                      )
         test2 (superimpose-layout square test-shape)
 
-        final-pattern ( half-drop-grid-layout 12
-                                              (repeat (superimpose-layout
-                                                       (translate-group 0 0.5 simple-clock)
-                                                       (checked-layout 3
-                                                                        (repeat (clock-rotate 3  (group  (zig-zag-sshape 4 {:colour my-blue}))))
-                                                                        (repeat bird)    ))))
+        final-pattern (scale-group 1  (superimpose-layout
+                                       (half-drop-grid-layout 7 (repeat square)) 
+                                       (half-drop-grid-layout 7
+                                                              (random-turn-groups (repeat test-shape) )))
+                                   )
         
         final-pattern3 ( superimpose-layout 
                         (checked-layout 4 (cycle [blue-cross (four-round test2)]) (repeat flake))

@@ -7,9 +7,27 @@
 
 ;; Point geometry
 
+(defn f-eq "floating point equality" [a b]  (<= (Math/abs (- a b)) 0.00001))
+(defn p-eq "point equality" [[x1 y1] [x2 y2]] (and (f-eq x1 x2) (f-eq y1 y2)))
+
+(defn line-to-segments [points]
+  (if (empty? points) [] 
+      (loop [p (first points) ps (rest points) acc []]
+        (if (empty? ps) acc
+            (recur (first ps) (rest ps) (conj acc [p (first ps)]) )  )        
+        )))
+
+(defn add-points [[x1 y1] [x2 y2]] [(+ x1 x2) (+ y1 y2)])
+(defn diff [[x1 y1] [x2 y2]] (let [dx (- x2 x1) dy (- y2 y1)]  [dx dy]) )
+(defn magnitude [[dx dy]] (math/sqrt (+ (* dx dx) (* dy dy) )))
+(defn distance [p1 p2] ( (comp magnitude diff) p1 p2) )
+(defn unit [[dx dy]] (let [m (magnitude [dx dy])] [(float (/ dx m)) (float (/ dy m))]) )
+
+(defn rev [[dx dy]] [(- dx) (- dy)])
+
 (defn rec-to-pol [[x y]] [(math/sqrt (+ (* x x) (* y y))) (atan2 x y)])
 (defn pol-to-rec [[r a]] [(* r (cos a)) (* r (sin a))])
-(defn add-points [[x1 y1] [x2 y2]] [(+ x1 x2) (+ y1 y2)])
+
 
 (defn rotate-point [a [x y]]
   (let [cos-a (cos a) sin-a (sin a)]  
@@ -194,10 +212,12 @@
         init-y1 (- in-y 1)
         init-y2 (- in-y (+ 1 ( / offset 2)))
         
-        h1-iterator (take n2 (iterate inc-x init-x1))
+        h1-iterator (take (if (even? n2) n2 (+ 1 n2)) (iterate inc-x init-x1))
         v1-iterator (take number (iterate inc-y init-y1))
         h2-iterator (take n2 (iterate inc-x init-x2))
         v2-iterator (take (+ 1 number) (iterate inc-y init-y2))
+        h-iterator (interleave h1-iterator h2-iterator)
+        v-iterator (interleave v1-iterator v2-iterator)
         ]
     (concat (cart [h1-iterator v1-iterator]) (cart [h2-iterator v2-iterator]))))
 
@@ -310,41 +330,14 @@
 
 
 
-(defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
-  [style]
-  (let [outer-radius 0.05
-        inner-radius (* 2.01 outer-radius)
-        arm-radius (* 4.2 inner-radius)
 
-        inner-circle (add-style style (poly 0 0 inner-radius 30))
-        sp1 [0 inner-radius]
-        sp2 [0 (+ inner-radius arm-radius)]
-      
-        one-spoke (group (sshape style [sp1 sp2 sp1 sp2])
-                         (add-style style (poly 0 (+ outer-radius (last sp2)) outer-radius 25)))
-      ]
-    (into [] (concat (group (add-style style (poly 0 0 inner-radius 35)))
-                     (clock-rotate 8 one-spoke)       ) ) ) )
+;; Growth transformations
 
+(defn l-norm [p1 p2] (let [[dx dy] (diff [p1 p2])] (unit [(- dy) dx]) ) )
+(defn r-norm [p1 p2] (rev (l-norm p1 p2)))
 
-(defn polyflower-group "number of polygons rotated and superimosed"
-  ( [sides-per-poly no-polies radius style]
-      (clock-rotate no-polies (group (add-style style (poly 0 0 radius sides-per-poly)))))
-  
-  ( [sides-per-poly no-polies radius] (polyflower-group sides-per-poly no-polies radius {})))
+(defn add-dots-to-sshape "Adds dots each side of a line. " [args make-spot dist {:keys [style points]}]  
+  (let [segs (line-to-segments points)
+        l-dot (fn [[x1 y1] [x2 y2]] (make-spot   ))]
+    ()))
 
-
-
-(defn face-group "[head, eyes, nose and mouth] each argument is a pair to describe a poly [no-sides colour]"
-  ( [[ head-sides head-colour] [ eye-sides eye-colour] [ nose-sides nose-colour] [ mouth-sides mouth-colour]] 
-      (let [left-eye (stretch-sshape 1.3 1 (add-style { :colour eye-colour } (poly -0.3 -0.1 0.1 eye-sides)))
-            right-eye (h-reflect-sshape left-eye)
-            ]
-                
-        (group (add-style {:colour head-colour } (poly 0 0 0.8 head-sides))
-               (stretch-sshape 1.3 0.4 (add-style {:colour mouth-colour } (poly 0 1.3 0.2 mouth-sides)))
-               (translate-sshape 0 0.1
-                                 (stretch-sshape 0.6 1.1 (rotate-sshape (/ PI 2)
-                                 (add-style {:colour nose-colour } (poly 0 0 0.2 nose-sides)))))
-               left-eye
-               right-eye) ) ) )
