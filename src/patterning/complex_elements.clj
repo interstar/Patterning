@@ -1,10 +1,26 @@
 (ns patterning.complex_elements
   (:require [quil.core :refer :all])
-  (:require [patterning.geometry :refer :all]) 
+  (:require [patterning.geometry :refer :all])
+  (:require [patterning.layouts :refer :all])
   )
 
 
+
 ;; Complex patterns made as groups (these have several disjoint sshapes)
+
+(defn cross-group "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
+  [colour x y] (group (colour-sshape colour (horizontal-sshape y)) (colour-sshape colour (vertical-sshape  x)))  )
+
+
+
+(defn ogee-group "An ogee shape" [resolution stretch style]
+  (let [o-group (into [] (four-mirror (group ( ogee-sshape resolution stretch style))))
+        o0 (get o-group 0)
+        o1 (reverse-order-sshape  (get o-group 1))
+        o2 (get o-group 2)
+        o3 (get o-group 3)
+        ref-group [o0 o1 o3 o2]]
+    (group (flatten-group style ref-group)) )  )
 
 (defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
   [style]

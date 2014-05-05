@@ -96,7 +96,7 @@
 (defn rotate-sshape [da {:keys [style points]}] {:style style :points (rotate-shape da points)} )
 (defn wobble-sshape [noise {:keys [style points]}] {:style style :points (wobble-shape noise points)} )
 
-
+(defn reverse-order-sshape [{:keys [style points]}] {:style style :points (reverse points)})
 
 ;;; Some actual sshapes
 (defn angles [number]  (take number (iterate (fn [a] (+ a (float (/ (* 2 PI) number)))) (- PI))) )
@@ -148,13 +148,27 @@
     (sshape style all)))
 
 
-;; Groups
-(defn group "a vector of sshapes"
-  [& sshapes]
-  (into [] sshapes) ) 
+(defn diamond-sshape [style] (sshape style (close-shape [[-1 0] [0 -1] [1 0] [0 1]])) )
 
+(defn ogee-sshape [resolution stretch style ]
+  (let [ogee (fn [x] (/ x (math/sqrt (+ 1 (* x x)))))
+        points (into [] (map (fn [x] [x (ogee (* stretch x))]) (range (- 1) 1.0001 resolution) ) )]
+    (sshape style (rotate-shape (/ PI 2) points))   ))
+
+;; Groups
+;; A Group is a vector of sshapes. All patterns are basically groups.
+;; Groups can represent ordinary patterns that require several sshapes
+;; (because they have disjoint geometric forms, or multiple colours
+;; etc.
+;; Groups are also the flattened results of combining multiple groups
+;; together, eg. when running them through a layout. 
+
+
+;;; Making groups
+(defn group "a vector of sshapes" [& sshapes] (into [] sshapes) )
 (defn empty-group [] (empty-sshape))
 
+;;; Simple transforms
 (defn scale-group ([val group] (into [] (map (partial scale-sshape val) group )))   )
 
 (defn translate-group  [dx dy group] (into [] (map (partial translate-sshape dx dy) group))  )
@@ -172,162 +186,14 @@
 (defn over-style-group "Changes the style of a group" [style group]
   (into [] (map (partial add-style style) group)))
 
-(defn cross-group "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
-  [colour x y] (group (colour-sshape colour (horizontal-sshape y)) (colour-sshape colour (vertical-sshape  x)))  )
 
-;; Layouts
-;; Note layouts combine and multiply groups to make larger groups
+(defn extract-points [{:keys [style points]}] points)
 
-(defn superimpose-layout "simplest layout, two groups located on top of each other "
-  [group1 group2] (into [] (concat group1 group2))   )
-
-
-(defn cart "Cartesian Product of two collections" [colls]
-  (if (empty? colls)
-    '(())
-    (for [x (first colls) more (cart (rest colls))]
-      (cons x more))))
-
-(defn grid-layout-positions "calculates the positions for a grid layout"
-  [number]
-  (let [ offset (/ 2 number)
-         inc (fn [x] (+ offset x))
-         ino (float (/ offset 2))
-         init (- ino 1)
-         h-iterator (take number (iterate inc init))
-         v-iterator (take number (iterate inc init)) ]
-  (cart [h-iterator v-iterator])  ) )
-
-(defn half-drop-grid-layout-positions "Like a grid but with a half-drop every other column"
-  [number]
-  (let [ offset (/ 2 number)
-        n2 (int  (/ number 2))
-        inc-x (fn [x] (+ (* 2 offset) x))
-        inc-y (fn [y] (+ offset y))
-        in-x (float (/ offset 2))
-        in-y (float (/ offset 2))
-        
-        init-x1 (- in-x 1)
-        init-x2 (- in-x (- 1 offset))
-        init-y1 (- in-y 1)
-        init-y2 (- in-y (+ 1 ( / offset 2)))
-        
-        h1-iterator (take (if (even? n2) n2 (+ 1 n2)) (iterate inc-x init-x1))
-        v1-iterator (take number (iterate inc-y init-y1))
-        h2-iterator (take n2 (iterate inc-x init-x2))
-        v2-iterator (take (+ 1 number) (iterate inc-y init-y2))
-        h-iterator (interleave h1-iterator h2-iterator)
-        v-iterator (interleave v1-iterator v2-iterator)
-        ]
-    (concat (cart [h1-iterator v1-iterator]) (cart [h2-iterator v2-iterator]))))
-
-(defn place-groups-at-positions "Takes a list of groups and a list of positions and puts one of the groups at each position"
-  [groups positions]
-  (concat ( mapcat (fn [[ [x y] group]] (translate-group x y group)) (map vector positions groups) ) )) 
-
-(defn scale-group-stream [n groups] (map (partial scale-group (/ 1 n)) groups))
-
-(defn grid-layout "Takes an n and a group-stream and returns items from the group-stream in an n X n grid "
-  [n groups] (place-groups-at-positions (scale-group-stream n groups) (grid-layout-positions n))  )
-
-(defn half-drop-grid-layout "Like grid but with half-drop"
-  [n groups] (place-groups-at-positions (scale-group-stream n groups) (half-drop-grid-layout-positions n)))
-
-(defn q1-rot-group [group] (rotate-group (float (/ PI 2)) group ) )
-(defn q2-rot-group [group] (rotate-group PI group))
-(defn q3-rot-group [group] (rotate-group (-  (float (/ PI 2))) group))
-
-
-(defn random-turn-groups [groups]
-  (let [random-turn (fn [group]
-                      (case (rand-int 4)
-                        0 group
-                        1 (q1-rot-group group)
-                        2 (q2-rot-group group)
-                        3 (q3-rot-group group)  ) ) ]
-    (map random-turn groups) ))
-
-(defn random-grid-layout  "Takes a group and returns a grid with random quarter rotations"
-  [n groups] (grid-layout n (random-turn-groups groups)))
-
-
-(defn drop-every [n xs] (lazy-seq (if (seq xs) (concat (take (dec n) xs) (drop-every n (drop n xs))))))
-
-
-(defn check-seq "returns the appropriate lazy seq of groups for constructing a checked-layout"
-  [n groups1 groups2]
-  (let [ together (scale-group-stream n (interleave groups1 groups2) ) ]
-    (if (= 0 (mod n 2))
-      (drop-every (+ 1 n) together)
-      together ) ) )
-
-
-(defn checked-layout "takes number n and two group-streams and lays out alternating copies of the groups on an n X n checkerboard"
-  [number groups1 groups2]
-  (let [c-seq (check-seq number groups1 groups2)
-        layout (map vector c-seq (grid-layout-positions number)  )]
-    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) layout )) ) )
-
-
-
-(defn one-x-layout
-  "Takes a total number of rows, an index i and two group-streams.
-   Makes an n X n square where row or col i is from group-stream2 and everything else is group-stream1"
-  [n i f groups1 groups2]
-  (let [the-seq (concat (take (* n i) groups1) (take n groups2) (take (* n (- n i)) groups1) )
-        layout-positions (map vector (scale-group-stream n the-seq) (grid-layout-positions n))        
-        ]
-     (concat (mapcat f layout-positions))
-    )
-  )
-
-(defn one-row-layout "uses one-x-layout with rows"
-  [n i groups1 groups2] (one-x-layout n i (fn [[group [x y]]] (translate-group y x group)) groups1 groups2  ))
-
-(defn one-col-layout "uses one-x-layout with rows"
-  [n i groups1 groups2] (one-x-layout n i (fn [[group [x y]]] (translate-group x y group)) groups1 groups2 ) )
-
-
-(defn alt-cols "Fills a group-stream with cols from alternative group-streams"
-  [n groups1 groups2]
-  (cycle (concat (take n groups1) (take n groups2)))  )
-
-(defn alt-rows "Fills a group-stream with rows from alternative group-streams"
-  [n groups1 groups2]
-  (interleave groups1 groups2))
-
-(defn alt-cols-grid-layout "Every other column from two streams" [n groups1 groups2]
-  (grid-layout n (alt-cols n groups1 groups2)))
-
-(defn alt-rows-grid-layout "Every other row from two streams" [n groups1 groups2]
-  (grid-layout n (alt-rows n groups1 groups2)))
-
-(defn four-mirror "Four-way mirroring. Returns the group repeated four times reflected vertically and horizontall" [group]
-  (let [nw (translate-group (- 0.5) (- 0.5) (scale-group (float (/ 1 2)) group))
-        ne (h-reflect-group nw)
-        sw (v-reflect-group nw)
-        se (h-reflect-group sw) ]
-    (concat nw ne sw se)))
-
-
-
-(defn clock-rotate "Circular layout. Returns n copies in a rotation"
-  [n group]
-  (let [angs (angles n)]
-    (concat (mapcat (fn [a] (rotate-group a group)) angs )) 
-   ))
-
-
-(defn four-round "Four squares rotated" [group]
-  (let [scaled (scale-group (float (/ 1 2)) group)
-        p2 (float (/ PI 2))
-        nw (translate-group (- 0.5) (- 0.5) scaled )
-        ne (translate-group 0.5 (- 0.5) (q1-rot-group scaled)) 
-        se (translate-group (- 0.5) 0.5 (q3-rot-group scaled))
-        sw (translate-group 0.5 0.5 (q2-rot-group scaled) )
-        ]
-    (concat nw ne se sw )  )  )
-
+(defn flatten-group "Flatten all sshapes into a single sshape"
+  ([group] (flatten-group {} group))
+  ([style group]
+     (let [all-points (mapcat extract-points group) ]
+       (sshape style all-points) )  ) )
 
 
 

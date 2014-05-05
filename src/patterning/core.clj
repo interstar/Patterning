@@ -1,6 +1,7 @@
 (ns patterning.core
   (:require [quil.core :refer :all])
   (:require [patterning.geometry :refer :all])
+  (:require [patterning.layouts :refer :all])
   (:require [patterning.complex_elements :refer :all])
   (:require [patterning.view :refer :all])
   (:gen-class))
@@ -22,13 +23,13 @@
         my-burgundy (color 160 0 23)
         my-pink (color 250 100 180)
         
-        square (group  {:style {:colour (color 255) :fill my-cream :stroke-weight 4} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
+        square (group  {:style {:colour (color 255)  :stroke-weight 2} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
         basic (superimpose-layout  (group                  
                                     (weight-sshape 2 (colour-sshape my-red (poly 0 0 0.5 3) ))
                                      (colour-sshape my-yellow (poly 0.3 0.6 0.2 7) ) )
                                      (clock-rotate 6 (group  (add-style {:colour my-purple :stroke-weight 2 } (poly (- 0.3) (- 0.5) 0.3 4) )))
                                     )
-        cross ( rotate-group (- (rand (/ PI 2)) (/ PI 4)) ( cross-group my-red 0 0))
+        cross ( rotate-group (- (rand (/ PI 2)) (/ PI 4)) ( cross-group my-green 0 0))
         blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0)) 
         clock (clock-rotate 12 (group  (weight-sshape 1 (colour-sshape my-cyan (poly (rand 1) (rand 1)  0.12 4)))
                                        (weight-sshape 2 (colour-sshape my-red (drunk-line 9 0.2)))))
@@ -52,24 +53,46 @@
                      )
         test2 (superimpose-layout square test-shape)
 
-        final-pattern (scale-group 1  (superimpose-layout
-                                       (half-drop-grid-layout 7 (repeat square)) 
-                                       (half-drop-grid-layout 7
-                                                              (random-turn-groups (repeat test-shape) )))
-                                   )
+        simple-diamond (group  (diamond-sshape {:colour my-red :stroke-weight 2}))
+
+        
+        complex-diamond (nested-stack [{:colour my-red} {:colour my-blue} {:colour my-pink} {:colour my-green}]
+                                      simple-diamond (fn [x] (- x 0.2)) )
+
+        complex-square (nested-stack [{:colour my-red} {:colour my-blue} {:colour my-pink} {:colour my-cream}]
+                                     square (fn [x] (- x 0.2)))
+
+        complex-ogee (nested-stack ( colour-to-fill-styles  ( colour-seq (take 5 (cycle [my-purple my-blue my-green]))))
+                                   (ogee-group 0.1 3 {:stroke-weight 4})
+                                   (fn [x] (- x 0.2)))
+
+        complex-ogee2 (nested-stack ( colour-to-fill-styles (colour-seq (take 5 (cycle [my-purple my-red my-pink]))))
+                                   (ogee-group 0.1 3 {:stroke-weight 4})
+                                   (fn [x] (- x 0.2)))
+
+        
+        final-pattern (scale-group 1  (diamond-layout 4 (cycle [complex-ogee complex-ogee2])))
+        
+        final-pattern5 (diamond-layout 6 (cycle [ complex-diamond complex-square]))
+        
+        final-pattern4 (scale-group 1  (superimpose-layout
+                                        (half-drop-grid-layout 7 (repeat square)) 
+                                        (half-drop-grid-layout 7
+                                                               (random-turn-groups (repeat test-shape) )))
+                                    )
         
         final-pattern3 ( superimpose-layout 
-                        (checked-layout 4 (cycle [blue-cross (four-round test2)]) (repeat flake))
-                        (alt-rows-grid-layout 4 (repeat  (polyflower-group 3 4 0.75 {:colour my-green :fill (color 100 255 100 100)}))
-                                              (repeat (add-style {:colour my-red} ( drunk-line 10 0.3)) ) ))
+                         (checked-layout 4 (cycle [blue-cross (four-round test2)]) (repeat flake))
+                         (alt-rows-grid-layout 4 (repeat  (polyflower-group 3 4 0.75 {:colour my-green :fill (color 100 255 100 100)}))
+                                               (repeat (add-style {:colour my-red} ( drunk-line 10 0.3)) ) ))
         
         final-pattern2  (four-round  (alt-rows-grid-layout 2 (repeat  test-shape)
-                                                          (repeat (checked-layout 3
-                                                                                  (cycle [flake
-                                                                                          (polyflower-group 3 5 0.7 {:colour my-pink})
-                                                                                          face ])
-                                                                                  (random-turn-groups (cycle  [(four-mirror  blue-cross) clock] )) )))) 
-   
+                                                           (repeat (checked-layout 3
+                                                                                   (cycle [flake
+                                                                                           (polyflower-group 3 5 0.7 {:colour my-pink})
+                                                                                           face ])
+                                                                                   (random-turn-groups (cycle  [(four-mirror  blue-cross) clock] )) )))) 
+        
         txpt (make-txpt [-1 -1 1 1] [0 0 (width) (height)])
         ]
 
