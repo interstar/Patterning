@@ -72,7 +72,7 @@
 
 ;; SShape (styled shape)
 ;; SShape, is a shape with a style attached ({:points points :style style}
-;; style is a dictionary of style hints eg. colour
+;; style is a dictionary of style hints eg. color
 
 (defn empty-sshape [] {:style {} :points []})
 
@@ -80,9 +80,9 @@
 
 (defn add-style [new-style {:keys [style points]} ] {:points points :style (conj style new-style)})
 
-(defn colour-sshape "Give new colour to a sshape " [colour sshape] (add-style {:colour colour} sshape))
+(defn color-sshape "Give new color to a sshape " [color sshape] (add-style {:color color} sshape))
 (defn weight-sshape "Give new strokeWeight to a sshape" [weight sshape] (add-style {:stroke-weight weight} sshape))
-(defn fill-sshape "Give a fill-colour to a sshape" [fill sshape] (add-style {:fill fill} sshape))
+(defn fill-sshape "Give a fill-color to a sshape" [fill sshape] (add-style {:fill fill} sshape))
 (defn hide-sshape "Keep this sshape in the pattern but disable it from rendering" [sshape] (add-style {:hidden true} sshape))
 (defn show-sshape "Remove the hidden label from a sshape, so it's shown" [sshape] (dissoc sshape :hidden))
 (defn sshape-hidden? "Test if a sshape is hidden" [{:keys [style points]}] (contains? style :hidden) )
@@ -158,7 +158,7 @@
 ;; Groups
 ;; A Group is a vector of sshapes. All patterns are basically groups.
 ;; Groups can represent ordinary patterns that require several sshapes
-;; (because they have disjoint geometric forms, or multiple colours
+;; (because they have disjoint geometric forms, or multiple colors
 ;; etc.
 ;; Groups are also the flattened results of combining multiple groups
 ;; together, eg. when running them through a layout. 

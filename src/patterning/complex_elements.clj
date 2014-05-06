@@ -9,7 +9,7 @@
 ;; Complex patterns made as groups (these have several disjoint sshapes)
 
 (defn cross-group "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
-  [colour x y] (group (colour-sshape colour (horizontal-sshape y)) (colour-sshape colour (vertical-sshape  x)))  )
+  [color x y] (group (color-sshape color (horizontal-sshape y)) (color-sshape color (vertical-sshape  x)))  )
 
 
 
@@ -47,16 +47,16 @@
 
 
 
-(defn face-group "[head, eyes, nose and mouth] each argument is a pair to describe a poly [no-sides colour]"
-  ( [[ head-sides head-colour] [ eye-sides eye-colour] [ nose-sides nose-colour] [ mouth-sides mouth-colour]] 
-      (let [left-eye (stretch-sshape 1.3 1 (add-style { :colour eye-colour } (poly -0.3 -0.1 0.1 eye-sides)))
+(defn face-group "[head, eyes, nose and mouth] each argument is a pair to describe a poly [no-sides color]"
+  ( [[ head-sides head-color] [ eye-sides eye-color] [ nose-sides nose-color] [ mouth-sides mouth-color]] 
+      (let [left-eye (stretch-sshape 1.3 1 (add-style { :color eye-color } (poly -0.3 -0.1 0.1 eye-sides)))
             right-eye (h-reflect-sshape left-eye)
             ]
                 
-        (group (add-style {:colour head-colour } (poly 0 0 0.8 head-sides))
-               (stretch-sshape 1.3 0.4 (add-style {:colour mouth-colour } (poly 0 1.3 0.2 mouth-sides)))
+        (group (add-style {:color head-color } (poly 0 0 0.8 head-sides))
+               (stretch-sshape 1.3 0.4 (add-style {:color mouth-color } (poly 0 1.3 0.2 mouth-sides)))
                (translate-sshape 0 0.1
                                  (stretch-sshape 0.6 1.1 (rotate-sshape (/ PI 2)
-                                 (add-style {:colour nose-colour } (poly 0 0 0.2 nose-sides)))))
+                                 (add-style {:color nose-color } (poly 0 0 0.2 nose-sides)))))
                left-eye
                right-eye) ) ) )

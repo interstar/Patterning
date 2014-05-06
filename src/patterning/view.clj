@@ -28,8 +28,8 @@
 
 ;; SVG generation
 
-(defn colour-to-web [colour]
-  (str (format  "#%x%x%x" (int (red colour)) (int (green colour)) (int  (blue colour))) ))
+(defn color-to-web [color]
+  (str (format  "#%x%x%x" (int (red color)) (int (green color)) (int  (blue color))) ))
 
 (defn sshape-to-SVG-path [txpt sshape]
   (let [stringify (fn [[x y]] (str " L " x " " y))
@@ -37,7 +37,7 @@
         p (first points)
         s1 (str "M " (first p) " " (last p) )
         strung (cons s1 (mapcat stringify (rest points)))
-        col (if (contains? style :colour) (colour-to-web (get style :colour)) (colour-to-web (color 0)) )]
+        col (if (contains? style :color) (color-to-web (get style :color)) (color-to-web (color 0)) )]
     
     (str (format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' fill='none' stroke='%s' " col)
          "d='"
@@ -68,7 +68,7 @@
   (if (sshape-hidden? sshape) ()
       (let [tsshape (transformed-sshape txpt sshape)]    
         (push-style)
-        (if (contains? style :colour) (stroke (get style :colour)))
+        (if (contains? style :color) (stroke (get style :color)))
         (if (contains? style :fill) (fill (get style :fill)))
         (if (contains? style :stroke-weight) (stroke-weight (get style :stroke-weight)))
         (begin-shape)

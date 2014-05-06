@@ -19,11 +19,11 @@
     (into [] (stack (mapcat gen-next (map vector styles (iterate reducer 1 )))))  ))
 
 ;; Colour helpers
-(defn colour-seq "handy for creating sequences of colour changes"
-  [colours] (into [] (map (fn [c] {:colour c}) colours )))
+(defn color-seq "handy for creating sequences of color changes"
+  [colors] (into [] (map (fn [c] {:color c}) colors )))
 
-(defn colour-to-fill [{:keys [colour, points] :as style} ] (conj {:fill colour} style))
-(defn colour-to-fill-styles [styles] (into [] (map colour-to-fill styles)))
+(defn color-to-fill [{:keys [color, points] :as style} ] (conj {:fill color} style))
+(defn color-to-fill-styles [styles] (into [] (map color-to-fill styles)))
 
 
 
