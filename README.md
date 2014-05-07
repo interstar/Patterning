@@ -2,9 +2,24 @@
 
 A Clojure / Quil system for generating patterns, both at the small scale and the "layout" of smaller units. Units can be recursively nested.
 
-## Usage
+## Quick Start
+Make sure you have [Clojure](http://clojure.org/), [Leiningen](http://leiningen.org/) and [Quil](https://github.com/quil/) installed.
 
-Coming soon ....
+    git clone https://github.com/interstar/Patterning.git patterning
+    cd patterning
+    lein run
+
+The code to generate the pattern is in src/patterning/core.clj
+
+To run unit tests.
+
+    lein test
+   
+To run the REPL.
+
+    lein repl
+
+
 
 ## License
 
