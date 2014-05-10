@@ -4,6 +4,7 @@
   (:require [patterning.layouts :refer :all])
   (:require [patterning.complex_elements :refer :all])
   (:require [patterning.view :refer :all])
+  (:require [patterning.color :refer :all])
   (:gen-class))
 
 
@@ -12,7 +13,7 @@
   (no-loop)
 
   (let [
-        my-green (color 180 240 180 )
+        my-green (color 180 240 180 230 )
         my-purple (color 150 100 200)
         my-blue (color 160 160 250 )
         my-red (color 255 150 150)
@@ -31,8 +32,8 @@
                                     )
         cross ( rotate-group (- (rand (/ PI 2)) (/ PI 4)) ( cross-group my-green 0 0))
         blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0)) 
-        clock (clock-rotate 12 (group  (weight-sshape 1 (color-sshape my-cyan (poly (rand 1) (rand 1)  0.12 4)))
-                                       (weight-sshape 2 (color-sshape my-red (drunk-line 9 0.2)))))
+        clock (clock-rotate 12 (group  (add-style {:color my-yellow :stroke-weight 2 :fill my-green} (poly (rand 1) (rand 1)  0.12 4))
+                                       (add-style {:color my-green :stroke-weight 3 } (drunk-line 9 0.2))))
         flake (spoke-flake-group {:color my-orange :stroke-weight 1 })
         face (scale-group 0.8 (face-group [20 my-cream] [5 my-blue] [3 my-purple]  [8 my-red]))
 
@@ -53,25 +54,41 @@
                      )
         test2 (superimpose-layout square test-shape)
 
-        simple-diamond (group  (diamond-sshape {:color my-red :stroke-weight 2}))
+;        setup-colours
+;        (comp         (partial mod-styles (fn [style] (conj {:color (color 0) :stroke-weight 3}  style)) )         (partial mod-styles color-to-fill)         color-seq  )        
+
 
         
-        complex-diamond (nested-stack [{:color my-red} {:color my-blue} {:color my-pink} {:color my-green}]
-                                      simple-diamond (fn [x] (- x 0.2)) )
+        simple-diamond (group  (diamond-sshape {:color my-red :stroke-weight 2}))
+        
+        complex-diamond (nested-stack (setup-colors  [my-red my-blue my-pink my-cream] (color 0))
+                                      simple-diamond (fn [x] (- x 0.25)) )
 
         complex-square (nested-stack [{:color my-red} {:color my-blue} {:color my-pink} {:color my-cream}]
                                      square (fn [x] (- x 0.2)))
 
-        complex-ogee (nested-stack ( color-to-fill-styles  ( color-seq (take 5 (cycle [my-purple my-blue my-green]))))
-                                   (ogee-group 0.1 3 {:stroke-weight 4})
+        complex-ogee (nested-stack (mod-styles color-to-fill (color-seq (take 5 (cycle [my-purple my-blue my-green]))))
+                                   (ogee-group 0.1 3 {:stroke-weight 2})
                                    (fn [x] (- x 0.2)))
 
-        complex-ogee2 (nested-stack ( color-to-fill-styles (color-seq (take 5 (cycle [my-purple my-red my-pink]))))
-                                   (ogee-group 0.1 3 {:stroke-weight 4})
-                                   (fn [x] (- x 0.2)))
+        complex-ogee2 (nested-stack ( color-seq (take 5 (cycle [my-purple my-red my-pink])))
+                                    (ogee-group 0.1 3 {:stroke-weight 2})
+                                    (fn [x] (- x 0.2)))
 
+        my-style {:color (color 0) :stroke-weight 1}
         
-        final-pattern (scale-group 1  (diamond-layout 4 (cycle [complex-ogee complex-ogee2])))
+
+        final-pattern (diamond-layout 4 (cycle [ complex-diamond  complex-ogee] ))
+        
+        
+        final-pattern8 (diamond-layout 7 (cycle [ (scale-group 0.9  (clock-rotate 3  (v-mirror complex-diamond)))
+                                                  complex-ogee cross flake clock ]) )
+
+        final-pattern7 (checked-layout 4
+                                       (repeat (stack  (clock-rotate 3 test2) (diamond-layout 4 (repeat complex-diamond))) )
+                                       (repeat (scale-group 0.8 (four-round (checked-layout 2  (repeat complex-ogee2) (repeat complex-ogee))))))
+        
+        final-pattern6 (scale-group 1  (diamond-layout 4 (cycle [complex-ogee complex-ogee2])))
         
         final-pattern5 (diamond-layout 6 (cycle [ complex-diamond complex-square]))
         

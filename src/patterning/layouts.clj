@@ -18,13 +18,6 @@
   (let [gen-next (fn [[style x]] (over-style-group style (scale-group x group)))]    
     (into [] (stack (mapcat gen-next (map vector styles (iterate reducer 1 )))))  ))
 
-;; Colour helpers
-(defn color-seq "handy for creating sequences of color changes"
-  [colors] (into [] (map (fn [c] {:color c}) colors )))
-
-(defn color-to-fill [{:keys [color, points] :as style} ] (conj {:fill color} style))
-(defn color-to-fill-styles [styles] (into [] (map color-to-fill styles)))
-
 
 
 
@@ -136,19 +129,16 @@
 
 (defn check-seq "returns the appropriate lazy seq of groups for constructing a checked-layout"
   [n groups1 groups2]
-  (let [ together (scale-group-stream n (interleave groups1 groups2) ) ]
+  (let [ together (interleave groups1 groups2 ) ]
     (if (= 0 (mod n 2))
       (drop-every (+ 1 n) together)
       together ) ) )
 
 
-(defn checked-layout "takes number n and two group-streams and lays out alternating copies of the groups on an n X n checkerboard"
+
+(defn checked-layout "does checks using grid layout"
   [number groups1 groups2]
-  (let [c-seq (check-seq number groups1 groups2)
-        layout (map vector c-seq (grid-layout-positions number)  )]
-    (concat (mapcat (fn [[group [x y]]] (translate-group x y group)) layout )) ) )
-
-
+  (grid-layout number (check-seq number groups1 groups2)))
 
 
 (defn one-x-layout
@@ -191,6 +181,16 @@
         sw (v-reflect-group nw)
         se (h-reflect-group sw) ]
     (concat nw ne sw se)))
+
+(defn h-mirror "Reflect horizontally and stretch"  [group]
+  (let [left  (translate-group -0.5 0 (stretch-group 0.5 1 group))
+        right (h-reflect-group left)]
+    (stack left right)))
+
+(defn v-mirror "Reflect vertically and stretch" [group]
+  (let [top    (translate-group 0 -0.5 (stretch-group 1 0.5 group))
+        bottom (v-reflect-group top)]
+    (stack top bottom)))
 
 
 

@@ -2,6 +2,7 @@
   (:require [quil.core :refer :all])
   (:require [patterning.geometry :refer :all])
   (:require [patterning.layouts :refer :all])
+  (:require [patterning.color :refer :all])
   )
 
 
@@ -12,15 +13,15 @@
   [color x y] (group (color-sshape color (horizontal-sshape y)) (color-sshape color (vertical-sshape  x)))  )
 
 
-
 (defn ogee-group "An ogee shape" [resolution stretch style]
-  (let [o-group (into [] (four-mirror (group ( ogee-sshape resolution stretch style))))
-        o0 (get o-group 0)
-        o1 (reverse-order-sshape  (get o-group 1))
-        o2 (get o-group 2)
-        o3 (get o-group 3)
-        ref-group [o0 o1 o3 o2]]
-    (group (flatten-group style ref-group)) )  )
+  (let [o-group (into [] (four-mirror (group ( ogee-sshape resolution stretch style))))        
+        o0 (get (get o-group 0) :points)
+        o1 (get (get o-group 1) :points)
+        o2 (get (get o-group 2) :points)
+        o3 (get (get o-group 3) :points)
+        top (tie-together o0 o1)
+        bottom (tie-together o2 o3) ]
+    (group (sshape style ( tie-together top bottom))) )  )
 
 (defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
   [style]

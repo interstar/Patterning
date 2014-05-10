@@ -1,6 +1,7 @@
 (ns patterning.core-test
   (:require [clojure.test :refer :all]
             [patterning.geometry :refer :all]
+            [patterning.color :refer :all]
             [patterning.layouts :refer :all]
             [patterning.complex_elements :refer :all]
             [patterning.core :refer :all]))
@@ -41,3 +42,22 @@
       (is (= (extract-points (flatten-group {:colour 2} g2))
              [[0 0] [1 1] [2 2] [3 3]]) )
       )))
+
+
+(deftest color-stuff
+  (let []
+    (testing "color sequence"
+      (is (= (color-seq ["red" "blue"])
+             (list {:color "red"} {:color "blue"}) ))
+      )
+    (testing "color to fill"
+      (is (= (color-to-fill {:color "red" :other "blah"})
+             {:color "red" :fill "red" :other "blah"} ) ))
+    
+    (testing "setup-colors"
+      (is (= ( ( edge-col "red") {:color "green"})
+             {:color "red" :fill "green"} ))
+      
+      (is (= (setup-colors ["red" "blue"] "black")
+             (list {:fill "red" :color "black"} {:fill "blue" :color "black"}) )))
+    ))

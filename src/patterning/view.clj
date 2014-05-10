@@ -1,7 +1,10 @@
 (ns patterning.view
   (:require [quil.core :refer :all])
-  (:require [patterning.geometry :refer :all]) 
+  (:require [patterning.geometry :refer :all])
+  (:require [patterning.color :refer :all])
   )
+
+
 
 ;; Viewing pipeline
 
@@ -28,8 +31,6 @@
 
 ;; SVG generation
 
-(defn color-to-web [color]
-  (str (format  "#%x%x%x" (int (red color)) (int (green color)) (int  (blue color))) ))
 
 (defn sshape-to-SVG-path [txpt sshape]
   (let [stringify (fn [[x y]] (str " L " x " " y))

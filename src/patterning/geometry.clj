@@ -69,6 +69,23 @@
 
 (defn wobble-shape [noise shape] (map (partial wobble-point noise) shape))
 
+(defn ends "the start and end point of a shape" [shape] [(first shape) (last shape)] )
+
+(defn tie-together "Merge two open shapes together, by choosing the ends that are closest" [shape1 shape2]
+  (let [[e1 e2] (ends shape1)
+        [e3 e4] (ends shape2)
+        o1 (distance e1 e3)
+        o2 (distance e1 e4)
+        o3 (distance e2 e3)
+        o4 (distance e2 e4)
+        dists [ o1 o2 o3 o4 ]
+        m (apply min dists)]
+    (cond 
+      (= m o1) (concat (reverse shape1) shape2)
+      (= m o2) (concat (reverse shape1) (reverse shape2))
+      (= m o3) (concat shape1 shape2)
+      (= m o4) (concat shape1 (reverse shape2)))  ) )
+
 
 ;; SShape (styled shape)
 ;; SShape, is a shape with a style attached ({:points points :style style}
@@ -79,8 +96,8 @@
 (defn sshape [style points] {:style style :points points})
 
 (defn add-style [new-style {:keys [style points]} ] {:points points :style (conj style new-style)})
+(defn color-sshape "Give new color to a sshape " [c sshape] (add-style {:color c} sshape))
 
-(defn color-sshape "Give new color to a sshape " [color sshape] (add-style {:color color} sshape))
 (defn weight-sshape "Give new strokeWeight to a sshape" [weight sshape] (add-style {:stroke-weight weight} sshape))
 (defn fill-sshape "Give a fill-color to a sshape" [fill sshape] (add-style {:fill fill} sshape))
 (defn hide-sshape "Keep this sshape in the pattern but disable it from rendering" [sshape] (add-style {:hidden true} sshape))
@@ -194,6 +211,8 @@
   ([style group]
      (let [all-points (mapcat extract-points group) ]
        (sshape style all-points) )  ) )
+
+
 
 
 
