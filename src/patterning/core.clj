@@ -15,7 +15,7 @@
   (let [
         my-green (color 180 240 180 230 )
         my-purple (color 150 100 200)
-        my-blue (color 160 160 250 )
+        my-blue (color 100 100 255 )
         my-red (color 255 150 150)
         my-yellow (color 220 200 150)
         my-orange (color 255 128 64)
@@ -23,8 +23,9 @@
         my-cream (color 252 251 227)
         my-burgundy (color 160 0 23)
         my-pink (color 250 100 180)
+        my-black (color 0)
         
-        square (group  {:style {:color (color 255)  :stroke-weight 2} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
+        square (group  {:style {:fill my-burgundy :color my-cream :stroke-weight 3} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
         basic (superimpose-layout  (group                  
                                     (weight-sshape 2 (color-sshape my-red (poly 0 0 0.5 3) ))
                                      (color-sshape my-yellow (poly 0.3 0.6 0.2 7) ) )
@@ -35,23 +36,24 @@
         clock (clock-rotate 12 (group  (add-style {:color my-yellow :stroke-weight 2 :fill my-green} (poly (rand 1) (rand 1)  0.12 4))
                                        (add-style {:color my-green :stroke-weight 3 } (drunk-line 9 0.2))))
         flake (spoke-flake-group {:color my-orange :stroke-weight 1 })
-        face (scale-group 0.8 (face-group [20 my-cream] [5 my-blue] [3 my-purple]  [8 my-red]))
+        face (scale-group 0.8 (face-group [20 my-burgundy] [5 my-blue] [3 my-purple]  [8 my-red]))
 
         red-ball (group (add-style {:color my-red :stroke-weight 2} (poly 0 -0.82 0.05 3)))
         simple-clock (clock-rotate 8 (group (add-style {:color my-pink :stroke-weight 1 } (poly 0.5 0 0.2 8))))
         half-bird (sshape {:color my-purple :stroke-weight 2} [[0 0] [0.4 (- 0.2)] [0.8 (- 0.3)]])
         bird (group half-bird (h-reflect-sshape half-bird ))
         
-        test-shape (group
-                   (add-style {:color my-burgundy :fill my-burgundy :stroke-weight 2} (poly 0 0 0.8 3))                     
-                   (sshape {:color my-green :stroke-weight 3} [[0 0] [(-  0.25) (- 1)]])
-;;                   (rotate-sshape (/ PI 2)  (stretch-sshape 1 0.5 (h-sin-sshape {:color my-pink :stroke-weight 1})))
-;;                    (zig-zag-sshape 4 {:color my-blue} )
-
-;;                     (sshape {:color (color 100 100 200) :fill my-green} [[-1 -1] [1 -1] [1 1] [-1 -1]] )
-;;                     (random-rect {:color (color 50 100 100)})
-;;                    (random-rect {:color (color 150 100 0) :fill (color 200 220 150 180)})
-                     )
+        test-shape (stack
+                    (group
+                     ;(add-style {:color my-cream :fill my-burgundy :stroke-weight 3} (poly 0 0 0.8 3))  
+                           (zig-zag-sshape 4 {:color my-blue :stroke-weight 3} )                   
+                           ;;                   (rotate-sshape (/ PI 2)  (stretch-sshape 1 0.5 (h-sin-sshape {:color my-pink :stroke-weight 1})))
+                           ;;                     (sshape {:color (color 100 100 200) :fill my-green} [[-1 -1] [1 -1] [1 1] [-1 -1]] )
+                           ;;                     (random-rect {:color (color 50 100 100)})
+                           ;;                    (random-rect {:color (color 150 100 0) :fill (color 200 220 150 180)})
+                           )
+                    (clock-rotate 3 (group  (sshape {:color my-green :stroke-weight 3} [[0 0] [(-  0.25) (- 1)]]) ))
+                    )
         test2 (superimpose-layout square test-shape)
 
 ;        setup-colours
@@ -61,7 +63,7 @@
         
         simple-diamond (group  (diamond-sshape {:color my-red :stroke-weight 2}))
         
-        complex-diamond (nested-stack (setup-colors  [my-red my-blue my-pink my-cream] (color 0))
+        complex-diamond (nested-stack (setup-colors  [my-green my-pink my-cream] (color 0))
                                       simple-diamond (fn [x] (- x 0.25)) )
 
         complex-square (nested-stack [{:color my-red} {:color my-blue} {:color my-pink} {:color my-cream}]
@@ -76,9 +78,19 @@
                                     (fn [x] (- x 0.2)))
 
         my-style {:color (color 0) :stroke-weight 1}
-        
 
-        final-pattern (diamond-layout 4 (cycle [ complex-diamond  complex-ogee] ))
+        half (group (sshape {:fill my-black :color my-black} [[-1 -1] [1 1] [1 -1]]) )
+
+        pink-tile (stack complex-diamond (group ( sshape {:color my-blue :stroke-weight 5} [[0 0] [0 1] ])))
+        
+        edge (rotate-group (half-PI) (stretch-group 0.7 1 pink-tile))
+
+        corner (rotate-group (q-PI) edge)
+        
+        final-pattern (framed 6 (repeat corner) (repeat edge)
+                              (random-grid-layout 4 (repeat pink-tile )))
+        
+        final-pattern9 (diamond-layout 4 (cycle [ complex-diamond  complex-ogee] ))
         
         
         final-pattern8 (diamond-layout 7 (cycle [ (scale-group 0.9  (clock-rotate 3  (v-mirror complex-diamond)))

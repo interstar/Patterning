@@ -61,3 +61,4 @@
       (is (= (setup-colors ["red" "blue"] "black")
              (list {:fill "red" :color "black"} {:fill "blue" :color "black"}) )))
     ))
+

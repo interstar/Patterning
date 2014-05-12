@@ -7,6 +7,9 @@
 
 ;; Point geometry
 
+(defn half-PI []  (float (/ PI 2)))
+(defn q-PI [] (float (/ PI 4)))
+
 (defn f-eq "floating point equality" [a b]  (<= (Math/abs (- a b)) 0.00001))
 (defn p-eq "point equality" [[x1 y1] [x2 y2]] (and (f-eq x1 x2) (f-eq y1 y2)))
 

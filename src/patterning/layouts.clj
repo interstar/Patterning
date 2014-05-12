@@ -192,9 +192,6 @@
         bottom (v-reflect-group top)]
     (stack top bottom)))
 
-
-
-
 (defn clock-rotate "Circular layout. Returns n copies in a rotation"
   [n group]
   (let [angs (angles n)]
@@ -211,3 +208,26 @@
         sw (translate-group 0.5 0.5 (q2-rot-group scaled) )
         ]
     (concat nw ne se sw )  )  )
+
+(defn frame "Frames consist of corners and edges. " [grid-size corners edges]
+  (let [
+        gs2 (- grid-size 2)
+        [nw b c d] (into [] (take 4 corners))
+        ne ( h-reflect-group b)
+        se ( h-reflect-group (v-reflect-group c ))
+        sw (v-reflect-group d)
+        edge (first edges)
+        col (concat [ (q1-rot-group edge)]
+                    (repeat gs2 (empty-group))
+                    [ (q3-rot-group edge)]
+            )     ]
+    (grid-layout grid-size (concat [nw] (repeat gs2 edge) [sw]
+                                   (mapcat identity (repeat gs2 col))
+                                   [ne] (repeat gs2 (q2-rot-group edge)) [se] ))
+    )  )
+
+(defn framed "Puts a frame around the other group" [grid-size corners edges inner]
+  (let [gs2 (- grid-size 2)
+        shrink (float (/ gs2 grid-size))]
+    (stack (scale-group shrink inner)
+            (frame grid-size corners edges) ) ))
