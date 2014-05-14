@@ -17,7 +17,7 @@
         my-purple (color 150 100 200)
         my-blue (color 100 100 255 )
         my-red (color 255 150 150)
-        my-yellow (color 220 200 150)
+        my-yellow (color 240 250 200)
         my-orange (color 255 128 64)
         my-cyan (color 150 250 250)
         my-cream (color 252 251 227)
@@ -34,7 +34,7 @@
         cross ( rotate-group (- (rand (/ PI 2)) (/ PI 4)) ( cross-group my-green 0 0))
         blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0)) 
         clock (clock-rotate 12 (group  (add-style {:color my-yellow :stroke-weight 2 :fill my-green} (poly (rand 1) (rand 1)  0.12 4))
-                                       (add-style {:color my-green :stroke-weight 3 } (drunk-line 9 0.2))))
+                                       (add-style {:color my-red :fill my-blue :stroke-weight 3 } (drunk-line 9 0.2))))
         flake (spoke-flake-group {:color my-orange :stroke-weight 1 })
         face (scale-group 0.8 (face-group [20 my-burgundy] [5 my-blue] [3 my-purple]  [8 my-red]))
 
@@ -86,8 +86,20 @@
         edge (rotate-group (half-PI) (stretch-group 0.7 1 pink-tile))
 
         corner (rotate-group (q-PI) edge)
+
+        bez-style {:color my-green :stroke-weight 3 :fill my-yellow :bezier true}        
         
-        final-pattern (framed 6 (repeat corner) (repeat edge)
+        nothing-like-fucking-bez (clock-rotate 5 (stack (petal-pair-group bez-style 0.5 0.7) ))
+
+        system-1 (l-system [["F" "F+G++F-F--FF-G+"]
+                            ["G" "-F+GG++G+F--F-G"]])
+
+        sys-g1 (l-string-to-group {:style {:color my-purple  :stroke-weight 2}
+                                 :length 0.1 :d-angle (/ PI 3) :start [0 0]} (system-1 4 "F") )
+        
+        final-pattern (reframe-group  sys-g1)
+        
+        final-pattern-framed (framed 6 (repeat corner) (repeat edge)
                               (random-grid-layout 4 (repeat pink-tile )))
         
         final-pattern9 (diamond-layout 4 (cycle [ complex-diamond  complex-ogee] ))

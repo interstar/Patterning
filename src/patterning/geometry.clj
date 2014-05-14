@@ -98,8 +98,11 @@
 
 (defn sshape [style points] {:style style :points points})
 
+
 (defn add-style [new-style {:keys [style points]} ] {:points points :style (conj style new-style)})
 (defn color-sshape "Give new color to a sshape " [c sshape] (add-style {:color c} sshape))
+
+(defn bez-curve [style points] (add-style {:bezier true} (sshape style points )))
 
 (defn weight-sshape "Give new strokeWeight to a sshape" [weight sshape] (add-style {:stroke-weight weight} sshape))
 (defn fill-sshape "Give a fill-color to a sshape" [fill sshape] (add-style {:fill fill} sshape))
@@ -117,6 +120,20 @@
 (defn wobble-sshape [noise {:keys [style points]}] {:style style :points (wobble-shape noise points)} )
 
 (defn reverse-order-sshape [{:keys [style points]}] {:style style :points (reverse points)})
+
+(defn flat-point-list [{:keys [style points] :as sshape}] (flatten points))
+
+(defn xs [{:keys [style points]}] (map first points))
+(defn ys [{:keys [style points]}] (map second points))
+
+(defn top-sshape [sshape] (apply min (ys sshape)))
+(defn bottom-sshape [sshape] (apply max (ys sshape)))
+(defn left-sshape [sshape] (apply min (xs sshape)))
+(defn right-sshape [sshape] (apply max (xs sshape)))
+
+(defn width-sshape [sshape] (- (right-sshape sshape) (left-sshape sshape)))
+(defn height-sshape [sshape] (- (bottom-sshape sshape) (top-sshape sshape)))
+
 
 ;;; Some actual sshapes
 (defn angles [number]  (take number (iterate (fn [a] (+ a (float (/ (* 2 PI) number)))) (- PI))) )
@@ -215,17 +232,17 @@
      (let [all-points (mapcat extract-points group) ]
        (sshape style all-points) )  ) )
 
+(defn reframe-scaler "Takes a sshape and returns a scaler to reduce it to usual viewport coords [-1 -1][1 1] "
+  [sshape] (/ 2.0 (max (width-sshape sshape) (height-sshape sshape))))
 
+(defn reframe-group [group]
+  (let [sshape (flatten-group {} group)
+        scaled (scale-group (reframe-scaler sshape) group)
+        f-scaled (flatten-group {} scaled)
+        dx (- (- 1) (left-sshape f-scaled))
+        dy (- (- 1) (top-sshape f-scaled))
+        ]
+    (let []
+      (translate-group dx dy scaled))))
 
-
-
-;; Growth transformations
-
-(defn l-norm [p1 p2] (let [[dx dy] (diff [p1 p2])] (unit [(- dy) dx]) ) )
-(defn r-norm [p1 p2] (rev (l-norm p1 p2)))
-
-(defn add-dots-to-sshape "Adds dots each side of a line. " [args make-spot dist {:keys [style points]}]  
-  (let [segs (line-to-segments points)
-        l-dot (fn [[x1 y1] [x2 y2]] (make-spot   ))]
-    ()))
 

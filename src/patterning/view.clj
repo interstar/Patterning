@@ -72,9 +72,15 @@
         (if (contains? style :color) (stroke (get style :color)))
         (if (contains? style :fill) (fill (get style :fill)))
         (if (contains? style :stroke-weight) (stroke-weight (get style :stroke-weight)))
-        (begin-shape)
-        (dorun (map (fn [[x y]] (vertex x y)) (get tsshape :points)))
-        (end-shape )
+        (if (contains? style :bezier)
+          (let [ls (flat-point-list tsshape) ]             
+            (apply bezier ls) 
+            )
+          
+          (do (begin-shape)
+            (dorun (map (fn [[x y]] (vertex x y)) (get tsshape :points)))
+            (end-shape ))
+           )
         (pop-style)
         ))
   )
