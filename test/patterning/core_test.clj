@@ -116,10 +116,10 @@
       )
 
     (testing "string to group"
-      (is (= (second (l-string-turtle-to-group-r [0 0] 0.1 0 0 "F"))
+      (is (= (l-string-to-group [0 0] 0.1 0 0 "F" {:color "red"})
              [{:style {:color "red"} :points [[0 0] [0.1 0.0]]}]))
       
-      (let [stg (l-string-to-group {:style {} :length 0.1 :d-angle 1.5707963705062866 :start [0 0]} "F+F")
+      (let [stg (l-string-to-group [0 0] 0.1 0 1.5707963705062866 "F+F")
             ps (get (first stg) :points)] 
         (is (= (first ps) [0 0]))
         (is (= (get ps 1) [0.1 0.0]))

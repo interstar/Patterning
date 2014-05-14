@@ -91,11 +91,10 @@
         
         nothing-like-fucking-bez (clock-rotate 5 (stack (petal-pair-group bez-style 0.5 0.7) ))
 
-        system-1 (l-system [["F" "F+G++F-F--FF-G+"]
+        system-1 (l-system [["F" "F+G++G-F--FF-G+"]
                             ["G" "-F+GG++G+F--F-G"]])
 
-        sys-g1 (l-string-to-group {:style {:color my-purple  :stroke-weight 2}
-                                 :length 0.1 :d-angle (/ PI 3) :start [0 0]} (system-1 4 "F") )
+        sys-g1 (l-string-to-group [0 0] 0.1 0 (/ PI 3) (system-1 4 "F") {:color my-purple  :stroke-weight 2} )
         
         final-pattern (reframe-group  sys-g1)
         

@@ -86,37 +86,6 @@
 
 (defn l-system [rules] #(multi-apply-rules %1 rules %2))
 
-(defn l-string-to-points "turns the string to points"
-  [[ox oy] d angle da string ]
-  (let [for-x (fn [x a] (+ x (* d (Math/cos a))) )
-        for-y (fn [y a] (+ y (* d (Math/sin a))) )
-        ]
-    
-    (loop [x ox y oy a angle s string points []]
-      (if (empty? s) (conj points [x y])
-          
-          (case (first s)
-            ;; note we give ourselves 5 drawable edges here, 
-            \F (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) )
-            \G (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) )
-            \H (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) )
-            \I (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) )
-            \J (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) )            
-
-            ;; our two turning options
-            \+ (recur x y (+ a da) (rest s) points)
-            \- (recur x y (- a da) (rest s) points)
-            
-            ;; catch 
-            (recur x y a (rest s) points))
-          ) ) ))
-
-
-(defn l-string-to-group "turns a string from the l-system into a number of lines"
-  [{:keys [style length d-angle start] :as turtle} string]
-  (let [points (l-string-to-points start length 0 d-angle string)]
-    (group (sshape style points))) )
-
 (defn l-string-turtle-to-group-r "A more sophisticated turtle that renders l-system string but has a stack and returns a group"
   [[ox oy] d angle da string]
   (let [for-x (fn [x a] (+ x (* d (Math/cos a))) )
@@ -145,6 +114,12 @@
             ;; catch 
             (recur x y a (rest s) points acc))
           ) ) ))
+
+(defn l-string-to-group "turns a string from the l-system into a number of lines"
+  ([start-pos d init-angle d-angle string style]
+     (let [res (l-string-turtle-to-group-r start-pos d init-angle d-angle string)]
+       (over-style-group style (second res))))
+  ([start-pos d init-angle d-angle string] (l-string-to-group start-pos d init-angle d-angle string {}))   )
 
 
 ;; Growth transformations (unfinished)
