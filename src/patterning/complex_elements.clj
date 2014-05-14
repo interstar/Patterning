@@ -115,11 +115,11 @@
             (recur x y a (rest s) points acc))
           ) ) ))
 
-(defn l-string-to-group "turns a string from the l-system into a number of lines"
+(defn basic-turtle "turns a string from the l-system into a number of lines"
   ([start-pos d init-angle d-angle string style]
      (let [res (l-string-turtle-to-group-r start-pos d init-angle d-angle string)]
        (over-style-group style (second res))))
-  ([start-pos d init-angle d-angle string] (l-string-to-group start-pos d init-angle d-angle string {}))   )
+  ([start-pos d init-angle d-angle string] (basic-turtle start-pos d init-angle d-angle string {}))   )
 
 
 ;; Growth transformations (unfinished)
