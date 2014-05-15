@@ -87,33 +87,45 @@
 (defn l-system [rules] #(multi-apply-rules %1 rules %2))
 
 (defn l-string-turtle-to-group-r "A more sophisticated turtle that renders l-system string but has a stack and returns a group"
-  [[ox oy] d angle da string]
-  (let [for-x (fn [x a] (+ x (* d (Math/cos a))) )
-        for-y (fn [y a] (+ y (* d (Math/sin a))) )
-        ]
-    
-    (loop [x ox y oy a angle s string points [] acc [] ]
-      (if (empty? s) [s (into [] (concat acc [(sshape {} (conj points [x y]))]))]          
-          (case (first s)
-            ;; note we give ourselves 5 drawable edges here, 
-            \F (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)
-            \G (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)
-            \H (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)
-            \I (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)
-            \J (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)            
 
-            ;; our two turning options
-            \+ (recur x y (+ a da) (rest s) points acc)
-            \- (recur x y (- a da) (rest s) points acc)
+  ([[ox oy] d angle da string leaf-map]
+      (let [for-x (fn [x a] (+ x (* d (Math/cos a))) )
+            for-y (fn [y a] (+ y (* d (Math/sin a))) ) ]
+        
+        (loop [x ox y oy a angle s string points [] acc [] ]
+          (if (empty? s) [s (into [] (concat acc [(sshape {} (conj points [x y]))]))]
 
-            ;; recursion
-            \[ (let [[cont sub-groups] (l-string-turtle-to-group-r [x y] d a da (rest s) ) ]
-                 (recur x y a cont points (concat acc sub-groups)))
-            \] [(rest s) (into [] (concat [(sshape {} (conj points [x y]))] acc ))]
-            
-            ;; catch 
-            (recur x y a (rest s) points acc))
-          ) ) ))
+              ;; We check first for custom leaves. If (first s)
+              ;; maps to a custom leaf function we call that and add
+              ;; to our accumulator before recursing
+              
+              (if (contains? leaf-map (first s))
+                (let [leaf ((get leaf-map (first s)) x y a)]
+                  (recur x y a (rest s) points (concat acc leaf) ) )
+
+                ;; otherwise we have standard interpretations for
+                ;; the (first s) character
+                (case (first s)
+                    ;; note we give ourselves 5 drawable edges here, 
+                    \F (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)
+                    \G (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)
+                    \H (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)
+                    \I (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)
+                    \J (recur (for-x x a) (for-y y a) a (rest s) (conj points [x y]) acc)            
+
+                    ;; our two turning options
+                    \+ (recur x y (+ a da) (rest s) points acc)
+                    \- (recur x y (- a da) (rest s) points acc)
+
+                    ;; recursion
+                    \[ (let [[cont sub-groups] (l-string-turtle-to-group-r [x y] d a da (rest s) ) ]
+                         (recur x y a cont points (concat acc sub-groups)))
+                    \] [(rest s) (into [] (concat [(sshape {} (conj points [x y]))] acc ))]
+                    
+                    ;; catch 
+                    (recur x y a (rest s) points acc)) )
+              ) ) ))
+  ([pos d a da s] (l-string-turtle-to-group-r pos d a da s {}))   )
 
 (defn basic-turtle "turns a string from the l-system into a number of lines"
   ([start-pos d init-angle d-angle string style]
