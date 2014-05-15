@@ -94,15 +94,19 @@
         system-1 (l-system [["F" "F+G++G-F--FF-G+"]
                             ["G" "-F+GG++G+F--F-G"]])
 
-        system-2 (l-system [["F" "F[+F]F[-F][F]"]])
+        system-2 (l-system [["F" "F[+F]F[-F][FG]"]
+                            ["G" "H"]
+                            ["H" "Z"] ])
         
-        sys-g1 (basic-turtle [0 0] 0.1 0 (/ PI 3) (system-1 4 "F") {:color my-purple  :stroke-weight 2} )
+        sys-g1 (basic-turtle [0 0] 0.1 0 (/ PI 3) (system-1 4 "F") {} {:color my-purple  :stroke-weight 2} )
 
-        sys-g2 (basic-turtle [0 0] 0.1 (/ PI -2) (/ PI 9) (system-2 5 "F") )
+        sys-g2 (basic-turtle [0 0] 0.1 (/ PI -2) (/ PI 9) (system-2 5 "F")
+                             {\Z (fn [x y a] (let [] (group (poly x y 0.05 8 {:fill my-red}))))}
+                             {:color my-green :stroke-weight 2} )
 
         sprey  (reframe-group (translate-group 0.6 0 (h-reflect-group (stretch-group 2 1 sys-g2))))
         
-        final-pattern (over-style-group {:color my-green :stroke-weight 2}  sprey)
+        final-pattern sprey
         
         final-pattern-framed (framed 6 (repeat corner) (repeat edge)
                               (random-grid-layout 4 (repeat pink-tile )))

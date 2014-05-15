@@ -116,10 +116,10 @@
       )
 
     (testing "string to group"
-      (is (= (basic-turtle [0 0] 0.1 0 0 "F" {:color "red"})
+      (is (= (basic-turtle [0 0] 0.1 0 0 "F" {} {:color "red"})
              [{:style {:color "red"} :points [[0 0] [0.1 0.0]]}]))
       
-      (let [stg (basic-turtle [0 0] 0.1 0 1.5707963705062866 "F+F")
+      (let [stg (basic-turtle [0 0] 0.1 0 1.5707963705062866 "F+F" {} {} )
             ps (get (first stg) :points)] 
         (is (= (first ps) [0 0]))
         (is (= (get ps 1) [0.1 0.0]))
@@ -127,10 +127,10 @@
         )
       )
     
-    (is (= (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F" ))
+    (is (= (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F" {} {} ))
              [{:style {} :points [[0 0] [0.1 0.0]]}]))
       
-    (let [stg (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F"))
+    (let [stg (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F" {} {}))
             ps (get (first stg) :points)]
         (is (= (first ps) [0 0]))
         (is (= (get ps 1) [0.1 0.0]))
@@ -138,7 +138,7 @@
         )
       
     (let [leaf (fn [x y a] (let [] (println "in leaf function") (group ( sshape {} [[-10 -10]]))))
-          stg (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F[FF]Z" {\Z leaf}))
+          stg (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F[FF]Z" {\Z leaf} {}))
             s2 (get stg 0)
             s3 (get stg 1)
             s1 (get stg 2)

@@ -88,12 +88,12 @@
 
 (defn l-string-turtle-to-group-r "A more sophisticated turtle that renders l-system string but has a stack and returns a group"
 
-  ([[ox oy] d angle da string leaf-map]
+  ([[ox oy] d angle da string leaf-map style]
       (let [for-x (fn [x a] (+ x (* d (Math/cos a))) )
             for-y (fn [y a] (+ y (* d (Math/sin a))) ) ]
         
         (loop [x ox y oy a angle s string points [] acc [] ]
-          (if (empty? s) [s (into [] (concat acc [(sshape {} (conj points [x y]))]))]
+          (if (empty? s) [s (into [] (concat acc [(sshape style (conj points [x y]))]))]
 
               ;; We check first for custom leaves. If (first s)
               ;; maps to a custom leaf function we call that and add
@@ -118,20 +118,18 @@
                     \- (recur x y (- a da) (rest s) points acc)
 
                     ;; recursion
-                    \[ (let [[cont sub-groups] (l-string-turtle-to-group-r [x y] d a da (rest s) ) ]
+                    \[ (let [[cont sub-groups] (l-string-turtle-to-group-r [x y] d a da (rest s) leaf-map style ) ]
                          (recur x y a cont points (concat acc sub-groups)))
-                    \] [(rest s) (into [] (concat [(sshape {} (conj points [x y]))] acc ))]
+                    \] [(rest s) (into [] (concat [(sshape style (conj points [x y]))] acc ))]
                     
                     ;; catch 
                     (recur x y a (rest s) points acc)) )
-              ) ) ))
-  ([pos d a da s] (l-string-turtle-to-group-r pos d a da s {}))   )
+              ) ) ))   )
 
 (defn basic-turtle "turns a string from the l-system into a number of lines"
-  ([start-pos d init-angle d-angle string style]
-     (let [res (l-string-turtle-to-group-r start-pos d init-angle d-angle string)]
-       (over-style-group style (second res))))
-  ([start-pos d init-angle d-angle string] (basic-turtle start-pos d init-angle d-angle string {}))   )
+  ([start-pos d init-angle d-angle string leaf-map style]
+     (let [res (l-string-turtle-to-group-r start-pos d init-angle d-angle string leaf-map style)]
+       (second res)))  )
 
 
 ;; Growth transformations (unfinished)
