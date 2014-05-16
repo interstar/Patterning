@@ -33,16 +33,26 @@
 
 
 (defn sshape-to-SVG-path [txpt sshape]
-  (let [stringify (fn [[x y]] (str " L " x " " y))
+  (let [linify (fn [[x y]] (str " L " x " " y))
+        bezify (fn [[x y]] (str x " " y " " ))
+
         {:keys [style points] :as tss} (transformed-sshape txpt sshape)
         p (first points)
         s1 (str "M " (first p) " " (last p) )
-        strung (cons s1 (mapcat stringify (rest points)))
-        col (if (contains? style :color) (color-to-web (get style :color)) (color-to-web (color 0)) )]
+        
+        strung (if (contains? style :bezier)
+                 (cons s1 (cons "C" (mapcat bezify (rest points) )))
+                 (cons s1 (mapcat linify (rest points)))
+                 )
+        col (if (contains? style :color) (color-to-web (get style :color)) (color-to-web (color 0)) )
+        fill (if (contains? style :fill)
+               (str "fill=\"" (color-to-web (get style :fill)) "\" ")
+               "")
+        ]
     
-    (str (format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' fill='none' stroke='%s' " col)
+    (str (format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' stroke='%s' %s " col fill)
          "d='"
-         (apply str  (cons s1 (map stringify (rest points))))
+         (apply str strung)
          "'></path>"
          )  ) )
 
@@ -50,10 +60,9 @@
   "svg 'template' which also flips the coordinate system via http://www.braveclojure.com/organization/"
   [txpt width height group]
   (str "<svg height=\"" height "\" width=\"" width "\">"
-;;       "<g transform=\"translate(0," height ")\">"
-;;       "<g transform=\"scale(-1,1)\">"
+
        (clojure.string/join  (apply str (mapcat (partial sshape-to-SVG-path txpt) group)))
-;;       "</g></g>"
+
        "</svg>"))
 
 (defn write-svg "writes svg"

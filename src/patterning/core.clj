@@ -26,6 +26,10 @@
         my-black (color 0)
         
         square (group  {:style {:fill my-burgundy :color my-cream :stroke-weight 3} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
+
+
+
+        
         basic (superimpose-layout  (group                  
                                     (weight-sshape 2 (color-sshape my-red (poly 0 0 0.5 3) ))
                                      (color-sshape my-yellow (poly 0.3 0.6 0.2 7) ) )
@@ -39,7 +43,7 @@
         face (scale-group 0.8 (face-group [20 my-burgundy] [5 my-blue] [3 my-purple]  [8 my-red]))
 
         red-ball (group (add-style {:color my-red :stroke-weight 2} (poly 0 -0.82 0.05 3)))
-        simple-clock (clock-rotate 8 (group (add-style {:color my-pink :stroke-weight 1 } (poly 0.5 0 0.2 8))))
+        simple-clock (clock-rotate 8 (group (add-style {:color my-orange :fill my-cream :stroke-weight 1 } (poly 0.5 0 0.2 8))))
         half-bird (sshape {:color my-purple :stroke-weight 2} [[0 0] [0.4 (- 0.2)] [0.8 (- 0.3)]])
         bird (group half-bird (h-reflect-sshape half-bird ))
         
@@ -65,7 +69,10 @@
         
         complex-diamond (nested-stack (setup-colors  [my-green my-pink my-cream] (color 0))
                                       simple-diamond (fn [x] (- x 0.25)) )
-
+        
+        less-complex-diamond (nested-stack (setup-colors  [my-blue my-pink ] (color 0))
+                                      simple-diamond (fn [x] (- x 0.2)) )
+        
         complex-square (nested-stack [{:color my-red} {:color my-blue} {:color my-pink} {:color my-cream}]
                                      square (fn [x] (- x 0.2)))
 
@@ -87,26 +94,46 @@
 
         corner (rotate-group (q-PI) edge)
 
-        bez-style {:color my-green :stroke-weight 3 :fill my-yellow :bezier true}        
+        bez-style {:color my-yellow :stroke-weight 3 :fill my-orange :bezier true}        
         
         nothing-like-fucking-bez (clock-rotate 5 (stack (petal-pair-group bez-style 0.5 0.7) ))
 
         system-1 (l-system [["F" "F+G++G-F--FF-G+"]
                             ["G" "-F+GG++G+F--F-G"]])
 
-        system-2 (l-system [["F" "F[+F]F[-F][FG]"]
+        system-2 (l-system [["F" "F[+F]F[-F][GF]"]
                             ["G" "H"]
-                            ["H" "Z"] ])
+                            ["H" "IZ"]
+                            ])
         
-        sys-g1 (basic-turtle [0 0] 0.1 0 (/ PI 3) (system-1 4 "F") {} {:color my-purple  :stroke-weight 2} )
+        sys-g1 (basic-turtle [0 0] 0.1 0 (/ PI 3) (system-1 3 "F") {} {:color my-purple  :stroke-weight 2} )
 
-        sys-g2 (basic-turtle [0 0] 0.1 (/ PI -2) (/ PI 9) (system-2 5 "F")
-                             {\Z (fn [x y a] (let [] (group (poly x y 0.05 8 {:fill my-red}))))}
-                             {:color my-green :stroke-weight 2} )
+        sys-g2 (basic-turtle [0 0] 0.1 (/ PI -2) (/ PI 9) (system-2 4 "F")
+                             {\Z (fn [x y a] (let [] ( group (poly x y 0.05 8 {:fill my-red}))))}
+                             {:color my-green :stroke-weight 2}
+                             )
 
-        sprey  (reframe-group (translate-group 0.6 0 (h-reflect-group (stretch-group 2 1 sys-g2))))
+        sprey (translate-group -0.6 0 (h-reflect-group (reframe-group sys-g2)))
+
+        square2 (stack (group (sshape {:fill my-cream :color my-blue :stroke-weight 3}  [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]]))
+                       less-complex-diamond
+                       simple-clock
+                       )
+
+        inner (stack (reframe-group sys-g1)
+                     (alt-rows-grid-layout 4 (repeat (checked-layout 2 (repeat nothing-like-fucking-bez) (repeat [])))
+                                           (cycle [sprey sprey (h-reflect-group sprey) (h-reflect-group sprey)])))
+
+        final-pattern  (framed 9 (repeat nothing-like-fucking-bez) (repeat square2) sprey )
         
-        final-pattern sprey
+        final-pattern-final-paper (framed 9 (repeat (scale-group 0.75 ( rotate-group (/ PI 4) square2)))
+                              (cycle [square2 (scale-group 0.8 square2)]) inner)
+
+        
+        final-pattern-framed-plant  (framed 9 (repeat nothing-like-fucking-bez) (repeat square2) sprey )
+        
+        final-pattern-trees
+          (framed 6 (repeat corner) (repeat sprey) (checked-layout 4 (repeat pink-tile) (repeat nothing-like-fucking-bez )) ) 
         
         final-pattern-framed (framed 6 (repeat corner) (repeat edge)
                               (random-grid-layout 4 (repeat pink-tile )))
@@ -149,6 +176,7 @@
         (stroke-weight 1)
         (color 0)
         (no-fill)
+                                        ;(background 200 200 255)
         (background 255)
         (draw-group txpt final-pattern)
         (write-svg txpt 800 800 final-pattern)
