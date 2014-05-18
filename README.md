@@ -20,6 +20,17 @@ To run the REPL.
     lein repl
 
 
+## Examples
+Look in the src/patterning/examples directory for examples
+
+basics.clj gives a guided tour of the basic functions of Patterning 
+
+to see each of the examples in action change src/patterning/core.clj 
+so that final-pattern gets one of the patterns defined in basics.clj. 
+
+Then re-run with 
+
+    lein run
 
 ## License
 
