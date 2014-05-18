@@ -27,8 +27,8 @@
         
 (def simple-diamond (group  (diamond-sshape {:color my-red :stroke-weight 2})))
 
-(def bez-style {:color my-yellow :stroke-weight 3 :fill my-orange :bezier true})        
-(def nothing-like-fucking-bez (clock-rotate 5 (stack (petal-pair-group bez-style 0.5 0.7) )))
+(def flower-style {:color my-yellow :stroke-weight 3 :fill my-orange :bezier true})        
+(def flower (clock-rotate 5 (stack (petal-pair-group flower-style 0.5 0.7) )))
 
 (def system-2 (l-system [["F" "F[+F]F[-F][GF]"] ["G" "H"] ["H" "IZ"] ]))
         
@@ -118,21 +118,15 @@
         edge (rotate-group (half-PI) (stretch-group 0.7 1 pink-tile))
 
         corner (rotate-group (q-PI) edge)
-
- 
-        
- 
-
         system-1 (l-system [["F" "F+G++G-F--FF-G+"]
                             ["G" "-F+GG++G+F--F-G"]])
 
 
-        
         sys-g1 (basic-turtle [0 0] 0.1 0 (/ PI 3) (system-1 3 "F") {} {:color my-purple  :stroke-weight 2} )
 
 
         inner (stack (reframe-group sys-g1)
-                     (alt-rows-grid-layout 4 (repeat (checked-layout 2 (repeat nothing-like-fucking-bez) (repeat [])))
+                     (alt-rows-grid-layout 4 (repeat (checked-layout 2 (repeat flower) (repeat [])))
                                            (cycle [sprey sprey (h-reflect-group sprey) (h-reflect-group sprey)])))
         
 
@@ -144,10 +138,10 @@
                               (cycle [square2 (scale-group 0.8 square2)]) inner)
 
         
-        final-pattern-framed-plant  (framed 9 (repeat nothing-like-fucking-bez) (repeat square2) sprey )
+        final-pattern-framed-plant  (framed 9 (repeat flower) (repeat square2) sprey )
         
         final-pattern-trees
-          (framed 6 (repeat corner) (repeat sprey) (checked-layout 4 (repeat pink-tile) (repeat nothing-like-fucking-bez )) ) 
+          (framed 6 (repeat corner) (repeat sprey) (checked-layout 4 (repeat pink-tile) (repeat flower )) ) 
         
         final-pattern-framed (framed 6 (repeat corner) (repeat edge)
                               (random-grid-layout 4 (repeat pink-tile )))

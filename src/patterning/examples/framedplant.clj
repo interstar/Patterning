@@ -9,4 +9,4 @@
   )
 
 (defn framed-plant []
-  (let [] (framed 9 (repeat nothing-like-fucking-bez) (repeat square2) sprey )))
+  (let [] (framed 9 (repeat flower) (repeat square2) sprey )))
