@@ -45,9 +45,10 @@
                  (cons s1 (mapcat linify (rest points)))
                  )
         col (if (contains? style :color) (color-to-web (get style :color)) (color-to-web (p-color 0)) )
-        fill (if (contains? style :fill)
-               (str "fill=\"" (color-to-web (get style :fill)) "\" ")
-               "")
+        fill (str "fill=\""  (if (contains? style :fill)
+                               (color-to-web (get style :fill))
+                               "none")
+                  "\" ")
         ]
     
     (str (format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' stroke='%s' %s " col fill)
@@ -65,10 +66,8 @@
 
        "</svg>"))
 
-(defn write-svg "writes svg"
-  [txpt width height group]
-  (spit "out.svg" (xml-tpl txpt width height group))
-  )
+(defn write-svg "writes svg" [width height group]
+  (spit "out.svg" (xml-tpl (make-txpt [-1 -1 1 1] [0 0 width height]) width height group))   )
 
 
 ;; Interactive Bit. Only this bit should be Quil / Processing dependent. 

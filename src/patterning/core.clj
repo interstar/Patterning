@@ -6,7 +6,9 @@
   (:require [patterning.view :refer :all])
   (:require [patterning.color :refer :all])
 
-  (:require [patterning.examples.framedplant :refer :all])
+  (:require [patterning.examples.basics :refer :all])
+  
+  (:require [patterning.examples.framedplant :refer :all])  
   (:gen-class))
 
 
@@ -14,20 +16,13 @@
   (no-loop)
 
   (let [        
-
         ;; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        ;; THIS IS THE CURRENT PATTERN WHICH IS PRODUCED
-        ;; (Note this is being :required above)
-        
-        final-pattern (framed-plant)
-
-        ;; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-        ;; THIS MAKES THE FUNCTION THAT MAPS FROM THE VIEWPORT (ALL
-        ;; PATTERNS ARE DEFINED IN CO-ORDINATES [-1 -1] TO [1 1])
-        ;; TO THE SCREEN. DON'T LOSE THIS        
-        txpt (make-txpt [-1 -1 1 1] [0 0 (width) (height)])
+        ;; THIS IS THE CURRENT PATTERN 
+        ;; assign to "final-pattern" the result of creating a pattern,
+        ;; 
+        ;; Here's an example, 
+        final-pattern pen-tri
+        ;; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         ]
 
         ;; THIS IS THE BIT THAT
@@ -35,14 +30,20 @@
         (color 0)
         (no-fill)
         (background 255)
+
         ;; THIS IS WHERE WE ACTUALLY DRAW THE PATTERN ON THE SCREEN
-        (draw-group txpt final-pattern) 
+        ;; note we call the function make-txpt which creates a mapping
+        ;; function from our co-ordinate system to the actual window
+        ;; draw-group uses this to transform all points in our pattern
+        (draw-group (make-txpt [-1 -1 1 1] [0 0 (width) (height)]) final-pattern) 
         (smooth)
         (smooth)
         ;; AND THIS IS WHERE WE WRITE IT TO out.svg
-        (write-svg txpt 800 800 final-pattern)
+        (write-svg 800 800 final-pattern)
         ) )  
 
+;; This is not an interactive sketch so we don't do anything else in
+;; the (draw) function
 (defn draw [])
 
 
