@@ -44,7 +44,7 @@
                  (cons s1 (cons "C" (mapcat bezify (rest points) )))
                  (cons s1 (mapcat linify (rest points)))
                  )
-        col (if (contains? style :color) (color-to-web (get style :color)) (color-to-web (color 0)) )
+        col (if (contains? style :color) (color-to-web (get style :color)) (color-to-web (p-color 0)) )
         fill (if (contains? style :fill)
                (str "fill=\"" (color-to-web (get style :fill)) "\" ")
                "")
@@ -73,13 +73,17 @@
 
 ;; Interactive Bit. Only this bit should be Quil / Processing dependent. 
 
+;; we are now using our p-color to represent colors, this converts it
+;; into Processing format
+(defn mk-color [[r g b a]] (color r g b a))
+
 (defn draw-sshape "using vertices"
   [txpt {:keys [style points] :as sshape}]
   (if (sshape-hidden? sshape) ()
       (let [tsshape (transformed-sshape txpt sshape)]    
         (push-style)
-        (if (contains? style :color) (stroke (get style :color)))
-        (if (contains? style :fill) (fill (get style :fill)))
+        (if (contains? style :color) (stroke  (mk-color (get style :color))))
+        (if (contains? style :fill) (fill (mk-color (get style :fill))))
         (if (contains? style :stroke-weight) (stroke-weight (get style :stroke-weight)))
         (if (contains? style :bezier)
           (let [ls (flat-point-list tsshape) ]             

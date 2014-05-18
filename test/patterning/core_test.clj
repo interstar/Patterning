@@ -46,9 +46,9 @@
     (testing "extracting points"
       (is (= (extract-points s1)
              [[0 0] [1 1]]  ))
-      (is (= (extract-points  (flatten-group {:colour 1} g1))
+      (is (= (extract-points  (flatten-group {:color 1} g1))
              [[0 0] [1 1]]))
-      (is (= (extract-points (flatten-group {:colour 2} g2))
+      (is (= (extract-points (flatten-group {:color 2} g2))
              [[0 0] [1 1] [2 2] [3 3]]) )
       )))
 
@@ -146,10 +146,6 @@
             ps2 (get s2 :points)
             ps3 (get s3 :points)
             ]
-        (println stg)
-        (println "ps1 " ps1)
-        (println "ps2 " ps2)
-        (println "ps3 " ps3)
         
         (is (= (count stg) 3))
         (is (= (count ps1) 3))
