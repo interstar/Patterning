@@ -21,11 +21,11 @@
         ;; assign to "final-pattern" the result of creating a pattern,
         ;; 
         ;; Here's an example, 
-        final-pattern pen-tri
+        final-pattern frame-it
         ;; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         ]
 
-        ;; THIS IS THE BIT THAT
+        ;; Set up sketch, these correspond to standard Processing calls
         (stroke-weight 1)
         (color 0)
         (no-fill)
