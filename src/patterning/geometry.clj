@@ -89,6 +89,8 @@
       (= m o3) (concat shape1 shape2)
       (= m o4) (concat shape1 (reverse shape2)))  ) )
 
+(defn filter-shape [f? ps] (filter f? ps))
+
 
 ;; SShape (styled shape)
 ;; SShape, is a shape with a style attached ({:points points :style style}
@@ -134,6 +136,7 @@
 (defn width-sshape [sshape] (- (right-sshape sshape) (left-sshape sshape)))
 (defn height-sshape [sshape] (- (bottom-sshape sshape) (top-sshape sshape)))
 
+(defn filter-sshape [p? {:keys [style, points]}] {:style style :points (filter-shape p? points)})
 
 ;;; Some actual sshapes
 (defn angles [number]  (take number (iterate (fn [a] (+ a (float (/ (* 2 PI) number)))) (- PI))) )
@@ -169,6 +172,7 @@
                                   m1 (fn [x] (- x 1))]
                              (add-style style (rect-sshape (m1 (rr 1)) (m1 (rr 1)) (rr 1) (rr 1)  ) )))
 
+(defn square-sshape [] {:style {} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
 
 (defn h-sin-sshape [style] (sshape style (into [] (map (fn [a] [a (sin (* PI a))]  ) (range (- 1) 1 0.05)) )))
 
@@ -223,7 +227,6 @@
 (defn over-style-group "Changes the style of a group" [style group]
   (into [] (map (partial add-style style) group)))
 
-
 (defn extract-points [{:keys [style points]}] points)
 
 (defn flatten-group "Flatten all sshapes into a single sshape"
@@ -244,5 +247,31 @@
         ]
     (let []
       (translate-group dx dy scaled))))
+
+(defn filter-group [p? group] (map (partial filter-sshape p?) group))
+
+(defn filter-sshapes-in-group "this removes entire sshapes from the group that have points that don't match the criteria"
+  [p? group]
+  (let [all-ok? (fn [{:keys [style points]}] (every? p? points) )]
+    (filter all-ok? group) ) )
+
+
+(defn clip-sshape "takes a predicate and a sshape, splits the sshape at any point which doesn't meet the predicate, return group"
+  [p? {:keys [style points]}]
+  (let []
+    (if (empty? points) {:style style :points points}
+        (loop [p (first points) ps (rest points) acc-sshape-ps [] acc-group []]
+          (cond
+           (and (empty? ps) (not (p? p))) (conj acc-group {:style style :points acc-sshape-ps})           
+           (empty? ps) (conj acc-group {:style style :points (conj acc-sshape-ps p)})
+           (p? p) (recur (first ps) (rest ps) (conj acc-sshape-ps p) acc-group)
+           :else (recur (first ps) (rest ps) [] (conj acc-group {:style style :points acc-sshape-ps}))
+           )          
+          )
+        )
+    ))
+
+(defn clip-group "clips all sshapes in a group"
+  [p? group] (mapcat (partial clip-sshape p?) group) )
 
 
