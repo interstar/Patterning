@@ -231,3 +231,12 @@
         shrink (float (/ gs2 grid-size))]
     (stack (scale-group shrink inner)
             (frame grid-size corners edges) ) ))
+
+
+;; Flower of Life layout ... these are recursive developments of circles
+(defn flower-of-life-positions [r depth [cx cy]]
+  (if (= depth 0) [[cx cy]]      
+      (let [round-points (map (fn [a] (rotate-point a [(+ cx 0) (+ cy r)])) (angles 6) )
+            rec-points (mapcat (partial flower-of-life-positions r (- depth 1)) round-points)]        
+        (set (conj rec-points [cx cy]))
+        ))  )
