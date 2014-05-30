@@ -85,7 +85,34 @@
              (list {:fill "red" :color "black"} {:fill "blue" :color "black"}) )))
     ))
 
+(deftest filtering
+  (let [inside? (fn [[ x y]] (< (+ (* y y) (* x x)) 4 ))
+        points [[0 0] [1 1] [2 2] [3 3]]
+        gp (group (sshape {} points) (sshape {} points))
+        gp2 (group {:style {} :points [[(- 1) (- 1)] [0 0]]} {:style {} :points [[0 0] [2 2] [4 4]]})
+        ]
+    (testing "filter points from shape, sshape and groups. filtering sshapes from group"
+      (is (= (filter-shape inside? []) []))
+      (is (= (filter-shape inside? points) [[0 0] [1 1]]))
+      (is (= (filter-sshape inside? (sshape {} points)) {:style {} :points [[0 0] [1 1]]}))
+      (is (= (filter-group inside? gp) [  {:style {} :points [[0 0] [1 1]]}  {:style {} :points [[0 0] [1 1]]}]))
+      (is (= (filter-sshapes-in-group inside? gp2)
+             [{:style {} :points [[-1 -1] [0 0]]}] ))
+      )))
 
+(deftest clipping
+  (let [inside? (fn [[ x y]] (< (+ (* y y) (* x x)) 4 ))
+        s {:style {} :points [[0 0] [1 1] [2 2] [1 1] [0 0]]}
+        g [s s]]
+    (testing "clipping. always returns a group of sshapes"
+      (is (= (clip-sshape inside? s)
+             [{:style {} :points [[0 0] [1 1]]} {:style {} :points [[1 1] [0 0]]}]))
+      (is (= (clip-group inside? g)
+             [{:style {} :points [[0 0] [1 1]]} {:style {} :points [[1 1] [0 0]]}
+              {:style {} :points [[0 0] [1 1]]} {:style {} :points [[1 1] [0 0]]} ]) )
+      )
+    
+    ))
 
 (deftest l-system-testing
   (let [rule1 ["A" "B"]
