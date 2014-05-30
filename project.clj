@@ -7,5 +7,5 @@
                  [org.clojure/math.numeric-tower "0.0.4"]
                  [quil "1.7.0"]]
   :aot [patterning.core]
-  :main patterning.core)  
+  :main patterning.core)
    
