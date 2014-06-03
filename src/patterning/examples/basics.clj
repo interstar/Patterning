@@ -1,6 +1,6 @@
 (ns patterning.examples.basics
-  (:require [quil.core :refer :all])
-  (:require [patterning.geometry :refer :all])
+  (:require [patterning.sshapes :refer :all])
+  (:require [patterning.groups :refer :all])
   (:require [patterning.layouts :refer :all])
   (:require [patterning.complex_elements :refer :all])
   (:require [patterning.view :refer :all])
@@ -77,13 +77,13 @@
 ;; Bezier curves? We got 'em
 
 (def orange-style  {:color (p-color 255 128 64) :stroke-weight 4})
-(def bez1  (group (bez-curve orange-style [[-0.9 0] [0.8 0.8] [-0.5 -0.8] [0.6 -0.5]])))
+(def bez1 (group (bez-curve orange-style [[-0.9 0] [0.8 0.8] [-0.5 -0.8] [0.6 -0.5]])))
 
 ;; Perhaps that would makethe corners of a nice frame
 (def frame-it (framed 6 (repeat bez1)
-                      (repeat (stack
-                               (group (sshape orange-style [[-0.5 -1] [-0.5 1]]))
-                               (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :color (p-color 255 255 200)}))) )
+                      (repeat
+                       (stack (group (make orange-style [[-0.5 -1] [-0.5 1]]))
+                              (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :color (p-color 255 255 200)}))) )
                       dl-clock ))
 
 ;; framed takes three arguments, a list of corner pieces (which it

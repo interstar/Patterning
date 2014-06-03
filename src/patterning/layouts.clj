@@ -1,6 +1,6 @@
 (ns patterning.layouts
-  (:require [quil.core :refer :all])
-  (:require [patterning.geometry :refer :all]) 
+  (:require [patterning.maths :as maths])
+  (:require [patterning.groups :refer :all]) 
   )
 
 
@@ -104,9 +104,9 @@
 (defn diamond-layout "Like half-drop"
   [n groups] (place-groups-at-positions (scale-group-stream n groups) (diamond-layout-positions n)))
 
-(defn q1-rot-group [group] (rotate-group (float (/ PI 2)) group ) )
-(defn q2-rot-group [group] (rotate-group PI group))
-(defn q3-rot-group [group] (rotate-group (-  (float (/ PI 2))) group))
+(defn q1-rot-group [group] (rotate-group (float (/ maths/PI 2)) group ) )
+(defn q2-rot-group [group] (rotate-group maths/PI group))
+(defn q3-rot-group [group] (rotate-group (-  (float (/ maths/PI 2))) group))
 
 
 (defn random-turn-groups [groups]
@@ -194,14 +194,14 @@
 
 (defn clock-rotate "Circular layout. Returns n copies in a rotation"
   [n group]
-  (let [angs (angles n)]
+  (let [angs (maths/clock-angles n)]
     (concat (mapcat (fn [a] (rotate-group a group)) angs )) 
    ))
 
 
 (defn four-round "Four squares rotated" [group]
   (let [scaled (scale-group (float (/ 1 2)) group)
-        p2 (float (/ PI 2))
+        p2 (float (/ maths/PI 2))
         nw (translate-group (- 0.5) (- 0.5) scaled )
         ne (translate-group 0.5 (- 0.5) (q1-rot-group scaled)) 
         se (translate-group (- 0.5) 0.5 (q3-rot-group scaled))
@@ -236,7 +236,7 @@
 ;; Flower of Life layout ... these are recursive developments of circles
 (defn flower-of-life-positions [r depth [cx cy]]
   (if (= depth 0) [[cx cy]]      
-      (let [round-points (map (fn [a] (rotate-point a [(+ cx 0) (+ cy r)])) (angles 6) )
+      (let [round-points (map (fn [a] (maths/rotate-point a [(+ cx 0) (+ cy r)])) (maths/clock-angles 6) )
             rec-points (mapcat (partial flower-of-life-positions r (- depth 1)) round-points)]        
         (set (conj rec-points [cx cy]))
         ))  )

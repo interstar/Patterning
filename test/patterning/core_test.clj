@@ -1,6 +1,8 @@
 (ns patterning.core-test
   (:require [clojure.test :refer :all]
-            [patterning.geometry :refer :all]
+            [patterning.maths :as maths]
+            [patterning.sshapes :as sshapes]
+            [patterning.groups :refer :all]
             [patterning.color :refer :all]
             [patterning.layouts :refer :all]
             [patterning.complex_elements :refer :all]
@@ -11,36 +13,36 @@
 
 (deftest geometry-line-to-segments
   (testing "line-to-segments"
-    (is (= (line-to-segments [])
+    (is (= (maths/line-to-segments [])
            []))
-    (is (= (line-to-segments [[0 0]])
+    (is (= (maths/line-to-segments [[0 0]])
            []))
-    (is (= (line-to-segments [[0 0] [1 1]])
+    (is (= (maths/line-to-segments [[0 0] [1 1]])
            [[ [0 0] [1 1] ]]))
-    (is (= (line-to-segments [[0 0] [1 1] [2 2]])
+    (is (= (maths/line-to-segments [[0 0] [1 1] [2 2]])
            [[ [0 0] [1 1]] [[1 1] [2 2]]]))
-    (is (= (line-to-segments [[0 0] [1 1] [2 2] [3 3]])
+    (is (= (maths/line-to-segments [[0 0] [1 1] [2 2] [3 3]])
            [[ [0 0] [1 1]] [[1 1] [2 2]] [[2 2] [3 3]]]))
     ))
 
 (deftest geometry-flatten-point-list
-  (let [ss (sshape {} [[0 0] [1 1] [2 2]])  ] 
+  (let [ss (sshapes/make {} [[0 0] [1 1] [2 2]])  ] 
     (testing "flatten-point-list"
-      (is (= (flat-point-list ss)
+      (is (= (sshapes/flat-point-list ss)
              (list 0 0 1 1 2 2))))))
 
 (deftest geometry-basic-points
   (testing "basic point functions"
-    (is (= (diff [3 3] [5 5]) [2 2]))
-    (is (= (add-points [1 1] [2 2]) [3 3]))
-    (is (= (magnitude [3 4]) 5 ))
-    (is (= (distance [0 0] [0 10]) 10))
-    (is (p-eq (unit [10 0]) [1 0] ))
+    (is (= (maths/diff [3 3] [5 5]) [2 2]))
+    (is (= (maths/add-points [1 1] [2 2]) [3 3]))
+    (is (= (maths/magnitude [3 4]) 5.0 ))
+    (is (= (maths/distance [0 0] [0 10]) 10.0))
+    (is (maths/p-eq (maths/unit [10 0]) [1 0] ))
     ))
 
 (deftest groups-flatten
-  (let [s1 (sshape {} [[0 0] [1 1]])
-        s2 (sshape {} [[2 2] [3 3]])
+  (let [s1 (sshapes/make {} [[0 0] [1 1]])
+        s2 (sshapes/make {} [[2 2] [3 3]])
         g1 (group s1)
         g2 (group s1 s2)]
     (testing "extracting points"
@@ -53,16 +55,16 @@
       )))
 
 (deftest groups-process
-  (let [s1 (sshape {} [[0.2 0.2] [0.4 -0.4]])
+  (let [s1 (sshapes/make {} [[0.2 0.2] [0.4 -0.4]])
         ]
     (testing "reframing"
-      (is (= (top-sshape s1) -0.4))
-      (is (= (left-sshape s1) 0.2))
-      (is (= (bottom-sshape s1) 0.2))
-      (is (= (right-sshape s1) 0.4))
+      (is (= (sshapes/top s1) -0.4))
+      (is (= (sshapes/ss-left s1) 0.2))
+      (is (= (sshapes/bottom s1) 0.2))
+      (is (= (sshapes/ss-right s1) 0.4))
       
-      (is (mol= (width-sshape s1) 0.2))
-      (is (mol= (height-sshape s1) 0.6))
+      (is (mol= (sshapes/width s1) 0.2))
+      (is (mol= (sshapes/height s1) 0.6))
       (is (mol= (reframe-scaler s1) (/ 2.0 0.6)))
       
      )))
@@ -88,13 +90,13 @@
 (deftest filtering
   (let [inside? (fn [[ x y]] (< (+ (* y y) (* x x)) 4 ))
         points [[0 0] [1 1] [2 2] [3 3]]
-        gp (group (sshape {} points) (sshape {} points))
+        gp (group (sshapes/make {} points) (sshapes/make {} points))
         gp2 (group {:style {} :points [[(- 1) (- 1)] [0 0]]} {:style {} :points [[0 0] [2 2] [4 4]]})
         ]
     (testing "filter points from shape, sshape and groups. filtering sshapes from group"
-      (is (= (filter-shape inside? []) []))
-      (is (= (filter-shape inside? points) [[0 0] [1 1]]))
-      (is (= (filter-sshape inside? (sshape {} points)) {:style {} :points [[0 0] [1 1]]}))
+      (is (= (sshapes/filter-shape inside? []) []))
+      (is (= (sshapes/filter-shape inside? points) [[0 0] [1 1]]))
+      (is (= (sshapes/ss-filter inside? (sshapes/make {} points)) {:style {} :points [[0 0] [1 1]]}))
       (is (= (filter-group inside? gp) [  {:style {} :points [[0 0] [1 1]]}  {:style {} :points [[0 0] [1 1]]}]))
       (is (= (filter-sshapes-in-group inside? gp2)
              [{:style {} :points [[-1 -1] [0 0]]}] ))
@@ -164,7 +166,7 @@
         (is (molv= (get ps 2) [0.1  0.1]))
         )
       
-    (let [leaf (fn [x y a] (let [] (println "in leaf function") (group ( sshape {} [[-10 -10]]))))
+    (let [leaf (fn [x y a] (let [] (println "in leaf function") (group ( sshapes/make {} [[-10 -10]]))))
           stg (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F[FF]Z" {\Z leaf} {}))
             s2 (get stg 0)
             s3 (get stg 1)

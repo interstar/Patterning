@@ -1,6 +1,7 @@
 (ns patterning.view
   (:require [quil.core :refer :all])
-  (:require [patterning.geometry :refer :all])
+  (:require [patterning.sshapes :as sshapes])
+  (:require [patterning.groups :refer :all])
   (:require [patterning.color :refer :all])
   )
 
@@ -78,14 +79,14 @@
 
 (defn draw-sshape "using vertices"
   [txpt {:keys [style points] :as sshape}]
-  (if (sshape-hidden? sshape) ()
+  (if (sshapes/hidden? sshape) ()
       (let [tsshape (transformed-sshape txpt sshape)]    
         (push-style)
         (if (contains? style :color) (stroke  (mk-color (get style :color))))
         (if (contains? style :fill) (fill (mk-color (get style :fill))))
         (if (contains? style :stroke-weight) (stroke-weight (get style :stroke-weight)))
         (if (contains? style :bezier)
-          (let [ls (flat-point-list tsshape) ]             
+          (let [ls (sshapes/flat-point-list tsshape) ]             
             (apply bezier ls) 
             )
           

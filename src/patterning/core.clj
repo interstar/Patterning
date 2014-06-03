@@ -1,6 +1,6 @@
 (ns patterning.core
   (:require [quil.core :refer :all])
-  (:require [patterning.geometry :refer :all])
+  (:require [patterning.groups :refer :all])
   (:require [patterning.layouts :refer :all])
   (:require [patterning.complex_elements :refer :all])
   (:require [patterning.view :refer :all])

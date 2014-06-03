@@ -1,6 +1,7 @@
 (ns patterning.color
 
-  (:require [patterning.geometry :refer :all])  )
+  ;(:require [patterning.groups :refer :all])
+  )
 
 
 ;; Now we'll use a custom vector as a color

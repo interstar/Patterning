@@ -1,6 +1,7 @@
 (ns patterning.complex_elements
-  (:require [quil.core :refer :all])
-  (:require [patterning.geometry :refer :all])
+  (:require [patterning.maths :as maths])
+  (:require [patterning.sshapes :as sshapes])
+  (:require [patterning.groups :refer :all])
   (:require [patterning.layouts :refer :all])
   (:require [patterning.color :refer :all])
   )
@@ -10,18 +11,18 @@
 ;; Complex patterns made as groups (these have several disjoint sshapes)
 
 (defn cross-group "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
-  [color x y] (group (color-sshape color (horizontal-sshape y)) (color-sshape color (vertical-sshape  x)))  )
+  [color x y] (group (sshapes/color-it color (sshapes/horizontal-line y)) (sshapes/color-it color (sshapes/vertical-line  x)))  )
 
 
 (defn ogee-group "An ogee shape" [resolution stretch style]
-  (let [o-group (into [] (four-mirror (group ( ogee-sshape resolution stretch style))))        
+  (let [o-group (into [] (four-mirror (group ( sshapes/ogee resolution stretch style))))        
         o0 (get (get o-group 0) :points)
         o1 (get (get o-group 1) :points)
         o2 (get (get o-group 2) :points)
         o3 (get (get o-group 3) :points)
-        top (tie-together o0 o1)
-        bottom (tie-together o2 o3) ]
-    (group (sshape style ( tie-together top bottom))) )  )
+        top (sshapes/tie-together o0 o1)
+        bottom (sshapes/tie-together o2 o3) ]
+    (group (sshapes/make style ( sshapes/tie-together top bottom))) )  )
 
 (defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
   [style]
@@ -29,20 +30,20 @@
         inner-radius (* 2.01 outer-radius)
         arm-radius (* 4.2 inner-radius)
 
-        inner-circle (add-style style (poly 0 0 inner-radius 30))
+        inner-circle (sshapes/add-style style (sshapes/poly 0 0 inner-radius 30))
         sp1 [0 inner-radius]
         sp2 [0 (+ inner-radius arm-radius)]
       
-        one-spoke (group (sshape style [sp1 sp2 sp1 sp2])
-                         (add-style style (poly 0 (+ outer-radius (last sp2)) outer-radius 25)))
+        one-spoke (group (sshapes/make style [sp1 sp2 sp1 sp2])
+                         (sshapes/add-style style (sshapes/poly 0 (+ outer-radius (last sp2)) outer-radius 25)))
       ]
-    (into [] (concat (group (add-style style (poly 0 0 inner-radius 35)))
+    (into [] (concat (group (sshapes/add-style style (sshapes/poly 0 0 inner-radius 35)))
                      (clock-rotate 8 one-spoke)       ) ) ) )
 
 
 (defn polyflower-group "number of polygons rotated and superimosed"
   ( [sides-per-poly no-polies radius style]
-      (clock-rotate no-polies (group (add-style style (poly 0 0 radius sides-per-poly)))))
+      (clock-rotate no-polies (group (sshapes/add-style style (sshapes/poly 0 0 radius sides-per-poly)))))
   
   ( [sides-per-poly no-polies radius] (polyflower-group sides-per-poly no-polies radius {})))
 
@@ -50,21 +51,21 @@
 
 (defn face-group "[head, eyes, nose and mouth] each argument is a pair to describe a poly [no-sides color]"
   ( [[ head-sides head-color] [ eye-sides eye-color] [ nose-sides nose-color] [ mouth-sides mouth-color]] 
-      (let [left-eye (stretch-sshape 1.3 1 (add-style { :color eye-color } (poly -0.3 -0.1 0.1 eye-sides)))
-            right-eye (h-reflect-sshape left-eye)
+      (let [left-eye (sshapes/stretch 1.3 1 (sshapes/add-style { :color eye-color } (sshapes/poly -0.3 -0.1 0.1 eye-sides)))
+            right-eye (sshapes/h-reflect left-eye)
             ]
                 
-        (group (add-style {:color head-color } (poly 0 0 0.8 head-sides))
-               (stretch-sshape 1.3 0.4 (add-style {:color mouth-color } (poly 0 1.3 0.2 mouth-sides)))
-               (translate-sshape 0 0.1
-                                 (stretch-sshape 0.6 1.1 (rotate-sshape (/ PI 2)
-                                 (add-style {:color nose-color } (poly 0 0 0.2 nose-sides)))))
+        (group (sshapes/add-style {:color head-color } (sshapes/poly 0 0 0.8 head-sides))
+               (sshapes/stretch 1.3 0.4 (sshapes/add-style {:color mouth-color } (sshapes/poly 0 1.3 0.2 mouth-sides)))
+               (sshapes/translate 0 0.1
+                                 (sshapes/stretch 0.6 1.1 (sshapes/rotate (/ maths/PI 2)
+                                 (sshapes/add-style {:color nose-color } (sshapes/poly 0 0 0.2 nose-sides)))))
                left-eye
                right-eye) ) ) )
 
 
 (defn petal-group "Using bezier curves" [style dx dy]
-  (let [ep [0 0]] [ (bez-curve style [ ep [(- dx) (- dy)] [(- (*  -2 dx) dx) (- dy)] ep])]  ))
+  (let [ep [0 0]] [ (sshapes/bez-curve style [ ep [(- dx) (- dy)] [(- (*  -2 dx) dx) (- dy)] ep])]  ))
 
 (defn petal-pair-group "reflected petals" [style dx dy]
   (let [petal (petal-group style dx dy)] (stack petal (h-reflect-group petal))))
@@ -93,7 +94,7 @@
             for-y (fn [y a] (+ y (* d (Math/sin a))) ) ]
         
         (loop [x ox y oy a angle s string points [] acc [] ]
-          (if (empty? s) [s (into [] (concat acc [(sshape style (conj points [x y]))]))]
+          (if (empty? s) [s (into [] (concat acc [(sshapes/make style (conj points [x y]))]))]
 
               ;; We check first for custom leaves. If (first s)
               ;; maps to a custom leaf function we call that and add
@@ -120,7 +121,7 @@
                     ;; recursion
                     \[ (let [[cont sub-groups] (l-string-turtle-to-group-r [x y] d a da (rest s) leaf-map style ) ]
                          (recur x y a cont points (concat acc sub-groups)))
-                    \] [(rest s) (into [] (concat [(sshape style (conj points [x y]))] acc ))]
+                    \] [(rest s) (into [] (concat [(sshapes/make style (conj points [x y]))] acc ))]
                     
                     ;; catch 
                     (recur x y a (rest s) points acc)) )
@@ -134,11 +135,11 @@
 
 ;; Growth transformations (unfinished)
 
-(defn l-norm [p1 p2] (let [[dx dy] (diff [p1 p2])] (unit [(- dy) dx]) ) )
-(defn r-norm [p1 p2] (rev (l-norm p1 p2)))
+(defn l-norm [p1 p2] (let [[dx dy] (maths/diff [p1 p2])] (maths/unit [(- dy) dx]) ) )
+(defn r-norm [p1 p2] (maths/rev (l-norm p1 p2)))
 
 (defn add-dots-to-sshape "Adds dots each side of a line. " [args make-spot dist {:keys [style points]}]  
-  (let [segs (line-to-segments points)
+  (let [segs (maths/line-to-segments points)
         l-dot (fn [[x1 y1] [x2 y2]] (make-spot   ))]
     ()))
 
