@@ -1,14 +1,17 @@
 (ns patterning.core
-  (:require [quil.core :refer :all])
+
   (:require [patterning.groups :refer :all])
   (:require [patterning.layouts :refer :all])
   (:require [patterning.complex_elements :refer :all])
   (:require [patterning.view :refer :all])
-  (:require [patterning.color :refer :all])
+  (:require [patterning.color :refer :all]) 
 
   (:require [patterning.examples.basics :refer :all])
   (:require [patterning.examples.framedplant :refer :all])
   (:require [patterning.examples.symbols :refer :all])
+
+  (:require [quil.core :refer :all])
+  (:require [patterning.quil.quilview :refer :all])
   (:gen-class))
 
 
