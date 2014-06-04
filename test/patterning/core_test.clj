@@ -11,7 +11,7 @@
 (defn mol= "more or less equal" [x y] (< (Math/abs (- x y)) 0.0000001) )
 (defn molv= "more or less equal vectors" [[x1 y1] [x2 y2]] (and (mol= x1 x2) (mol= y1 y2)))
 
-(deftest geometry-line-to-segments
+(deftest line-to-segments
   (testing "line-to-segments"
     (is (= (maths/line-to-segments [])
            []))
@@ -25,13 +25,13 @@
            [[ [0 0] [1 1]] [[1 1] [2 2]] [[2 2] [3 3]]]))
     ))
 
-(deftest geometry-flatten-point-list
+(deftest flatten-point-list
   (let [ss (sshapes/make {} [[0 0] [1 1] [2 2]])  ] 
     (testing "flatten-point-list"
       (is (= (sshapes/flat-point-list ss)
              (list 0 0 1 1 2 2))))))
 
-(deftest geometry-basic-points
+(deftest basic-points
   (testing "basic point functions"
     (is (= (maths/diff [3 3] [5 5]) [2 2]))
     (is (= (maths/add-points [1 1] [2 2]) [3 3]))
@@ -40,7 +40,7 @@
     (is (maths/p-eq (maths/unit [10 0]) [1 0] ))
     ))
 
-(deftest groups-flatten
+(deftest flatten
   (let [s1 (sshapes/make {} [[0 0] [1 1]])
         s2 (sshapes/make {} [[2 2] [3 3]])
         g1 (group s1)
@@ -54,7 +54,7 @@
              [[0 0] [1 1] [2 2] [3 3]]) )
       )))
 
-(deftest groups-process
+(deftest process
   (let [s1 (sshapes/make {} [[0.2 0.2] [0.4 -0.4]])
         ]
     (testing "reframing"
