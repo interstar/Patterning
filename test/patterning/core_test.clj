@@ -2,10 +2,10 @@
   (:require [clojure.test :refer :all]
             [patterning.maths :as maths]
             [patterning.sshapes :as sshapes]
-            [patterning.groups :refer :all]
-            [patterning.color :refer :all]
-            [patterning.layouts :refer :all]
-            [patterning.complex_elements :refer :all]
+            [patterning.groups :as groups]
+            [patterning.color :as color]
+            [patterning.layouts :as layouts]
+            [patterning.complex_elements :as complex-elements]
             [patterning.core :refer :all]))
 
 (defn mol= "more or less equal" [x y] (< (Math/abs (- x y)) 0.0000001) )
@@ -26,7 +26,7 @@
     ))
 
 (deftest flatten-point-list
-  (let [ss (sshapes/make {} [[0 0] [1 1] [2 2]])  ] 
+  (let [ss (sshapes/->SShape {} [[0 0] [1 1] [2 2]])  ] 
     (testing "flatten-point-list"
       (is (= (sshapes/flat-point-list ss)
              (list 0 0 1 1 2 2))))))
@@ -40,76 +40,77 @@
     (is (maths/p-eq (maths/unit [10 0]) [1 0] ))
     ))
 
-(deftest flatten
-  (let [s1 (sshapes/make {} [[0 0] [1 1]])
-        s2 (sshapes/make {} [[2 2] [3 3]])
-        g1 (group s1)
-        g2 (group s1 s2)]
+(deftest flatten-group
+  (let [s1 (sshapes/->SShape {} [[0 0] [1 1]])
+        s2 (sshapes/->SShape {} [[2 2] [3 3]])
+        g1 (groups/group s1)
+        g2 (groups/group s1 s2)]
     (testing "extracting points"
-      (is (= (extract-points s1)
+      (is (= (groups/extract-points s1)
              [[0 0] [1 1]]  ))
-      (is (= (extract-points  (flatten-group {:color 1} g1))
+      (is (= (groups/extract-points  (groups/flatten-group {:color 1} g1))
              [[0 0] [1 1]]))
-      (is (= (extract-points (flatten-group {:color 2} g2))
+      (is (= (groups/extract-points (groups/flatten-group {:color 2} g2))
              [[0 0] [1 1] [2 2] [3 3]]) )
       )))
 
 (deftest process
-  (let [s1 (sshapes/make {} [[0.2 0.2] [0.4 -0.4]])
+  (let [s1 (sshapes/->SShape {} [[0.2 0.2] [0.4 -0.4]])
         ]
     (testing "reframing"
       (is (= (sshapes/top s1) -0.4))
-      (is (= (sshapes/ss-left s1) 0.2))
+      (is (= (sshapes/leftmost s1) 0.2))
       (is (= (sshapes/bottom s1) 0.2))
-      (is (= (sshapes/ss-right s1) 0.4))
+      (is (= (sshapes/rightmost s1) 0.4))
       
       (is (mol= (sshapes/width s1) 0.2))
       (is (mol= (sshapes/height s1) 0.6))
-      (is (mol= (reframe-scaler s1) (/ 2.0 0.6)))
+      (is (mol= (groups/reframe-scaler s1) (/ 2.0 0.6)))
       
      )))
 
 (deftest color-stuff
   (let []
     (testing "color sequence"
-      (is (= (color-seq ["red" "blue"])
+      (is (= (color/color-seq ["red" "blue"])
              (list {:color "red"} {:color "blue"}) ))
       )
     (testing "color to fill"
-      (is (= (color-to-fill {:color "red" :other "blah"})
+      (is (= (color/color-to-fill {:color "red" :other "blah"})
              {:color "red" :fill "red" :other "blah"} ) ))
     
     (testing "setup-colors"
-      (is (= ( ( edge-col "red") {:color "green"})
+      (is (= ( ( color/edge-col "red") {:color "green"})
              {:color "red" :fill "green"} ))
       
-      (is (= (setup-colors ["red" "blue"] "black")
+      (is (= (color/setup-colors ["red" "blue"] "black")
              (list {:fill "red" :color "black"} {:fill "blue" :color "black"}) )))
     ))
 
 (deftest filtering
   (let [inside? (fn [[ x y]] (< (+ (* y y) (* x x)) 4 ))
         points [[0 0] [1 1] [2 2] [3 3]]
-        gp (group (sshapes/make {} points) (sshapes/make {} points))
-        gp2 (group {:style {} :points [[(- 1) (- 1)] [0 0]]} {:style {} :points [[0 0] [2 2] [4 4]]})
+        gp (groups/group (sshapes/->SShape {} points) (sshapes/->SShape {} points))
+        gp2 (groups/group {:style {} :points [[(- 1) (- 1)] [0 0]]} {:style {} :points [[0 0] [2 2] [4 4]]})
         ]
     (testing "filter points from shape, sshape and groups. filtering sshapes from group"
       (is (= (sshapes/filter-shape inside? []) []))
       (is (= (sshapes/filter-shape inside? points) [[0 0] [1 1]]))
-      (is (= (sshapes/ss-filter inside? (sshapes/make {} points)) {:style {} :points [[0 0] [1 1]]}))
-      (is (= (filter-group inside? gp) [  {:style {} :points [[0 0] [1 1]]}  {:style {} :points [[0 0] [1 1]]}]))
-      (is (= (filter-sshapes-in-group inside? gp2)
+      (is (= (sshapes/ss-filter inside? (sshapes/->SShape {} points)) (sshapes/->SShape {} [[0 0] [1 1]])))
+      (is (= (groups/filter-group inside? gp) [  (sshapes/->SShape {} [[0 0] [1 1]])
+                                                 (sshapes/->SShape {} [[0 0] [1 1]])]))
+      (is (= (groups/filter-sshapes-in-group inside? gp2)
              [{:style {} :points [[-1 -1] [0 0]]}] ))
       )))
 
 (deftest clipping
   (let [inside? (fn [[ x y]] (< (+ (* y y) (* x x)) 4 ))
-        s {:style {} :points [[0 0] [1 1] [2 2] [1 1] [0 0]]}
+        s (sshapes/->SShape {} [[0 0] [1 1] [2 2] [1 1] [0 0]])
         g [s s]]
     (testing "clipping. always returns a group of sshapes"
-      (is (= (clip-sshape inside? s)
+      (is (= (groups/clip-sshape inside? s)
              [{:style {} :points [[0 0] [1 1]]} {:style {} :points [[1 1] [0 0]]}]))
-      (is (= (clip-group inside? g)
+      (is (= (groups/clip inside? g)
              [{:style {} :points [[0 0] [1 1]]} {:style {} :points [[1 1] [0 0]]}
               {:style {} :points [[0 0] [1 1]]} {:style {} :points [[1 1] [0 0]]} ]) )
       )
@@ -123,32 +124,32 @@
         rule4 ["A" "AB"]
         rule5 ["B" "C"] ]
     (testing "basic string sub"
-      (is (= (apply-rule-to-char rule1 "A")
+      (is (= (complex-elements/apply-rule-to-char rule1 "A")
              "B"))
-      (is (= (apply-rule-to-char rule1 "C")
+      (is (= (complex-elements/apply-rule-to-char rule1 "C")
              "C"))
-      (is (= (apply-rule-to-char rule2 "A")
+      (is (= (complex-elements/apply-rule-to-char rule2 "A")
              "DE"))
       )
     
     (testing "rules on a string"
-      (is (= (apply-rules-to-char [rule1] "A") "B") )
-      (is (= (apply-rules-to-char [rule1] "C") "C"))
-      (is (= (apply-rules [rule1] "ADAM") "BDBM"))
-      (is (= (apply-rules [rule1 rule3] "ADAM") "BCEBM"))
-      (is (= (apply-rules [rule4 rule5] "A") "AB"))
-      (is (= (apply-rules [rule4 rule5] "AB") "ABC"))
-      (is (= (multi-apply-rules 2 [rule4 rule5] "A") "ABC" ))
-      (is (= (multi-apply-rules 4 [rule4 rule5] "A") "ABCCC"))
-      (let [ls (l-system [rule4 rule5])]
+      (is (= (complex-elements/apply-rules-to-char [rule1] "A") "B") )
+      (is (= (complex-elements/apply-rules-to-char [rule1] "C") "C"))
+      (is (= (complex-elements/apply-rules [rule1] "ADAM") "BDBM"))
+      (is (= (complex-elements/apply-rules [rule1 rule3] "ADAM") "BCEBM"))
+      (is (= (complex-elements/apply-rules [rule4 rule5] "A") "AB"))
+      (is (= (complex-elements/apply-rules [rule4 rule5] "AB") "ABC"))
+      (is (= (complex-elements/multi-apply-rules 2 [rule4 rule5] "A") "ABC" ))
+      (is (= (complex-elements/multi-apply-rules 4 [rule4 rule5] "A") "ABCCC"))
+      (let [ls (complex-elements/l-system [rule4 rule5])]
         (is (= (ls 2 "A") "ABC")))
       )
 
     (testing "string to group"
-      (is (= (basic-turtle [0 0] 0.1 0 0 "F" {} {:color "red"})
-             [{:style {:color "red"} :points [[0 0] [0.1 0.0]]}]))
+      (is (= (complex-elements/basic-turtle [0 0] 0.1 0 0 "F" {} {:color "red"})
+             [(sshapes/->SShape {:color "red"} [[0 0] [0.1 0.0]])]))
       
-      (let [stg (basic-turtle [0 0] 0.1 0 1.5707963705062866 "F+F" {} {} )
+      (let [stg (complex-elements/basic-turtle [0 0] 0.1 0 1.5707963705062866 "F+F" {} {} )
             ps (get (first stg) :points)] 
         (is (= (first ps) [0 0]))
         (is (= (get ps 1) [0.1 0.0]))
@@ -156,18 +157,18 @@
         )
       )
     
-    (is (= (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F" {} {} ))
-             [{:style {} :points [[0 0] [0.1 0.0]]}]))
+    (is (= (second (complex-elements/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F" {} {} ))
+           [(sshapes/->SShape {} [[0 0] [0.1 0.0]])]))
       
-    (let [stg (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F" {} {}))
+    (let [stg (second (complex-elements/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F" {} {}))
             ps (get (first stg) :points)]
         (is (= (first ps) [0 0]))
         (is (= (get ps 1) [0.1 0.0]))
         (is (molv= (get ps 2) [0.1  0.1]))
         )
       
-    (let [leaf (fn [x y a] (let [] (println "in leaf function") (group ( sshapes/make {} [[-10 -10]]))))
-          stg (second (l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F[FF]Z" {\Z leaf} {}))
+    (let [leaf (fn [x y a] (let [] (println "in leaf function") (groups/group ( sshapes/->SShape {} [[-10 -10]]))))
+          stg (second (complex-elements/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F[FF]Z" {\Z leaf} {}))
             s2 (get stg 0)
             s3 (get stg 1)
             s1 (get stg 2)
