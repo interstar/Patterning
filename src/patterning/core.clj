@@ -1,14 +1,14 @@
 (ns patterning.core
+  (:require [patterning.sshapes :refer []])
+  (:require [patterning.groups :as groups])
+  (:require [patterning.layouts :refer [framed]])
+  (:require [patterning.complex_elements :refer []])
+  (:require [patterning.view :refer [make-txpt write-svg]])
+  (:require [patterning.color :refer [p-color]]) 
 
-  (:require [patterning.groups :refer :all])
-  (:require [patterning.layouts :refer :all])
-  (:require [patterning.complex_elements :refer :all])
-  (:require [patterning.view :refer :all])
-  (:require [patterning.color :refer :all]) 
-
-  (:require [patterning.examples.basics :refer :all])
-  (:require [patterning.examples.framedplant :refer :all])
-  (:require [patterning.examples.symbols :refer :all])
+  (:require [patterning.examples.basics :as basics])
+  (:require [patterning.examples.framedplant :as framedplant])
+  (:require [patterning.examples.symbols :as symbols])
 
   (:require [quil.core :refer :all])
   (:require [patterning.quil.quilview :refer :all])
@@ -23,10 +23,14 @@
         ;; THIS IS THE CURRENT PATTERN 
         ;; assign to "final-pattern" the result of creating a pattern,
         ;; 
-        ;; Here's an example, 
-        final-pattern (framed 8 (repeat m2) (repeat triangles)
-                              (scale-group 0.8 (ringed-flower-of-life 70 {:color (p-color 200 150 255)  :stroke-weight 3})))
- 
+        ;; Here's an example,
+        
+        final-pattern (framed 8 (repeat basics/m2) (repeat basics/triangles)
+                              (groups/scale 0.8 (symbols/ringed-flower-of-life 70 {:color (p-color 200 150 255)  :stroke-weight 3})))
+
+        ;;pent (group (sshapes/poly 0.2 -0.7 0.2 5 {:color (p-color 255 255 100)} ))
+        ;;final-pattern (grid-layout 3 (repeat (clock-rotate 3 pent)))
+        ;;final-pattern framedplant/framed-plant
         ;; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         ]
 
@@ -41,7 +45,8 @@
         ;; function from our co-ordinate system to the actual window
         ;; draw-group uses this to transform all points in our pattern
         (draw-group (make-txpt [-1 -1 1 1] [0 0 (width) (height)]) final-pattern) 
-        (display-filter 11)
+        ;;(display-filter 11)
+        
         ;; AND THIS IS WHERE WE WRITE IT TO out.svg
         (write-svg 800 800 final-pattern)
         ) )  

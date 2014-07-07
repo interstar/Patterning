@@ -1,9 +1,9 @@
 (ns patterning.quil.quilview
   (:require [quil.core :refer :all])
   (:require [patterning.sshapes :as sshapes])
-  (:require [patterning.groups :refer :all])
-  (:require [patterning.color :refer :all])
-  (:require [patterning.view :refer :all])
+  (:require [patterning.groups :refer []])
+  (:require [patterning.color :refer []])
+  (:require [patterning.view :refer [transformed-sshape]])
   )
 
 

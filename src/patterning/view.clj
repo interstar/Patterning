@@ -1,7 +1,7 @@
 (ns patterning.view
-  (:require [patterning.sshapes :as sshapes])
-  (:require [patterning.groups :refer :all])
-  (:require [patterning.color :refer :all])
+  (:require [patterning.sshapes :refer []])
+  (:require [patterning.groups :refer []])
+  (:require [patterning.color :refer [color-to-web p-color]])
   )
 
 ;; Viewing pipeline

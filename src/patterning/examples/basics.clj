@@ -1,10 +1,11 @@
 (ns patterning.examples.basics
-  (:require [patterning.sshapes :refer :all])
-  (:require [patterning.groups :refer :all])
-  (:require [patterning.layouts :refer :all])
-  (:require [patterning.complex_elements :refer :all])
+  (:require [patterning.sshapes :refer [->SShape poly bez-curve add-style drunk-line]])
+  (:require [patterning.groups :refer [group scale ]])
+  (:require [patterning.layouts :refer [stack clock-rotate grid-layout checked-layout four-mirror framed
+                                        half-drop-grid-layout]])
+  (:require [patterning.complex_elements :as complex_elements])
   (:require [patterning.view :refer :all])
-  (:require [patterning.color :refer :all])
+  (:require [patterning.color :refer [p-color]])
   (:require [patterning.examples.design_language1 :refer :all])
   )
 
@@ -57,7 +58,7 @@
 (def clock-mirror (clock-rotate 5 (four-mirror dline)))
 
 ;; And did you want that mixed with our other shapes?
-(def m2 (clock-rotate 5 (four-mirror (stack dline (scale-group 0.4  triangles) ))))
+(def m2 (clock-rotate 5 (four-mirror (stack dline (scale 0.4  triangles) ))))
 
 ;; And perhaps you wanted that on a staggered grid?
 ;; (don't forget the repeat
@@ -82,7 +83,7 @@
 ;; Perhaps that would makethe corners of a nice frame
 (def frame-it (framed 6 (repeat bez1)
                       (repeat
-                       (stack (group (make orange-style [[-0.5 -1] [-0.5 1]]))
+                       (stack (group (->SShape orange-style [[-0.5 -1] [-0.5 1]]))
                               (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :color (p-color 255 255 200)}))) )
                       dl-clock ))
 

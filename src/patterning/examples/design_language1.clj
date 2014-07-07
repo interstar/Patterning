@@ -1,11 +1,14 @@
 (ns patterning.examples.design_language1
   (:require [patterning.maths :as maths])
-  (:require [patterning.sshapes :as sshapes])  
-  (:require [patterning.groups :refer :all])
-  (:require [patterning.layouts :refer :all])
-  (:require [patterning.complex_elements :refer :all])
+  (:require [patterning.sshapes :refer [add-style poly ->SShape square diamond set-weight set-color drunk-line h-reflect]])  
+  (:require [patterning.groups :refer [group rotate stretch scale] ])
+  (:require [patterning.groups :as groups])
+  (:require [patterning.layouts :refer [clock-rotate nested-stack stack diamond-layout v-mirror random-turn-groups
+                                        superimpose-layout half-drop-grid-layout framed random-grid-layout four-round
+                                        alt-rows-grid-layout checked-layout four-mirror ]])
+  (:require [patterning.complex_elements :refer [petal-pair-group cross-group spoke-flake-group face-group ogee-group polyflower-group]])
   (:require [patterning.view :refer :all])
-  (:require [patterning.color :refer :all])  
+  (:require [patterning.color :refer [p-color setup-colors mod-styles color-to-fill color-seq]])  
   )
 
 
@@ -24,9 +27,9 @@
 (def my-black (p-color 0))        
 
 
-(def simple-clock (clock-rotate 8 (group (sshapes/add-style {:color my-orange :fill my-cream :stroke-weight 1 } (sshapes/poly 0.5 0 0.2 8)))))
+(def simple-clock (clock-rotate 8 (group (add-style {:color my-orange :fill my-cream :stroke-weight 1 } (poly 0.5 0 0.2 8)))))
         
-(def simple-diamond (group  (sshapes/diamond {:color my-red :stroke-weight 2})))
+(def simple-diamond (group (diamond {:color my-red :stroke-weight 2})))
 
 (def flower-style {:color my-yellow :stroke-weight 3 :fill my-orange :bezier true})        
 (def flower (clock-rotate 5 (stack (petal-pair-group flower-style 0.5 0.7) )))
@@ -43,11 +46,11 @@
 (def complex-diamond (nested-stack (setup-colors  [my-green my-pink my-cream] (p-color 0))
                                           simple-diamond (fn [x] (- x 0.25)) ))
  
-(def pink-tile (stack complex-diamond (group ( sshapes/make {:color my-blue :stroke-weight 5} [[0 0] [0 1] ]))))
+(def pink-tile (stack complex-diamond (group (->SShape {:color my-blue :stroke-weight 5} [[0 0] [0 1] ]))))
         
-(def edge (rotate-group maths/half-PI (stretch-group 0.7 1 pink-tile)))
+(def edge (rotate maths/half-PI (stretch 0.7 1 pink-tile)))
 
-(def corner (rotate-group maths/q-PI edge))
+(def corner (rotate maths/q-PI edge))
 
 
 (defn dl []
@@ -61,42 +64,34 @@
 
         
         basic (superimpose-layout  (group                  
-                                    (sshapes/weight-it 2 (sshapes/color-it my-red (sshapes/poly 0 0 0.5 3) ))
-                                     (sshapes/color-it my-yellow (sshapes/poly 0.3 0.6 0.2 7) ) )
+                                    (set-weight 2 (set-color my-red (poly 0 0 0.5 3) ))
+                                     (set-color my-yellow (poly 0.3 0.6 0.2 7) ) )
                                    (clock-rotate 6
-                                                 (group (sshapes/add-style
-                                                         {:color my-purple :stroke-weight 2 } (sshapes/poly (- 0.3) (- 0.5) 0.3 4) )))
+                                                 (group (add-style
+                                                         {:color my-purple :stroke-weight 2 } (poly (- 0.3) (- 0.5) 0.3 4) )))
                                     )
-        cross ( rotate-group (- (rand (/ maths/PI 2)) (/ maths/PI 4)) ( cross-group my-green 0 0))
-        blue-cross (rotate-group (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross-group (p-color 100 100 200) 0 0)) 
+        cross ( rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross-group my-green 0 0))
+        blue-cross (rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross-group (p-color 100 100 200) 0 0)) 
         clock (clock-rotate 12 (group
-                                (sshapes/add-style {:color my-yellow :stroke-weight 2 :fill my-green}
-                                                   (sshapes/poly (rand 1) (rand 1)  0.12 4))
-                                       (sshapes/add-style {:color my-red :fill my-blue :stroke-weight 3 } (sshapes/drunk-line 9 0.2))))
+                                (add-style {:color my-yellow :stroke-weight 2 :fill my-green}
+                                                   (poly (rand 1) (rand 1)  0.12 4))
+                                       (add-style {:color my-red :fill my-blue :stroke-weight 3 } (drunk-line 9 0.2))))
         flake (spoke-flake-group {:color my-orange :stroke-weight 1 })
-        face (scale-group 0.8 (face-group [20 my-burgundy] [5 my-blue] [3 my-purple]  [8 my-red]))
+        face (groups/scale 0.8 (face-group [20 my-burgundy] [5 my-blue] [3 my-purple]  [8 my-red]))
         
-        red-ball (group (sshapes/add-style {:color my-red :stroke-weight 2} (sshapes/poly 0 -0.82 0.05 3)))
+        red-ball (groups/group (add-style {:color my-red :stroke-weight 2} (poly 0 -0.82 0.05 3)))
 
-        half-bird (sshapes/make {:color my-purple :stroke-weight 2} [[0 0] [0.4 (- 0.2)] [0.8 (- 0.3)]])
-        bird (group half-bird (sshapes/h-reflect half-bird ))
+        half-bird (->SShape {:color my-purple :stroke-weight 2} [[0 0] [0.4 (- 0.2)] [0.8 (- 0.3)]])
+        bird (groups/group half-bird (h-reflect half-bird ))
 
         
         test-shape (stack
-                    (group
-                     ;(sshapes/add-style {:color my-cream :fill my-burgundy :stroke-weight 3} (sshapes/poly 0 0 0.8 3))  
-                           (sshapes/zig-zag 4 {:color my-blue :stroke-weight 3} )                   
-                           ;;       (sshapes/rotate (/ PI 2)  (stretch-sshape 1 0.5 (h-sin-sshape {:color my-pink :stroke-weight 1})))
-                           ;;       (sshapes/make {:color (color 100 100 200) :fill my-green} [[-1 -1] [1 -1] [1 1] [-1 -1]] )
-                           ;;                     (random-rect {:color (color 50 100 100)})
-                           ;;                    (random-rect {:color (color 150 100 0) :fill (color 200 220 150 180)})
-                           )
-                    (clock-rotate 3 (group  (sshapes/make {:color my-green :stroke-weight 3} [[0 0] [(-  0.25) (- 1)]]) ))
+                    (clock-rotate 3 (groups/group  (->SShape {:color my-green :stroke-weight 3} [[0 0] [(-  0.25) (- 1)]]) ))
                     )       
 
         
         complex-square (nested-stack [{:color my-red} {:color my-blue} {:color my-pink} {:color my-cream}]
-                                     (group sshapes/square) (fn [x] (- x 0.2)))
+                                     (groups/group square) (fn [x] (- x 0.2)))
 
         complex-ogee (nested-stack (mod-styles color-to-fill (color-seq (take 5 (cycle [my-purple my-blue my-green]))))
                                    (ogee-group 0.1 3 {:stroke-weight 2})
@@ -109,7 +104,7 @@
 
         my-style {:color (p-color 0) :stroke-weight 1}
 
-        half (group (sshapes/make {:fill my-black :color my-black} [[-1 -1] [1 1] [1 -1]]) )
+        half (groups/group (->SShape {:fill my-black :color my-black} [[-1 -1] [1 1] [1 -1]]) )
 
         
 
@@ -120,19 +115,19 @@
         final-pattern9 (diamond-layout 4 (cycle [ complex-diamond  complex-ogee] ))
         
         
-        final-pattern8 (diamond-layout 7 (cycle [ (scale-group 0.9  (clock-rotate 3  (v-mirror complex-diamond)))
+        final-pattern8 (diamond-layout 7 (cycle [ (groups/scale 0.9  (clock-rotate 3  (v-mirror complex-diamond)))
                                                   complex-ogee cross flake clock ]) )
 
 
 
 
         
-        final-pattern6 (scale-group 1  (diamond-layout 4 (cycle [complex-ogee complex-ogee2])))
+        final-pattern6 (groups/scale 1  (diamond-layout 4 (cycle [complex-ogee complex-ogee2])))
         
         final-pattern5 (diamond-layout 6 (cycle [ complex-diamond complex-square]))
         
-        final-pattern4 (scale-group 1  (superimpose-layout
-                                        (half-drop-grid-layout 7 (repeat (group sshapes/square))) 
+        final-pattern4 (groups/scale 1  (superimpose-layout
+                                        (half-drop-grid-layout 7 (repeat (groups/group square))) 
                                         (half-drop-grid-layout 7
                                                                (random-turn-groups (repeat test-shape) )))
                                     )
