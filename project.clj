@@ -27,7 +27,7 @@
                                    :pretty-print true }
                         } ]}
 
-  :hooks [cljx.hooks]
+  :hooks [cljx.hooks leiningen.cljsbuild]
   
   :aot [patterning.core]
   :main patterning.core)

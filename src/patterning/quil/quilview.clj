@@ -3,7 +3,7 @@
   (:require [patterning.sshapes :as sshapes])
   (:require [patterning.groups :refer []])
   (:require [patterning.color :refer []])
-  (:require [patterning.view :refer [transformed-sshape]])
+  (:require [patterning.view :refer [transformed-sshape make-txpt xml-tpl ]])
   )
 
 
@@ -38,4 +38,5 @@
   [txpt group]
   (dorun (map (partial draw-sshape txpt) group))  )
 
-
+(defn write-svg "writes svg" [width height group]
+  (spit "out.svg" (xml-tpl (make-txpt [-1 -1 1 1] [0 0 width height]) width height group))   )

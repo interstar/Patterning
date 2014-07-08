@@ -72,26 +72,12 @@
 
 (defn bez-curve [style points] (add-style {:bezier true} (->SShape style points )))
 
-;(defn scale [val {:keys [style points]}]   {:style style :points (scale-shape val points) } )
-(defn scale [val sshape]
-  (try (->SShape (get sshape :style) (scale-shape val (get sshape :points)))
-       (catch Exception e (print (str " problem in scale " (.getMessage e))))))
-
-
+(defn scale [val sshape] (->SShape (get sshape :style) (scale-shape val (get sshape :points)))  )
 (defn translate [dx dy {:keys [style points]}] (->SShape style (translate-shape dx dy points)))
 (defn h-reflect [{:keys [style points]}] (->SShape style (h-reflect-shape points)))
 (defn v-reflect [{:keys [style points]}] (->SShape style (v-reflect-shape points)))
-
-;(defn stretch [sx sy {:keys [style points]}] {:style style :points(stretch-shape sx sy points)})
-(defn stretch [sx sy sshape]
-  (try (->SShape (get sshape :style) (stretch-shape sx sy (get sshape :points)))
-       (catch Exception e (println (str " problem in ss-stretch " (.getMessage e))))))
-
-;(defn rotate [da {:keys [style points]}] {:style style :points (rotate-shape da points)} )
-(defn rotate [da sshape]
-  (try (->SShape (get sshape :style) (rotate-shape da (get sshape :points))) 
-       (catch Exception e (println (str " problem in ss-rotate " (.getMessage e))))))
-
+(defn stretch [sx sy sshape] (->SShape (get sshape :style) (stretch-shape sx sy (get sshape :points))))
+(defn rotate [da sshape] (->SShape (get sshape :style) (rotate-shape da (get sshape :points))) )
 
 (defn wobble [noise {:keys [style points]}] (->SShape style (wobble-shape noise points)) )
 

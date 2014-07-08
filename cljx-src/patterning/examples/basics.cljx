@@ -1,13 +1,12 @@
 (ns patterning.examples.basics
-  (:require [patterning.sshapes :refer [->SShape poly bez-curve add-style drunk-line]])
-  (:require [patterning.groups :refer [group scale ]])
-  (:require [patterning.layouts :refer [stack clock-rotate grid-layout checked-layout four-mirror framed
-                                        half-drop-grid-layout]])
-  (:require [patterning.complex_elements :as complex_elements])
-  (:require [patterning.view :refer :all])
-  (:require [patterning.color :refer [p-color]])
-  (:require [patterning.examples.design_language1 :refer :all])
-  )
+  (:require [patterning.sshapes :refer [->SShape poly bez-curve add-style drunk-line]] 
+            [patterning.groups :refer [group scale ]]
+            [patterning.layouts :refer [stack clock-rotate grid-layout checked-layout four-mirror framed
+                                        half-drop-grid-layout]]
+            [patterning.complex_elements :as complex_elements]
+
+            [patterning.color :refer [p-color]]
+            [patterning.examples.design_language1 :refer []])  )
 
 ;; Some examples to get you started with Patterning
 

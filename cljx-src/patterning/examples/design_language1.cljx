@@ -1,14 +1,14 @@
 (ns patterning.examples.design_language1
-  (:require [patterning.maths :as maths])
-  (:require [patterning.sshapes :refer [add-style poly ->SShape square diamond set-weight set-color drunk-line h-reflect]])  
-  (:require [patterning.groups :refer [group rotate stretch scale] ])
-  (:require [patterning.groups :as groups])
-  (:require [patterning.layouts :refer [clock-rotate nested-stack stack diamond-layout v-mirror random-turn-groups
+  (:require [patterning.maths :as maths] 
+            [patterning.sshapes :refer [add-style poly ->SShape square diamond set-weight set-color drunk-line h-reflect]]  
+            [patterning.groups :refer [group rotate stretch scale] ]
+            [patterning.groups :as groups]
+            [patterning.layouts :refer [clock-rotate nested-stack stack diamond-layout v-mirror random-turn-groups
                                         superimpose-layout half-drop-grid-layout framed random-grid-layout four-round
-                                        alt-rows-grid-layout checked-layout four-mirror ]])
-  (:require [patterning.complex_elements :refer [petal-pair-group cross-group spoke-flake-group face-group ogee-group polyflower-group]])
-  (:require [patterning.view :refer :all])
-  (:require [patterning.color :refer [p-color setup-colors mod-styles color-to-fill color-seq]])  
+                                        alt-rows-grid-layout checked-layout four-mirror ]]
+            [patterning.complex_elements :refer [petal-pair-group cross-group spoke-flake-group face-group ogee-group polyflower-group]]
+
+            [patterning.color :refer [p-color setup-colors mod-styles color-to-fill color-seq]])  
   )
 
 

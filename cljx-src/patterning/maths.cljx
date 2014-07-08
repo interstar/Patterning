@@ -3,11 +3,11 @@
 ;; My maths library (to factor out all the maths functions that will
 ;; need to be different in Clojure / ClojureScript cljx
 
-(def PI (Math/PI))
+(def PI #+clj(Math/PI) #+cljs js/Math.PI )
 (def half-PI (float (/ PI 2)))
 (def q-PI (float (/ PI 4)))
 
-(defn sqrt [x] (Math/sqrt x))
+(defn sqrt [x] #+clj (Math/sqrt x) #+cljs (js/Math.sqrt x) )
 (defn abs [x] (Math/abs x))
 (defn atan2 [x y] (Math/atan2 x y))
 (defn cos [a] (Math/cos a))

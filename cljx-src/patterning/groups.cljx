@@ -1,6 +1,6 @@
 (ns patterning.groups
-  (:require [patterning.maths :as maths])
-  (:require [patterning.sshapes :as sshapes]))
+  (:require [patterning.maths :as maths] 
+            [patterning.sshapes :as sshapes]))
  
 
 ;; Groups

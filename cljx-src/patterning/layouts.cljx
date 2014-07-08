@@ -18,8 +18,6 @@
     (into [] (stack (mapcat gen-next (map vector styles (iterate reducer 1 )))))  ))
 
 
-
-
 (defn cart "Cartesian Product of two collections" [colls]
   (if (empty? colls)
     '(())

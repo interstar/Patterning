@@ -1,12 +1,12 @@
 (ns patterning.examples.symbols
-  (:require [patterning.maths :as maths])
-  (:require [patterning.sshapes :refer [->SShape poly ]])
-  (:require [patterning.groups :refer [group clip rotate]])
-  (:require [patterning.layouts :refer [clock-rotate stack flower-of-life-positions place-groups-at-positions]])
-  (:require [patterning.complex_elements :refer [basic-turtle]])
-  (:require [patterning.view :refer :all])
-  (:require [patterning.color :refer [p-color]])
-  (:require [patterning.examples.design_language1 :as design-language])
+  (:require [patterning.maths :as maths] 
+            [patterning.sshapes :refer [->SShape poly ]]
+            [patterning.groups :refer [group clip rotate]]
+            [patterning.layouts :refer [clock-rotate stack flower-of-life-positions place-groups-at-positions]]
+            [patterning.complex_elements :refer [basic-turtle]]
+
+            [patterning.color :refer [p-color]]
+            [patterning.examples.design_language1 :as design-language])
   )
 
 (defn khatim [style]

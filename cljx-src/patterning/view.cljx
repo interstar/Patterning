@@ -1,8 +1,9 @@
 (ns patterning.view
-  (:require [patterning.sshapes :refer []])
-  (:require [patterning.groups :refer []])
-  (:require [patterning.color :refer [color-to-web p-color]])
-  )
+  (:require [clojure.string :as string]
+            [patterning.strings :as strings]
+            [patterning.sshapes :refer []]
+            [patterning.groups :refer []]
+            [patterning.color :refer [color-to-web p-color]]) )
 
 ;; Viewing pipeline
 
@@ -49,21 +50,21 @@
                   "\" ")
         ]
     
-    (str (format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' stroke='%s' %s " col fill)
+    (str (strings/gen-format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' stroke='%s' %s " col fill)
          "d='"
          (apply str strung)
          "'></path>"
          )  ) )
 
+(defn inner-xml-tpl [txpt width height group] (string/join (apply str (mapcat (partial sshape-to-SVG-path txpt) group))) )
+
 (defn xml-tpl
   "svg 'template' which also flips the coordinate system via http://www.braveclojure.com/organization/"
   [txpt width height group]
   (str "<svg height=\"" height "\" width=\"" width "\">"
-
-       (clojure.string/join  (apply str (mapcat (partial sshape-to-SVG-path txpt) group)))
-
+       (inner-xml-tpl txpt width height group)
        "</svg>"))
 
-(defn write-svg "writes svg" [width height group]
-  (spit "out.svg" (xml-tpl (make-txpt [-1 -1 1 1] [0 0 width height]) width height group))   )
-
+(defn make-svg [viewport window width height group]
+  (let [txpt (make-txpt viewport window)]
+    (xml-tpl txpt width height group)  ))
