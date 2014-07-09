@@ -1,13 +1,13 @@
 (ns patterning.examples.symbols
   (:require [patterning.maths :as maths] 
             [patterning.sshapes :refer [->SShape poly ]]
-            [patterning.groups :refer [group clip rotate]]
-            [patterning.layouts :refer [clock-rotate stack flower-of-life-positions place-groups-at-positions]]
+            [patterning.groups :refer [group clip rotate scale]]
+            [patterning.layouts :refer [clock-rotate stack flower-of-life-positions place-groups-at-positions framed]]
             [patterning.complex_elements :refer [basic-turtle]]
-
+           
             [patterning.color :refer [p-color]]
-            [patterning.examples.design_language1 :as design-language])
-  )
+            [patterning.examples.design_language1 :as design-language]
+            [patterning.examples.basics :as basics] ) )
 
 (defn khatim [style]
   (clock-rotate 8 (group (poly 0 -0.45 0.25 4 style)) ))
@@ -42,3 +42,7 @@
     (stack
      (clock-rotate 4 part1)
      (rotate (/ maths/PI 8) (group (poly 0 0 0.55 8 s))))  ))
+
+;; example that can be called from javascript
+(defn folexample []
+  (scale 0.8 (ringed-flower-of-life 70 {:color (p-color 200 150 255)  :stroke-weight 3})))

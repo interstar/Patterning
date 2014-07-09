@@ -25,9 +25,9 @@
         ;; 
         ;; Here's an example,
         
-        ;;final-pattern (framed 8 (repeat basics/m2) (repeat basics/triangles)                      (groups/scale 0.8 (symbols/ringed-flower-of-life 70 {:color (p-color 200 150 255)  :stroke-weight 3})))
+        final-pattern (symbols/folexample)
 
-        final-pattern ( symbols/god-pattern)
+        ;;final-pattern ( symbols/god-pattern)
         ;;pent (group (sshapes/poly 0.2 -0.7 0.2 5 {:color (p-color 255 255 100)} ))
         ;;final-pattern (grid-layout 3 (repeat (clock-rotate 3 pent)))
         ;;final-pattern framedplant/framed-plant

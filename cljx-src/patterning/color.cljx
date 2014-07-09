@@ -28,4 +28,4 @@
 (defn setup-colors [colors c] (map (edge-col c) (color-seq colors)  ))
 
 
-(defn color-to-web [[r g b a]] (str (strings/gen-format "#%x%x%x" r g b) ))
+(defn color-to-web [[r g b a]] (str (strings/gen-format "rgb(%d,%d,%d)" r g b) ))
