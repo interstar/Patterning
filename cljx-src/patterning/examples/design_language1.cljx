@@ -31,7 +31,7 @@
         
 (def simple-diamond (group (diamond {:color my-red :stroke-weight 2})))
 
-(def flower-style {:color my-yellow :stroke-weight 3 :fill my-orange :bezier true})        
+(def flower-style {:color my-orange :stroke-weight 3  :bezier true})        
 (def flower (clock-rotate 5 (stack (petal-pair-group flower-style 0.5 0.7) )))
 
 (def less-complex-diamond (nested-stack

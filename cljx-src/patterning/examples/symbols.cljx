@@ -7,7 +7,9 @@
            
             [patterning.color :refer [p-color]]
             [patterning.examples.design_language1 :as design-language]
-            [patterning.examples.basics :as basics] ) )
+            [patterning.examples.basics :as basics] 
+ 
+            )  )
 
 (defn khatim [style]
   (clock-rotate 8 (group (poly 0 -0.45 0.25 4 style)) ))
@@ -26,8 +28,8 @@
   ([style] (flower-of-life 80 style)))
 
 (defn ringed-flower-of-life
-  ([sides style] (stack (flower-of-life sides style) (group (poly 0 0 1.2 sides style))))
-  ([style] (ringed-flower-of-life 80 style ) ))
+      ([sides style] (stack (flower-of-life sides style) (group (poly 0 0 1.2 sides style))))
+      ([style] (ringed-flower-of-life 80 style ) ))
 
 (defn god-pattern []
   (let [s {:color (p-color 0 0 0) :stroke-weight 2}

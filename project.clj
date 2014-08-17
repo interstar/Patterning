@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/math.numeric-tower "0.0.4"]                 
                  [quil "1.7.0"]
+                 [com.taoensso/timbre "3.2.0"]
                  ]
 
   :plugins [[com.keminglabs/cljx "0.4.0"]

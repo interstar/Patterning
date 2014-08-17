@@ -27,7 +27,7 @@
 ;; Stack 5 triangles on a blue pentagon
 ;; ------------------------------------
 
-(def blue-style {:color (p-color 200 200 255) :fill (p-color 150 150 255) :stroke-weight 3})
+(def blue-style {:color (p-color 200 200 255)  :stroke-weight 3})
 (def pentagon (group (poly 0 0 0.7 5 blue-style)))
 (def pen-tri (stack pentagon triangles))
 
