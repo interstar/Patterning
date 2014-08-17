@@ -1,0 +1,14 @@
+<html>
+<head><title>Patterning from ClojureScript</title></head>
+<body>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script>
+    
+    var pattern = patterning.examples.framedplant.framed_plant();
+    
+    var svg = patterning.view.make_svg([-1,-1,1,1],[0,0,400,400],400,400,pattern);    
+    document.write(svg);    
+    
+    </script>
+</body>
+</html>
