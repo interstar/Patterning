@@ -3,7 +3,8 @@
             [patterning.sshapes :refer [->SShape poly square]]
             [patterning.groups :refer [group translate h-reflect reframe scale rotate over-style]]
             [patterning.layouts :refer [stack alt-rows-grid-layout checked-layout framed]]
-            [patterning.complex_elements :refer [l-system basic-turtle]]
+            [patterning.library.turtle :refer [basic-turtle]]
+            [patterning.library.l_systems :refer [l-system]]
 
             [patterning.color :refer [p-color]]
             [patterning.examples.design_language1 :as design-language])  )

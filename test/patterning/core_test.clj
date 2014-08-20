@@ -5,7 +5,9 @@
             [patterning.groups :as groups]
             [patterning.color :as color]
             [patterning.layouts :as layouts]
-            [patterning.complex_elements :as complex-elements]
+            [patterning.library.l_systems :as l-systems]
+            [patterning.library.turtle :as turtle]
+            [patterning.complex_elements :as complex-elements]            
             [patterning.core :refer :all]))
 
 (defn mol= "more or less equal" [x y] (< (Math/abs (- x y)) 0.0000001) )
@@ -124,32 +126,32 @@
         rule4 ["A" "AB"]
         rule5 ["B" "C"] ]
     (testing "basic string sub"
-      (is (= (complex-elements/apply-rule-to-char rule1 "A")
+      (is (= (l-systems/apply-rule-to-char rule1 "A")
              "B"))
-      (is (= (complex-elements/apply-rule-to-char rule1 "C")
+      (is (= (l-systems/apply-rule-to-char rule1 "C")
              "C"))
-      (is (= (complex-elements/apply-rule-to-char rule2 "A")
+      (is (= (l-systems/apply-rule-to-char rule2 "A")
              "DE"))
       )
     
     (testing "rules on a string"
-      (is (= (complex-elements/apply-rules-to-char [rule1] "A") "B") )
-      (is (= (complex-elements/apply-rules-to-char [rule1] "C") "C"))
-      (is (= (complex-elements/apply-rules [rule1] "ADAM") "BDBM"))
-      (is (= (complex-elements/apply-rules [rule1 rule3] "ADAM") "BCEBM"))
-      (is (= (complex-elements/apply-rules [rule4 rule5] "A") "AB"))
-      (is (= (complex-elements/apply-rules [rule4 rule5] "AB") "ABC"))
-      (is (= (complex-elements/multi-apply-rules 2 [rule4 rule5] "A") "ABC" ))
-      (is (= (complex-elements/multi-apply-rules 4 [rule4 rule5] "A") "ABCCC"))
-      (let [ls (complex-elements/l-system [rule4 rule5])]
+      (is (= (l-systems/apply-rules-to-char [rule1] "A") "B") )
+      (is (= (l-systems/apply-rules-to-char [rule1] "C") "C"))
+      (is (= (l-systems/apply-rules [rule1] "ADAM") "BDBM"))
+      (is (= (l-systems/apply-rules [rule1 rule3] "ADAM") "BCEBM"))
+      (is (= (l-systems/apply-rules [rule4 rule5] "A") "AB"))
+      (is (= (l-systems/apply-rules [rule4 rule5] "AB") "ABC"))
+      (is (= (l-systems/multi-apply-rules 2 [rule4 rule5] "A") "ABC" ))
+      (is (= (l-systems/multi-apply-rules 4 [rule4 rule5] "A") "ABCCC"))
+      (let [ls (l-systems/l-system [rule4 rule5])]
         (is (= (ls 2 "A") "ABC")))
       )
 
     (testing "string to group"
-      (is (= (complex-elements/basic-turtle [0 0] 0.1 0 0 "F" {} {:color "red"})
+      (is (= (turtle/basic-turtle [0 0] 0.1 0 0 "F" {} {:color "red"})
              [(sshapes/->SShape {:color "red"} [[0 0] [0.1 0.0]])]))
       
-      (let [stg (complex-elements/basic-turtle [0 0] 0.1 0 1.5707963705062866 "F+F" {} {} )
+      (let [stg (turtle/basic-turtle [0 0] 0.1 0 1.5707963705062866 "F+F" {} {} )
             ps (get (first stg) :points)] 
         (is (= (first ps) [0 0]))
         (is (= (get ps 1) [0.1 0.0]))
@@ -157,10 +159,10 @@
         )
       )
     
-    (is (= (second (complex-elements/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F" {} {} ))
+    (is (= (second (turtle/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F" {} {} ))
            [(sshapes/->SShape {} [[0 0] [0.1 0.0]])]))
       
-    (let [stg (second (complex-elements/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F" {} {}))
+    (let [stg (second (turtle/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F" {} {}))
             ps (get (first stg) :points)]
         (is (= (first ps) [0 0]))
         (is (= (get ps 1) [0.1 0.0]))
@@ -168,7 +170,7 @@
         )
       
     (let [leaf (fn [x y a] (let [] (println "in leaf function") (groups/group ( sshapes/->SShape {} [[-10 -10]]))))
-          stg (second (complex-elements/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F[FF]Z" {\Z leaf} {}))
+          stg (second (turtle/l-string-turtle-to-group-r [0 0] 0.1 0 1.5707963705062866 "F+F[FF]Z" {\Z leaf} {}))
             s2 (get stg 0)
             s3 (get stg 1)
             s1 (get stg 2)

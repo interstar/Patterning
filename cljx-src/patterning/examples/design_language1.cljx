@@ -59,7 +59,12 @@
 (def emp (groups/empty-group))
 (def star-band (grid-layout 7 (cycle [emp emp emp star emp emp emp])))
    
-
+(defn complex-ogee
+  ([] (complex-ogee (take 5 (cycle [my-purple my-blue my-green])) ) )
+  ([colours] 
+     (nested-stack (mod-styles color-to-fill (color-seq colours))
+                   (ogee-group 0.1 3 {:stroke-weight 2})
+                   (fn [x] (- x 0.2)))))
 
 (defn dl []
   (let [
@@ -101,9 +106,7 @@
         complex-square (nested-stack [{:color my-red} {:color my-blue} {:color my-pink} {:color my-cream}]
                                      (groups/group square) (fn [x] (- x 0.2)))
 
-        complex-ogee (nested-stack (mod-styles color-to-fill (color-seq (take 5 (cycle [my-purple my-blue my-green]))))
-                                   (ogee-group 0.1 3 {:stroke-weight 2})
-                                   (fn [x] (- x 0.2)))
+
 
 
         complex-ogee2 (nested-stack ( color-seq (take 5 (cycle [my-purple my-red my-pink])))

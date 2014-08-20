@@ -3,7 +3,8 @@
             [patterning.sshapes :refer [->SShape poly ]]
             [patterning.groups :refer [group clip rotate scale]]
             [patterning.layouts :refer [clock-rotate stack flower-of-life-positions place-groups-at-positions framed]]
-            [patterning.complex_elements :refer [basic-turtle]]
+            
+            [patterning.library.turtle :refer [basic-turtle]]
            
             [patterning.color :refer [p-color]]
             [patterning.examples.design_language1 :as design-language]
