@@ -5,7 +5,7 @@
             [patterning.groups :as groups]
             [patterning.layouts :refer [clock-rotate nested-stack stack diamond-layout v-mirror random-turn-groups
                                         superimpose-layout half-drop-grid-layout framed random-grid-layout four-round
-                                        alt-rows-grid-layout checked-layout four-mirror ]]
+                                        alt-rows-grid-layout checked-layout four-mirror grid-layout ]]
             [patterning.complex_elements :refer [petal-pair-group cross-group spoke-flake-group face-group ogee-group polyflower-group]]
 
             [patterning.color :refer [p-color setup-colors mod-styles color-to-fill color-seq]])  
@@ -51,6 +51,14 @@
 (def edge (rotate maths/half-PI (stretch 0.7 1 pink-tile)))
 
 (def corner (rotate maths/q-PI edge))
+
+
+
+(def tri (groups/group (poly 0 0 0.7 3 {:color (p-color 240 200 170)})))
+(def star (stack tri (groups/rotate maths/PI tri)))
+(def emp (groups/empty-group))
+(def star-band (grid-layout 7 (cycle [emp emp emp star emp emp emp])))
+   
 
 
 (defn dl []

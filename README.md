@@ -21,7 +21,7 @@ To run the REPL.
 
 
 ## Examples
-Look in the src/patterning/examples directory for examples
+Look in the cljx-src/patterning/examples/ directory for examples
 
 basics.clj gives a guided tour of the basic functions of Patterning 
 

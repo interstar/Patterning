@@ -89,6 +89,7 @@
 
 (defn l-system [rules] #(multi-apply-rules %1 rules %2))
 
+;; Turtle
 (defn l-string-turtle-to-group-r "A more sophisticated turtle that renders l-system string but has a stack and returns a group"
 
   ([[ox oy] d angle da string leaf-map style]
