@@ -1,4 +1,4 @@
-(ns patterning.examples.symbols
+(ns patterning.library.symbols
   (:require [patterning.maths :as maths] 
             [patterning.sshapes :refer [->SShape poly ]]
             [patterning.groups :refer [group clip rotate scale]]
@@ -8,7 +8,7 @@
            
             [patterning.color :refer [p-color]]
             [patterning.examples.design_language1 :as design-language]
-            [patterning.examples.basics :as basics] 
+
  
             )  )
 

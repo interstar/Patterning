@@ -13,7 +13,7 @@
   (:require [patterning.examples.basics :as basics])
   (:require [patterning.examples.framedplant :as framedplant])
   (:require [patterning.examples.design_language1 :as design-language])
-  (:require [patterning.examples.symbols :as symbols])
+  (:require [patterning.library.symbols :as symbols])
 
   (:require [quil.core :refer :all])
   (:require [patterning.quil.quilview :refer :all])
