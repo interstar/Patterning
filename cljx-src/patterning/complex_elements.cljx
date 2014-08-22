@@ -88,10 +88,12 @@
 (defn scroll [[x y] d da number style extras]
   (turtle/basic-turtle [x y] d 0 da (all number) extras style ))
 
-(def r-scroll (groups/reframe (scroll [0 0] 0.01 (/ maths/PI 10) 16  
-                                      {:color (color/p-color 200 255 200) :stroke-weight 2} {}) ))
+(defn r-scroll [d da number style extras] (groups/reframe (scroll [0 0] d da number  
+                                      style extras) ))
 
-(def vase (layouts/stack r-scroll (groups/v-reflect r-scroll) ))
+(defn vase [d da count style]
+  (let [scroll (r-scroll d da count style {})]
+    (layouts/stack scroll (groups/v-reflect scroll) )))
 
 
 
