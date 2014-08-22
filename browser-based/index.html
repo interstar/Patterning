@@ -1,14 +1,39 @@
 <html>
 <head><title>Patterning from ClojureScript</title></head>
 <body>
+    <h2>Patterning from ClojureScript</h2>
+
+
+    <div id="controls">
+      Size : <input type="text" id="size"/>
+    </div>
+    
+    <iframe id="myIFrame" height="500" width="500"
+    seamless="seamless"></iframe> 
+
+
     <script type="text/javascript" src="js/main.js"></script>
     <script>
     
-    var pattern = patterning.examples.framedplant.framed_plant();
-    
-    var svg = patterning.view.make_svg([-1,-1,1,1],[0,0,400,400],400,400,pattern);    
-    document.write(svg);    
-    
+    function recalc(id,size) {
+      var pattern = patterning.examples.interactive.plant(size);
+      var svg = patterning.view.make_svg([-1,-1,1,1],[0,0,400,400],400,400,pattern); 
+
+      var ifrm = document.getElementById(id);
+      ifrm = (ifrm.contentWindow) ? ifrm.contentWindow :
+         (ifrm.contentDocument.document) ? 
+            ifrm.contentDocument.document : ifrm.contentDocument;
+      ifrm.document.open();
+      ifrm.document.write(svg);
+      ifrm.document.close();
+      //el.appendChild( document.createElement(svg) );
+    }
+  
+    document.getElementById('size').addEventListener('change',  
+        function() { recalc("myIFrame", document.getElementById('size').value); });
+
+    recalc("myIFrame",7);
     </script>
+
 </body>
 </html>
