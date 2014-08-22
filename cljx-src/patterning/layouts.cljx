@@ -76,7 +76,7 @@
         init-y1 (- in-y 1)
         init-y2 (- in-y (+ 1 ( / offset 2)))
         
-        h1-iterator (take (+ 1 (if (even? n2) n2 (+ 1 n2))) (iterate inc-x init-x1))
+        h1-iterator (take (+ 0 (if (even? n2) n2 (+ 1 n2))) (iterate inc-x init-x1))
         v1-iterator (take number (iterate inc-y init-y1))
         h2-iterator (take n2 (iterate inc-x init-x2))
         v2-iterator (take (+ 1 number) (iterate inc-y init-y2))
