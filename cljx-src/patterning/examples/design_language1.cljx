@@ -14,7 +14,7 @@
 
 ;; The palette
 (def x 4)
-(def my-green (p-color 20 150 20 ))
+(def my-green (p-color 100 250 130 ))
 (def my-purple (p-color 150 100 200))
 (def my-blue (p-color 100 100 255 ))
 (def my-red (p-color 255 150 150))
@@ -52,7 +52,7 @@
 
 (def corner (rotate maths/q-PI edge))
 
-
+(def red-ball (groups/group (add-style {:color my-red :fill my-red :stroke-weight 2} (poly 0 -0.82 0.3 8 ))))
 
 (def tri (groups/group (poly 0 0 0.7 3 {:color (p-color 240 200 170)})))
 (def star (stack tri (groups/rotate maths/PI tri)))
@@ -65,6 +65,11 @@
      (nested-stack (mod-styles color-to-fill (color-seq colours))
                    (ogee-group 0.1 3 {:stroke-weight 2})
                    (fn [x] (- x 0.2)))))
+
+
+(defn square2 [] (stack (group (->SShape {:fill my-cream :color my-blue :stroke-weight 3}
+                                         [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]]))
+                        less-complex-diamond simple-clock  ))
 
 (defn dl []
   (let [
@@ -92,7 +97,7 @@
         flake (spoke-flake-group {:color my-orange :stroke-weight 1 })
         face (groups/scale 0.8 (face-group [20 my-burgundy] [5 my-blue] [3 my-purple]  [8 my-red]))
         
-        red-ball (groups/group (add-style {:color my-red :stroke-weight 2} (poly 0 -0.82 0.05 3)))
+      
 
         half-bird (->SShape {:color my-purple :stroke-weight 2} [[0 0] [0.4 (- 0.2)] [0.8 (- 0.3)]])
         bird (groups/group half-bird (h-reflect half-bird ))

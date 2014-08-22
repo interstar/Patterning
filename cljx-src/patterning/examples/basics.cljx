@@ -1,5 +1,5 @@
 (ns patterning.examples.basics
-  (:require [patterning.sshapes :refer [->SShape poly bez-curve add-style drunk-line]] 
+  (:require [patterning.sshapes :refer [->SShape poly bez-curve add-style drunk-line close-shape]] 
             [patterning.groups :refer [group scale ]]
             [patterning.layouts :refer [stack clock-rotate grid-layout checked-layout four-mirror framed
                                         half-drop-grid-layout]]
@@ -90,4 +90,6 @@
 ;; reflects appropriately), a list of edge pieces (which it rotates
 ;; appropriately) and a single centre (NOT a list, just a group)
 
+;; A half square triangle
 
+(defn wedge [style] (group (->SShape style (close-shape  [[-1 -1] [-1 1] [1 -1]]))) )

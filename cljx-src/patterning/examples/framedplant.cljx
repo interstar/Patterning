@@ -7,6 +7,7 @@
             [patterning.library.l_systems :refer [l-system]]
 
             [patterning.color :refer [p-color]]
+            [patterning.examples.design_language1 :refer [square2]]
             [patterning.examples.design_language1 :as design-language])  )
 
 
@@ -24,10 +25,7 @@
 
 (defn sprey [] (translate -0.6 0 (h-reflect (reframe (sys-g2))))) 
 
-(defn square2 [] (stack (group (->SShape {:fill design-language/my-cream :color design-language/my-blue :stroke-weight 3}
-                                   [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]]))
-                    design-language/less-complex-diamond
-                    design-language/simple-clock  ))
+
 
 (defn inner [] (stack (reframe ( sys-g1))
                   (alt-rows-grid-layout
