@@ -1,6 +1,6 @@
 (ns patterning.examples.tutorial
   (:require [patterning.sshapes :refer [->SShape poly bez-curve add-style drunk-line close-shape]] 
-            [patterning.groups :refer [group scale ]]
+            [patterning.groups :refer [group scale over-style]]
             [patterning.layouts :refer [stack clock-rotate grid-layout checked-layout four-mirror framed
                                         half-drop-grid-layout]]
             [patterning.library.complex_elements :as complex_elements]
@@ -12,7 +12,9 @@
 
 ;; To run these examples, make sure tutorial.clj is included in core.clj
 ;;   (:require [patterning.examples.tutorial :refer :all])
-;; Then call one of the functions below
+;;
+;; Then in core.clj, assign one of the patterns below to "final-pattern"
+;;   (def final-pattern tutorial/triangles)
 
 
 ;; 5 triangles in a ring
@@ -89,6 +91,30 @@
 ;; framed takes three arguments, a list of corner pieces (which it
 ;; reflects appropriately), a list of edge pieces (which it rotates
 ;; appropriately) and a single centre (NOT a list, just a group)
+
+;; You can, of course, have frames inside frames
+
+(def multi-frame
+  (let [edge
+        (stack (group (->SShape orange-style [[-0.5 -1] [-0.5 1]]))
+               (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :color (p-color 255 255 200)}))) ]
+    (framed 6 (repeat bez1)
+            (repeat edge)
+            frame-it)))
+
+;; A word on colour.
+;; colours are made with p-color and can have up to four arguments :
+;; red, green, blue, alpha
+
+(def trans-green (p-color 150 255 150 150) )
+
+;; We can supplement the colour of an existing group using the
+;; groups/over-style function
+
+(def fill-clock (over-style {:fill trans-green} dl-clock) )
+
+(def m6 (stack pt-checks fill-clock ))
+
 
 ;; A half square triangle
 

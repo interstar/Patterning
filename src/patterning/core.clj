@@ -31,7 +31,7 @@
 ;; THIS IS THE CURRENT PATTERN 
 ;; assign to "final-pattern" the result of creating a pattern,
 
-(def final-pattern tutorial/triangles)
+(def final-pattern tutorial/m6)
 
 
 (def my-width 700)
