@@ -1,17 +1,15 @@
 (ns patterning.view
   (:require [clojure.string :as string]
+            [patterning.maths :refer [tx]]
             [patterning.strings :as strings]
             [patterning.sshapes :refer []]
             [patterning.groups :refer []]
             [patterning.color :refer [color-to-web p-color]]) )
 
+
+
+
 ;; Viewing pipeline
-
-(defn tx
-  "transform a scalar from one space to another. o1 is origin min, o2 is origin max, t1 is target min, t2 is target max"
-  [o1 o2 t1 t2 x]
-  (+ (* (float (/ (- x o1) (- o2 o1))) (- t2 t1)) t1) )
-
 
 (defn make-txpt
   "first argument is viewport (left, top, right, bottom), second is window (left, top, right, bottom)
@@ -50,7 +48,7 @@
                   "\" ")
         ]
     
-    (str (strings/gen-format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' stroke='%s' %s " col fill)
+    (str (strings/gen-format "\n<path style='-webkit-tap-highlight-color: rgba(0, 0, 0, 0);' stroke='%s' %s " col fill )
          "d='"
          (apply str strung)
          "'></path>"

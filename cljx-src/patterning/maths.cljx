@@ -16,6 +16,12 @@
 
 (defn clock-angles [number]  (take number (iterate (fn [a] (+ a (float (/ (* 2 PI) number)))) (- PI))) )
 
+(defn tx
+  "transform a scalar from one space to another. o1 is origin min, o2 is origin max, t1 is target min, t2 is target max"
+  [o1 o2 t1 t2 x]
+  (+ (* (float (/ (- x o1) (- o2 o1))) (- t2 t1)) t1) )
+
+
 
 ;; Point geometry
 
