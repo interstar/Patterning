@@ -99,7 +99,14 @@
 (defn ss-filter [p? {:keys [style, points]}] (->SShape style (filter-shape p? points)))
 
 
-;;; Some actual sshapes
+
+;;; Some basic sshapes
+
+(defn rect "Rectangle"
+  ([x y w h style] (let [x2 (+ x w) y2 (+ y h)]  (->SShape style [[x y] [x2 y] [x2 y2] [x y2] [x y]]) ))
+  ([x y w h] (rect x y w h {}))  )
+
+(defn square [style] (rect -1 -1 2 2 style) )
 
 (defn poly "polygon sshape"
   ([cx cy radius no-sides style]
@@ -108,6 +115,12 @@
        ))
   ([cx cy radius no-sides] (poly cx cy radius no-sides {}))
   )
+
+(defn random-rect [style]
+  (let [ rr (fn [l] (rand l))
+        m1 (fn [x] (- x 1))]
+    (rect (m1 (rr 1)) (m1 (rr 1)) (rr 1) (rr 1) style ) ))
+
 
 (defn horizontal-line "horizontal line" [y] (->SShape {} [[(- 1) y] [1 y] [(- 1 ) y] [1 y]]) )
 (defn vertical-line "vertical line" [x] (->SShape {} [[x (- 1)] [x 1] [x (- 1)] [x 1]]))
@@ -126,13 +139,7 @@
 
 
 
-(defn rect [x y w h] (let [x2 (+ x w) y2 (+ y h)]  (->SShape {} [[x y] [x2 y] [x2 y2] [x y2] [x y]]) ))
 
-(defn random-rect [style]  (let [ rr (fn [l] (rand l ))
-                                  m1 (fn [x] (- x 1))]
-                             (add-style style (rect (m1 (rr 1)) (m1 (rr 1)) (rr 1) (rr 1)  ) )))
-
-(defn square [] (->SShape {} [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] ) )
 
 (defn h-sin [style] (->SShape style (into [] (map (fn [a] [a (maths/sin (* maths/PI a))]  ) (range (- 1) 1 0.05)) )))
 
@@ -140,13 +147,6 @@
   (let [e1 (last shape1)
         add (fn [[x y]] [(+ 1 (first e1) x) y])]
     (concat shape1 (into [] (map add shape2)))))
-
-(defn zig-zag [freq style]
-  (let [tri (into [] (map (fn [x] [x (maths/abs x)]) (range (- 1) 1 0.1) ))
-        down (translate (- (- 1 (float (/ 1 freq))) ) (- 0.25) (stretch (float (/ 1 freq)) 0.5 tri))
-        all (reduce h-glue-shape (repeat freq down))
-        ]
-    (->SShape style all)))
 
 
 (defn diamond [style] (->SShape style (close-shape [[-1 0] [0 -1] [1 0] [0 1]])) )
