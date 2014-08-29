@@ -7,9 +7,6 @@
             [patterning.library.turtle :refer [basic-turtle]]
            
             [patterning.color :refer [p-color]]
-            [patterning.examples.design_language1 :as design-language]
-
- 
             )  )
 
 (defn khatim [style]
