@@ -7,7 +7,7 @@
             [patterning.layouts :as layouts]
             [patterning.library.l_systems :as l-systems]
             [patterning.library.turtle :as turtle]
-            [patterning.complex_elements :as complex-elements]            
+            [patterning.library.complex_elements :as complex-elements]            
             [patterning.core :refer :all]))
 
 (defn mol= "more or less equal" [x y] (< (Math/abs (- x y)) 0.0000001) )
