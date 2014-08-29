@@ -43,9 +43,9 @@
 
         
 
-(defn framed-FASS [] (framed 9 (repeat (scale 0.75 (rotate (/ maths/PI 4) square2)))
+(defn framed-FASS [] (framed 9 (repeat (scale 0.75 (rotate (/ maths/PI 4) (square2))))
                              (cycle [(square2) (scale 0.8 (square2))])
-                             (stack (over-style {:fill (p-color 200 200 255)} [(square)]) (reframe (sys-g1))) ))
+                             (stack [(square {:fill (p-color 200 200 255)} )] (reframe (sys-g1))) ))
 
 (defn framed-plant [] (framed 9 (repeat design-language/flower) (repeat  (square2)) (sprey) ))
 
