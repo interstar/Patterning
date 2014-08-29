@@ -71,7 +71,11 @@
 (defn petal-pair-group "reflected petals" [style dx dy]
   (let [petal (petal-group style dx dy)] (layouts/stack petal (groups/h-reflect petal))))
 
+;; Made with Turtle
 
+(defn zig-zag [[x y]] (basic-turtle [x y] 0.1 (/ maths/PI 2)
+                                      (/ maths/PI 3) "++F-FF+FF-FF+FF-FF+FF-FF+FF-FF+F" {}
+                                      {:color (p-color 150 210 200) :stroke-weight 4}))
 
 ;; Scrolls
 
