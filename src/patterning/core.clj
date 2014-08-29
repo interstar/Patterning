@@ -7,11 +7,11 @@
                                         four-mirror four-round nested-stack checked-layout
                                         half-drop-grid-layout random-turn-groups h-mirror]])
   (:require [patterning.library.turtle :refer [basic-turtle]])
-  (:require [patterning.complex_elements :refer [vase]])
+  (:require [patterning.library.complex_elements :refer [vase zig-zag]])
   (:require [patterning.view :refer [make-txpt ]])
   (:require [patterning.color :refer [p-color]]) 
 
-  (:require [patterning.examples.basics :as basics])
+  (:require [patterning.examples.tutorial :as tutorial])
   (:require [patterning.examples.framedplant :as framedplant])
   (:require [patterning.examples.design_language1 :as design-language])
   (:require [patterning.library.symbols :as symbols])
@@ -35,11 +35,11 @@
     (stack s (groups/h-reflect s))
     ) )
 
-(defn framed-plant [] (framed 9 (repeat basics/dl-clock  )
+(defn framed-plant [] (framed 9 (repeat tutorial/dl-clock  )
                               (repeat (groups/rotate (/ PI 2) (zig-zag [ 0.7 0]))  )
                               (stack
                                (grid-layout 14 (random-turn-groups
-                                               (repeat (basics/wedge {:color back-col :fill back-col}) )))
+                                               (repeat (tutorial/wedge {:color back-col :fill back-col}) )))
                                (spreys)) ))
 
 (def main (interactive/test2 12 12))

@@ -1,10 +1,10 @@
-(ns patterning.complex_elements
+(ns patterning.library.complex_elements
   (:require [patterning.maths :as maths] 
             [patterning.sshapes :as sshapes]
             [patterning.groups :as groups]
             [patterning.layouts :as layouts]
             [patterning.library.turtle :as turtle]
-            [patterning.color :as color]))
+            [patterning.color :refer [p-color]]))
 
 
 ;; Complex patterns made as groups (these have several disjoint sshapes)
@@ -71,9 +71,10 @@
 (defn petal-pair-group "reflected petals" [style dx dy]
   (let [petal (petal-group style dx dy)] (layouts/stack petal (groups/h-reflect petal))))
 
+
 ;; Made with Turtle
 
-(defn zig-zag [[x y]] (basic-turtle [x y] 0.1 (/ maths/PI 2)
+(defn zig-zag [[x y]] (turtle/basic-turtle [x y] 0.1 (/ maths/PI 2)
                                       (/ maths/PI 3) "++F-FF+FF-FF+FF-FF+FF-FF+FF-FF+F" {}
                                       {:color (p-color 150 210 200) :stroke-weight 4}))
 

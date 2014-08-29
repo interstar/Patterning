@@ -1,17 +1,17 @@
-(ns patterning.examples.basics
+(ns patterning.examples.tutorial
   (:require [patterning.sshapes :refer [->SShape poly bez-curve add-style drunk-line close-shape]] 
             [patterning.groups :refer [group scale ]]
             [patterning.layouts :refer [stack clock-rotate grid-layout checked-layout four-mirror framed
                                         half-drop-grid-layout]]
-            [patterning.complex_elements :as complex_elements]
+            [patterning.library.complex_elements :as complex_elements]
 
             [patterning.color :refer [p-color]]
             [patterning.examples.design_language1 :refer []])  )
 
 ;; Some examples to get you started with Patterning
 
-;; To run these examples, make sure basics.clj is included in core.clj
-;;   (:require [patterning.examples.basics :refer :all])
+;; To run these examples, make sure tutorial.clj is included in core.clj
+;;   (:require [patterning.examples.tutorial :refer :all])
 ;; Then call one of the functions below
 
 

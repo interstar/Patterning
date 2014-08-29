@@ -8,8 +8,8 @@
             [patterning.library.l_systems :refer [l-system]]
             [patterning.color :refer [p-color setup-colors]]
             [patterning.examples.design_language1 :as design-language]
-            [patterning.examples.basics :as basics]
-            [patterning.complex_elements :as complex_elements]
+            [patterning.examples.tutorial :as tutorial]
+            [patterning.library.complex_elements :as complex_elements]
             [patterning.library.symbols :as symbols]
             [patterning.examples.framedplant :as framedplant]
             )  )
@@ -17,9 +17,9 @@
 ; "Interactive" examples ... these are paramaterised shapes designed
 ; to be called from Javascript 
 
-(defn framed_fol [frame-size rotated] (stack basics/m2 (scale 0.7 (symbols/folexample)) )
-  (framed frame-size (repeat (clock-rotate rotated basics/dline))
-           (repeat basics/triangles) (symbols/folexample))
+(defn framed_fol [frame-size rotated] (stack tutorial/m2 (scale 0.7 (symbols/folexample)) )
+  (framed frame-size (repeat (clock-rotate rotated tutorial/dline))
+           (repeat tutorial/triangles) (symbols/folexample))
   )
 
 
@@ -55,11 +55,11 @@
           (grid-layout grid-size (cycle [flower (diamonds shrink)]))))
 
 
-(def tri (over-style {:color (p-color 100 100 255)}  basics/triangles) )
+(def tri (over-style {:color (p-color 100 100 255)}  tutorial/triangles) )
 (defn test2 [grid-size rotates ]
   (stack (checked-layout grid-size
                          (repeat tri )
                          (repeat (diamonds 0.3)))
-         (four-mirror (over-style {:fill (p-color 100 200 150 180)} (clock-rotate rotates basics/dline))))
+         (four-mirror (over-style {:fill (p-color 100 200 150 180)} (clock-rotate rotates tutorial/dline))))
   )
 
