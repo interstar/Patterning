@@ -1,16 +1,25 @@
-(ns patterning.core-test
+(ns patterning.groups-test
   (:require [clojure.test :refer :all]
             [patterning.maths :as maths]
             [patterning.maths :refer [mol= molv=]]
             [patterning.sshapes :as sshapes]
             [patterning.groups :as groups]
-            [patterning.color :as color]
-            [patterning.layouts :as layouts]
-            [patterning.library.l_systems :as l-systems]
-            [patterning.library.turtle :as turtle]
-            [patterning.library.complex_elements :as complex-elements]            
-            [patterning.core :refer :all]))
+))
 
+
+(deftest flatten-group
+  (let [s1 (sshapes/->SShape {} [[0 0] [1 1]])
+        s2 (sshapes/->SShape {} [[2 2] [3 3]])
+        g1 (groups/group s1)
+        g2 (groups/group s1 s2)]
+    (testing "extracting points"
+      (is (= (groups/extract-points s1)
+             [[0 0] [1 1]]  ))
+      (is (= (groups/extract-points  (groups/flatten-group {:color 1} g1))
+             [[0 0] [1 1]]))
+      (is (= (groups/extract-points (groups/flatten-group {:color 2} g2))
+             [[0 0] [1 1] [2 2] [3 3]]) )
+      )))
 
 
 (deftest process
@@ -27,8 +36,6 @@
       (is (mol= (groups/reframe-scaler s1) (/ 2.0 0.6)))
       
      )))
-
-
 
 (deftest filtering
   (let [inside? (fn [[ x y]] (< (+ (* y y) (* x x)) 4 ))
