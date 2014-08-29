@@ -1,6 +1,7 @@
 (ns patterning.groups
   (:require [patterning.maths :as maths] 
-            [patterning.sshapes :as sshapes]))
+            [patterning.sshapes :as sshapes]
+            [clojure.set :refer [union]]))
  
 
 ;; Groups
@@ -38,6 +39,16 @@
   (into [] (map (partial sshapes/add-style style) group)))
 
 (defn extract-points [{:keys [style points]}] points)
+
+(defn style-attribute-set [group attribute]
+  (reduce (fn [atts sshape]
+            (let [style (get sshape :style) ] 
+              (if (contains? style attribute)
+                (conj atts (get style :color) )
+                atts)) )
+          (set []) group) )
+
+(defn color-set [group] (union (style-attribute-set group :color) (style-attribute-set group :fill)))
 
 (defn flatten-group "Flatten all sshapes into a single sshape"
   ([group] (flatten-group {} group))
