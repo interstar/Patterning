@@ -97,13 +97,3 @@
 
 
 
-;; Growth transformations (unfinished)
-
-(defn l-norm [p1 p2] (let [[dx dy] (maths/diff [p1 p2])] (maths/unit [(- dy) dx]) ) )
-(defn r-norm [p1 p2] (maths/rev (l-norm p1 p2)))
-
-(defn add-dots-to-sshape "Adds dots each side of a line. " [args make-spot dist {:keys [style points]}]  
-  (let [segs (maths/line-to-segments points)
-        l-dot (fn [[x1 y1] [x2 y2]] (make-spot   ))]
-    ()))
-
