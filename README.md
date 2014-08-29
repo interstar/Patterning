@@ -23,14 +23,21 @@ To run the REPL.
 ## Examples
 Look in the cljx-src/patterning/examples/ directory for examples
 
-basics.clj gives a guided tour of the basic functions of Patterning 
+tutorial.cljx gives a guided tour of the basic functions of Patterning 
 
-to see each of the examples in action change src/patterning/core.clj 
-so that final-pattern gets one of the patterns defined in basics.clj. 
+to see each of the examples in action change src/patterning/core.clj to assign the pattern that's created to "final-pattern".
+
+For example : 
+
+    (def final-pattern tutorial/triangles)
+
 
 Then re-run with 
 
     lein run
+
+
+See [Alchemy Islands](http://alchemyislands.com) for more examples and discussion of Patterning.
 
 ## License
 
