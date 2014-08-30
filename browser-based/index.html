@@ -15,24 +15,24 @@
     <script type="text/javascript" src="js/main.js"></script>
     <script>
     
-    function recalc(id,size) {
-      var pattern = patterning.examples.interactive.plant(size);
-      var svg = patterning.view.make_svg([-1,-1,1,1],[0,0,400,400],400,400,pattern); 
+    function recalc() {
 
-      var ifrm = document.getElementById(id);
+      pattern = patterning.examples.tutorial.triangles;
+      var svg = patterning.view.make_svg([-1,-1,1,1],[0,0,400,400],400,400,pattern); 
+      console.log(svg);
+      var ifrm = document.getElementById("myIFrame");
       ifrm = (ifrm.contentWindow) ? ifrm.contentWindow :
          (ifrm.contentDocument.document) ? 
             ifrm.contentDocument.document : ifrm.contentDocument;
       ifrm.document.open();
       ifrm.document.write(svg);
       ifrm.document.close();
-      //el.appendChild( document.createElement(svg) );
     }
   
     document.getElementById('size').addEventListener('change',  
-        function() { recalc("myIFrame", document.getElementById('size').value); });
+        function() { recalc(); });
 
-    recalc("myIFrame",7);
+    recalc();
     </script>
 
 </body>

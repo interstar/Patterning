@@ -21,7 +21,7 @@
                  :rules :cljs}]}
 
   :cljsbuild {:builds [{
-                        :source-paths ["src-cljs"]
+                        :source-paths ["target/classes" "src-cljs" ]
                         :compiler { 
                                    :output-to "browser-based/js/main.js"
                                    :optimizations :whitespace
@@ -29,6 +29,7 @@
                         } ]}
 
   :hooks [cljx.hooks leiningen.cljsbuild]
+
   
   :aot [patterning.core]
   :main patterning.core)

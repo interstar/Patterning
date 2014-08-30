@@ -1,6 +1,7 @@
 (ns patterning.core
   (:require [patterning.maths :as maths])
-  (:require [patterning.sshapes :refer [poly ->SShape]])
+  (:require [patterning.sshapes :refer [poly ->SShape ]])
+  (:require [patterning.sshapes :as sshapes])
   
   (:require [patterning.groups :as groups])
   (:require [patterning.layouts :refer [framed clock-rotate stack grid-layout diamond-layout
@@ -19,19 +20,18 @@
   (:require [patterning.examples.interactive :as interactive])
   
   (:require [quil.core :refer :all])
-  (:require [patterning.quil.quilview :refer :all])
-
-  (require  [taoensso.timbre.profiling :as profiling
-             :refer (pspy pspy* profile defnp p p*)])
-  
-  (:gen-class))
+  (:require [patterning.quil.quilview :refer :all]) )
 
 
 ;; +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ;; THIS IS THE CURRENT PATTERN 
 ;; assign to "final-pattern" the result of creating a pattern,
 
-(def final-pattern tutorial/m6)
+(def main (clock-rotate
+           4 (groups/group
+              ( sshapes/drunk-line 10 0.1 {:color (p-color 200 200 100) :stroke-weight 4}))))
+
+(def final-pattern main)
 
 
 (def my-width 700)
