@@ -1,6 +1,7 @@
 (ns patterning.examples.design_language1
   (:require [patterning.maths :as maths] 
-            [patterning.sshapes :refer [add-style poly ->SShape square diamond set-weight set-color drunk-line h-reflect]]  
+            [patterning.sshapes :refer [add-style ->SShape set-weight set-color h-reflect]]
+            [patterning.library.std :refer [poly square diamond drunk-line]]
             [patterning.groups :refer [group rotate stretch scale] ]
             [patterning.groups :as groups]
             [patterning.layouts :refer [clock-rotate nested-stack stack diamond-layout v-mirror random-turn-groups

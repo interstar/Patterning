@@ -1,8 +1,9 @@
 (ns patterning.examples.framedplant
   (:require [patterning.maths :as maths] 
-            [patterning.sshapes :refer [->SShape poly square]]
+            [patterning.sshapes :refer [->SShape ]]
             [patterning.groups :refer [group translate h-reflect reframe scale rotate over-style]]
             [patterning.layouts :refer [stack alt-rows-grid-layout checked-layout framed]]
+            [patterning.library.std :refer [poly square]]
             [patterning.library.turtle :refer [basic-turtle]]
             [patterning.library.l_systems :refer [l-system]]
 

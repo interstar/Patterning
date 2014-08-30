@@ -1,9 +1,10 @@
 (ns patterning.examples.interactive
   (:require [patterning.maths :as maths] 
-            [patterning.sshapes :refer [->SShape poly ]]
+            [patterning.sshapes :refer [->SShape]]
             [patterning.groups :refer [group clip rotate scale translate h-reflect reframe over-style]]
             [patterning.layouts :refer [clock-rotate stack flower-of-life-positions nested-stack 
                                         place-groups-at-positions framed grid-layout checked-layout four-mirror]]
+            [patterning.library.std :refer [poly drunk-line]]
             [patterning.library.turtle :refer [basic-turtle]]
             [patterning.library.l_systems :refer [l-system]]
             [patterning.color :refer [p-color setup-colors]]
@@ -12,6 +13,7 @@
             [patterning.library.complex_elements :as complex_elements]
             [patterning.library.symbols :as symbols]
             [patterning.examples.framedplant :as framedplant]
+
             )  )
 
 ; "Interactive" examples ... these are paramaterised shapes designed
@@ -63,3 +65,8 @@
          (four-mirror (over-style {:fill (p-color 100 200 150 180)} (clock-rotate rotates tutorial/dline))))
   )
 
+
+(def test3 (stack tutorial/m2
+                  (clock-rotate 6 (group (poly 0.3 0.3 0.4 5 {:fill (p-color 120 90 160 100) })))
+                  (clock-rotate 6 (group
+                      ( drunk-line 10 0.1 {:color (p-color 200 200 100) :stroke-weight 4})))))

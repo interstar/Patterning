@@ -1,9 +1,9 @@
 (ns patterning.library.symbols
-  (:require [patterning.maths :as maths] 
-            [patterning.sshapes :refer [->SShape poly ]]
+  (:require [patterning.maths :as maths]
+            [patterning.sshapes :refer [->SShape  ]]
             [patterning.groups :refer [group clip rotate scale]]
             [patterning.layouts :refer [clock-rotate stack flower-of-life-positions place-groups-at-positions framed]]
-            
+            [patterning.library.std :refer [poly]]
             [patterning.library.turtle :refer [basic-turtle]]
            
             [patterning.color :refer [p-color]]

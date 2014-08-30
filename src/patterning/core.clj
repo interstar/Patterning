@@ -1,12 +1,13 @@
 (ns patterning.core
   (:require [patterning.maths :as maths])
-  (:require [patterning.sshapes :refer [poly ->SShape ]])
-  (:require [patterning.sshapes :as sshapes])
+  (:require [patterning.sshapes :refer [->SShape ]])
   
   (:require [patterning.groups :as groups])
   (:require [patterning.layouts :refer [framed clock-rotate stack grid-layout diamond-layout
                                         four-mirror four-round nested-stack checked-layout
                                         half-drop-grid-layout random-turn-groups h-mirror]])
+
+  (:require [patterning.library.std :refer [poly]])
   (:require [patterning.library.turtle :refer [basic-turtle]])
   (:require [patterning.library.complex_elements :refer [vase zig-zag]])
   (:require [patterning.view :refer [make-txpt ]])
@@ -27,11 +28,9 @@
 ;; THIS IS THE CURRENT PATTERN 
 ;; assign to "final-pattern" the result of creating a pattern,
 
-(def main (clock-rotate
-           4 (groups/group
-              ( sshapes/drunk-line 10 0.1 {:color (p-color 200 200 100) :stroke-weight 4}))))
 
-(def final-pattern main)
+
+(def final-pattern interactive/test3)
 
 
 (def my-width 700)

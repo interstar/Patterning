@@ -1,8 +1,9 @@
 (ns patterning.examples.tutorial
-  (:require [patterning.sshapes :refer [->SShape poly bez-curve add-style drunk-line close-shape]] 
+  (:require [patterning.sshapes :refer [->SShape  bez-curve add-style  close-shape]] 
             [patterning.groups :refer [group scale over-style]]
             [patterning.layouts :refer [stack clock-rotate grid-layout checked-layout four-mirror framed
                                         half-drop-grid-layout]]
+            [patterning.library.std :refer [poly drunk-line]]
             [patterning.library.complex_elements :as complex_elements]
 
             [patterning.color :refer [p-color]]

@@ -23,7 +23,7 @@ To run the REPL.
 ## Examples
 Look in the cljx-src/patterning/examples/ directory for examples
 
-tutorial.cljx gives a guided tour of the basic functions of Patterning 
+[The tutorial](http://alchemyislands.com/tutorial/tutorial.html) gives a guided tour of the basic functions of Patterning. The code for this tutorial can be found in examples/tutorial.clj
 
 to see each of the examples in action change src/patterning/core.clj to assign the pattern that's created to "final-pattern".
 
