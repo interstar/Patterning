@@ -52,17 +52,17 @@
 
 (defn face-group "[head, eyes, nose and mouth] each argument is a pair to describe a poly [no-sides color]"
   ( [[ head-sides head-color] [ eye-sides eye-color] [ nose-sides nose-color] [ mouth-sides mouth-color]] 
-      (let [left-eye (sshapes/stretch 1.3 1 (sshapes/add-style { :color eye-color } (std/poly -0.3 -0.1 0.1 eye-sides)))
+      (let [left-eye (sshapes/stretch 1.3 1 (sshapes/add-style { :stroke eye-color } (std/poly -0.3 -0.1 0.1 eye-sides)))
             right-eye (sshapes/h-reflect left-eye)
             ]
                 
-        (groups/group (sshapes/add-style {:color head-color } (std/poly 0 0 0.8 head-sides))
-               (sshapes/stretch 1.3 0.4 (sshapes/add-style {:color mouth-color } (std/poly 0 1.3 0.2 mouth-sides)))
+        (groups/group (sshapes/add-style {:stroke head-color } (std/poly 0 0 0.8 head-sides))
+               (sshapes/stretch 1.3 0.4 (sshapes/add-style {:stroke mouth-color } (std/poly 0 1.3 0.2 mouth-sides)))
                (sshapes/translate 0 0.1
                                   (sshapes/stretch
                                    0.6 1.1
                                    (sshapes/rotate
-                                    (/ maths/PI 2) (sshapes/add-style {:color nose-color } (std/poly 0 0 0.2 nose-sides)))))
+                                    (/ maths/PI 2) (sshapes/add-style {:stroke nose-color } (std/poly 0 0 0.2 nose-sides)))))
                left-eye
                right-eye) ) ) )
 
@@ -78,7 +78,7 @@
 
 (defn zig-zag [[x y]] (turtle/basic-turtle [x y] 0.1 (/ maths/PI 2)
                                       (/ maths/PI 3) "++F-FF+FF-FF+FF-FF+FF-FF+FF-FF+F" {}
-                                      {:color (p-color 150 210 200) :stroke-weight 4}))
+                                      {:stroke (p-color 150 210 200) :stroke-weight 4}))
 
 ;; Scrolls
 

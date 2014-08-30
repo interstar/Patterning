@@ -17,36 +17,36 @@
         ;; TO THE "final-pattern" DEFINITION
 
         
-        square (group  {:style {:fill my-burgundy :color my-cream :stroke-weight 3} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
+        square (group  {:style {:fill my-burgundy :stroke my-cream :stroke-weight 3} :points [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] } )
         
         basic (superimpose-layout  (group                  
                                     (weight-sshape 2 (color-sshape my-red (poly 0 0 0.5 3) ))
                                      (color-sshape my-yellow (poly 0.3 0.6 0.2 7) ) )
-                                     (clock-rotate 6 (group  (add-style {:color my-purple :stroke-weight 2 } (poly (- 0.3) (- 0.5) 0.3 4) )))
+                                     (clock-rotate 6 (group  (add-style {:stroke my-purple :stroke-weight 2 } (poly (- 0.3) (- 0.5) 0.3 4) )))
                                     )
         cross ( rotate-group (- (rand (/ PI 2)) (/ PI 4)) ( cross-group my-green 0 0))
         blue-cross (rotate-group (- (rand (/ PI 2)) (/ PI 4)) (cross-group (color 100 100 200) 0 0)) 
-        clock (clock-rotate 12 (group  (add-style {:color my-yellow :stroke-weight 2 :fill my-green} (poly (rand 1) (rand 1)  0.12 4))
-                                       (add-style {:color my-red :fill my-blue :stroke-weight 3 } (drunk-line 9 0.2))))
-        flake (spoke-flake-group {:color my-orange :stroke-weight 1 })
+        clock (clock-rotate 12 (group  (add-style {:stroke my-yellow :stroke-weight 2 :fill my-green} (poly (rand 1) (rand 1)  0.12 4))
+                                       (add-style {:stroke my-red :fill my-blue :stroke-weight 3 } (drunk-line 9 0.2))))
+        flake (spoke-flake-group {:stroke my-orange :stroke-weight 1 })
         face (scale-group 0.8 (face-group [20 my-burgundy] [5 my-blue] [3 my-purple]  [8 my-red]))
         
-        red-ball (group (add-style {:color my-red :stroke-weight 2} (poly 0 -0.82 0.05 3)))
+        red-ball (group (add-style {:stroke my-red :stroke-weight 2} (poly 0 -0.82 0.05 3)))
 
-        half-bird (sshape {:color my-purple :stroke-weight 2} [[0 0] [0.4 (- 0.2)] [0.8 (- 0.3)]])
+        half-bird (sshape {:stroke my-purple :stroke-weight 2} [[0 0] [0.4 (- 0.2)] [0.8 (- 0.3)]])
         bird (group half-bird (h-reflect-sshape half-bird ))
 
         
         test-shape (stack
                     (group
-                     ;(add-style {:color my-cream :fill my-burgundy :stroke-weight 3} (poly 0 0 0.8 3))  
-                           (zig-zag-sshape 4 {:color my-blue :stroke-weight 3} )                   
-                           ;;                   (rotate-sshape (/ PI 2)  (stretch-sshape 1 0.5 (h-sin-sshape {:color my-pink :stroke-weight 1})))
-                           ;;                     (sshape {:color (color 100 100 200) :fill my-green} [[-1 -1] [1 -1] [1 1] [-1 -1]] )
-                           ;;                     (random-rect {:color (color 50 100 100)})
-                           ;;                    (random-rect {:color (color 150 100 0) :fill (color 200 220 150 180)})
+                     ;(add-style {:stroke my-cream :fill my-burgundy :stroke-weight 3} (poly 0 0 0.8 3))  
+                           (zig-zag-sshape 4 {:stroke my-blue :stroke-weight 3} )                   
+                           ;;                   (rotate-sshape (/ PI 2)  (stretch-sshape 1 0.5 (h-sin-sshape {:stroke my-pink :stroke-weight 1})))
+                           ;;                     (sshape {:stroke (color 100 100 200) :fill my-green} [[-1 -1] [1 -1] [1 1] [-1 -1]] )
+                           ;;                     (random-rect {:stroke (color 50 100 100)})
+                           ;;                    (random-rect {:stroke (color 150 100 0) :fill (color 200 220 150 180)})
                            )
-                    (clock-rotate 3 (group  (sshape {:color my-green :stroke-weight 3} [[0 0] [(-  0.25) (- 1)]]) ))
+                    (clock-rotate 3 (group  (sshape {:stroke my-green :stroke-weight 3} [[0 0] [(-  0.25) (- 1)]]) ))
                     )
         test2 (superimpose-layout square test-shape)
 
@@ -58,7 +58,7 @@
         
 
         
-        complex-square (nested-stack [{:color my-red} {:color my-blue} {:color my-pink} {:color my-cream}]
+        complex-square (nested-stack [{:stroke my-red} {:stroke my-blue} {:stroke my-pink} {:stroke my-cream}]
                                      square (fn [x] (- x 0.2)))
 
         complex-ogee (nested-stack (mod-styles color-to-fill (color-seq (take 5 (cycle [my-purple my-blue my-green]))))
@@ -70,11 +70,11 @@
                                     (ogee-group 0.1 3 {:stroke-weight 2})
                                     (fn [x] (- x 0.2)))
 
-        my-style {:color (color 0) :stroke-weight 1}
+        my-style {:stroke (color 0) :stroke-weight 1}
 
-        half (group (sshape {:fill my-black :color my-black} [[-1 -1] [1 1] [1 -1]]) )
+        half (group (sshape {:fill my-black :stroke my-black} [[-1 -1] [1 1] [1 -1]]) )
 
-        pink-tile (stack complex-diamond (group ( sshape {:color my-blue :stroke-weight 5} [[0 0] [0 1] ])))
+        pink-tile (stack complex-diamond (group ( sshape {:stroke my-blue :stroke-weight 5} [[0 0] [0 1] ])))
         
         edge (rotate-group (half-PI) (stretch-group 0.7 1 pink-tile))
 
@@ -89,7 +89,7 @@
 
 
         
-        sys-g1 (basic-turtle [0 0] 0.1 0 (/ PI 3) (system-1 3 "F") {} {:color my-purple  :stroke-weight 2} )
+        sys-g1 (basic-turtle [0 0] 0.1 0 (/ PI 3) (system-1 3 "F") {} {:stroke my-purple  :stroke-weight 2} )
 
 
         inner (stack (reframe-group sys-g1)
@@ -137,8 +137,8 @@
         
         final-pattern3 ( superimpose-layout 
                          (checked-layout 4 (cycle [blue-cross (four-round test2)]) (repeat flake))
-                         (alt-rows-grid-layout 4 (repeat  (polyflower-group 3 4 0.75 {:color my-green :fill (color 100 255 100 100)}))
-                                               (repeat (add-style {:color my-red} ( drunk-line 10 0.3)) ) ))
+                         (alt-rows-grid-layout 4 (repeat  (polyflower-group 3 4 0.75 {:stroke my-green :fill (color 100 255 100 100)}))
+                                               (repeat (add-style {:stroke my-red} ( drunk-line 10 0.3)) ) ))
 
 
         
@@ -146,7 +146,7 @@
                          (alt-rows-grid-layout
                           2 (repeat  test-shape)
                           (repeat (checked-layout 3 (cycle [flake
-                                                            (polyflower-group 3 5 0.7 {:color my-pink}) face ])
+                                                            (polyflower-group 3 5 0.7 {:stroke my-pink}) face ])
                                                   (random-turn-groups (cycle  [(four-mirror  blue-cross) clock] ))
                                                   )))) 
         

@@ -41,7 +41,7 @@
                  (cons s1 (cons "C" (mapcat bezify (rest points) )))
                  (cons s1 (mapcat linify (rest points)))
                  )
-        col (if (contains? style :color) (color-to-web (get style :color)) (color-to-web (p-color 0)) )
+        col (if (contains? style :stroke) (color-to-web (get style :stroke)) (color-to-web (p-color 0)) )
         fill (str "fill=\""  (if (contains? style :fill)
                                (color-to-web (get style :fill))
                                "none")

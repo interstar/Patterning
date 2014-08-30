@@ -30,7 +30,7 @@
 (defn draw-it [da]
   (basic-turtle [0 0] 0.1 (/ maths/PI -2) (/ maths/PI da) (l-sys 4 "F")
                 {\Z (fn [x y a] (let [] ( group (poly x y 0.05 8 {:fill design-language/my-red}))))}
-                {:color design-language/my-green :stroke-weight 2}  ))
+                {:stroke design-language/my-green :stroke-weight 2}  ))
 
 (defn _spray [da] (translate -0.6 0 (h-reflect (reframe (draw-it da)))))
 (def spray (memoize _spray))
@@ -48,7 +48,7 @@
 
 (def diamonds (memoize _diamonds))
 
-(def flower (over-style {:color (p-color 240 200 180)
+(def flower (over-style {:stroke (p-color 240 200 180)
                          :fill (p-color 200 150 100)} design-language/flower ))
 
  
@@ -57,7 +57,7 @@
           (grid-layout grid-size (cycle [flower (diamonds shrink)]))))
 
 
-(def tri (over-style {:color (p-color 100 100 255)}  tutorial/triangles) )
+(def tri (over-style {:stroke (p-color 100 100 255)}  tutorial/triangles) )
 (defn test2 [grid-size rotates ]
   (stack (checked-layout grid-size
                          (repeat tri )
@@ -69,4 +69,4 @@
 (def test3 (stack tutorial/m2
                   (clock-rotate 6 (group (poly 0.3 0.3 0.4 5 {:fill (p-color 120 90 160 100) })))
                   (clock-rotate 6 (group
-                      ( drunk-line 10 0.1 {:color (p-color 200 200 100) :stroke-weight 4})))))
+                      ( drunk-line 10 0.1 {:stroke (p-color 200 200 100) :stroke-weight 4})))))

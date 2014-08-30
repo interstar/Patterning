@@ -20,7 +20,7 @@
 
 ;; 5 triangles in a ring
 ;; ---------------------
-(def red-style {:color (p-color 255 100 100) :stroke-weight 2 })
+(def red-style {:stroke (p-color 255 100 100) :stroke-weight 2 })
 
 ;; poly creates a polygon, the arguments are x-centre, y-centre, radius,
 ;;number-of-sides, style
@@ -30,7 +30,7 @@
 ;; Stack 5 triangles on a blue pentagon
 ;; ------------------------------------
 
-(def blue-style {:color (p-color 200 200 255)  :stroke-weight 3})
+(def blue-style {:stroke (p-color 200 200 255)  :stroke-weight 3})
 (def pentagon (group (poly 0 0 0.7 5 blue-style)))
 (def pen-tri (stack pentagon triangles))
 
@@ -48,7 +48,7 @@
 ;; (drunk-line 10 0.1)
 
 ;; BUT drunk-lines come unstyled, so we need to add a style to it
-(def dline (group  (add-style {:color (p-color 100 255 100) :stroke-weight 3} (drunk-line 10 0.1)))  )
+(def dline (group  (add-style {:stroke (p-color 100 255 100) :stroke-weight 3} (drunk-line 10 0.1)))  )
 
 ;; Why do we want a random wiggle? Well, they look a lot cooler when
 ;; we do some more things to them
@@ -79,14 +79,14 @@
 ;; OK. So that's line for you, but what about something smoother?
 ;; Bezier curves? We got 'em
 
-(def orange-style  {:color (p-color 255 128 64) :stroke-weight 4})
+(def orange-style  {:stroke (p-color 255 128 64) :stroke-weight 4})
 (def bez1 (group (bez-curve orange-style [[-0.9 0] [0.8 0.8] [-0.5 -0.8] [0.6 -0.5]])))
 
 ;; Perhaps that would makethe corners of a nice frame
 (def frame-it (framed 6 (repeat bez1)
                       (repeat
                        (stack (group (->SShape orange-style [[-0.5 -1] [-0.5 1]]))
-                              (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :color (p-color 255 255 200)}))) )
+                              (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :stroke (p-color 255 255 200)}))) )
                       dl-clock ))
 
 ;; framed takes three arguments, a list of corner pieces (which it
@@ -98,7 +98,7 @@
 (def multi-frame
   (let [edge
         (stack (group (->SShape orange-style [[-0.5 -1] [-0.5 1]]))
-               (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :color (p-color 255 255 200)}))) ]
+               (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :stroke (p-color 255 255 200)}))) ]
     (framed 6 (repeat bez1)
             (repeat edge)
             frame-it)))

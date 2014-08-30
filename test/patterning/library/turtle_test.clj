@@ -41,8 +41,8 @@
       )
 
     (testing "string to group"
-      (is (= (turtle/basic-turtle [0 0] 0.1 0 0 "F" {} {:color "red"})
-             [(sshapes/->SShape {:color "red"} [[0 0] [0.1 0.0]])]))
+      (is (= (turtle/basic-turtle [0 0] 0.1 0 0 "F" {} {:stroke "red"})
+             [(sshapes/->SShape {:stroke "red"} [[0 0] [0.1 0.0]])]))
       
       (let [stg (turtle/basic-turtle [0 0] 0.1 0 1.5707963705062866 "F+F" {} {} )
             ps (get (first stg) :points)] 

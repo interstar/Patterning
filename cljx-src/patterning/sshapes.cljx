@@ -70,7 +70,7 @@
 
 ;; Adding styles to sshapes
 (defn add-style [new-style {:keys [style points]} ] {:points points :style (conj style new-style)})
-(defn set-color "Give new color to a sshape " [c sshape] (add-style {:color c} sshape))
+(defn set-color "Give new color to a sshape " [c sshape] (add-style {:stroke c} sshape))
 (defn set-weight "Give new strokeWeight to a sshape" [weight sshape] (add-style {:stroke-weight weight} sshape))
 (defn set-fill "Give a fill-color to a sshape" [fill sshape] (add-style {:fill fill} sshape))
 (defn hide "Keep this sshape in the pattern but disable it from rendering" [sshape] (add-style {:hidden true} sshape))

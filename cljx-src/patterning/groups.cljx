@@ -44,11 +44,11 @@
   (reduce (fn [atts sshape]
             (let [style (get sshape :style) ] 
               (if (contains? style attribute)
-                (conj atts (get style :color) )
+                (conj atts (get style :stroke) )
                 atts)) )
           (set []) group) )
 
-(defn color-set [group] (union (style-attribute-set group :color) (style-attribute-set group :fill)))
+(defn color-set [group] (union (style-attribute-set group :stroke) (style-attribute-set group :fill)))
 
 (defn flatten-group "Flatten all sshapes into a single sshape"
   ([group] (flatten-group {} group))

@@ -18,7 +18,7 @@
   (if (sshapes/hidden? sshape) ()
       (let [tsshape (transformed-sshape txpt sshape)]    
         (push-style)
-        (if (contains? style :color) (stroke  (mk-color (get style :color))))
+        (if (contains? style :stroke) (stroke  (mk-color (get style :stroke))))
         (if (contains? style :fill) (fill (mk-color (get style :fill))))
         (if (contains? style :stroke-weight) (stroke-weight (get style :stroke-weight)))
         (if (contains? style :bezier)

@@ -15,9 +15,9 @@
     (testing "extracting points"
       (is (= (groups/extract-points s1)
              [[0 0] [1 1]]  ))
-      (is (= (groups/extract-points  (groups/flatten-group {:color 1} g1))
+      (is (= (groups/extract-points  (groups/flatten-group {:stroke 1} g1))
              [[0 0] [1 1]]))
-      (is (= (groups/extract-points (groups/flatten-group {:color 2} g2))
+      (is (= (groups/extract-points (groups/flatten-group {:stroke 2} g2))
              [[0 0] [1 1] [2 2] [3 3]]) )
       )))
 

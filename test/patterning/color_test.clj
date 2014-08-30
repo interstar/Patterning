@@ -7,18 +7,18 @@
   (let []
     (testing "color sequence"
       (is (= (color/color-seq ["red" "blue"])
-             (list {:color "red"} {:color "blue"}) ))
+             (list {:stroke "red"} {:stroke "blue"}) ))
       )
     (testing "color to fill"
-      (is (= (color/color-to-fill {:color "red" :other "blah"})
-             {:color "red" :fill "red" :other "blah"} ) ))
+      (is (= (color/color-to-fill {:stroke "red" :other "blah"})
+             {:stroke "red" :fill "red" :other "blah"} ) ))
     
     (testing "setup-colors"
-      (is (= ( ( color/edge-col "red") {:color "green"})
-             {:color "red" :fill "green"} ))
+      (is (= ( ( color/edge-col "red") {:stroke "green"})
+             {:stroke "red" :fill "green"} ))
       
       (is (= (color/setup-colors ["red" "blue"] "black")
-             (list {:fill "red" :color "black"} {:fill "blue" :color "black"}) )))
+             (list {:fill "red" :stroke "black"} {:fill "blue" :stroke "black"}) )))
     ))
 
 

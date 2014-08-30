@@ -30,7 +30,7 @@
       ([style] (ringed-flower-of-life 80 style ) ))
 
 (defn god-pattern []
-  (let [s {:color (p-color 0 0 0) :stroke-weight 2}
+  (let [s {:stroke (p-color 0 0 0) :stroke-weight 2}
         for-x (fn [x a d] (+ x (* d (maths/cos a))) )
         for-y (fn [y a d] (+ y (* d (maths/sin a))) )
         sq (* 0.1 (Math/sqrt 5))
@@ -45,4 +45,4 @@
 
 ;; example that can be called from javascript
 (defn folexample []
-  (scale 0.8 (ringed-flower-of-life 70 {:color (p-color 200 150 255)  :stroke-weight 3})))
+  (scale 0.8 (ringed-flower-of-life 70 {:stroke (p-color 200 150 255)  :stroke-weight 3})))
