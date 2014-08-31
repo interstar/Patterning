@@ -9,21 +9,6 @@
             [patterning.color :refer [p-color]]))
 
 
-;; Complex patterns made as groups (these have several disjoint sshapes)
-
-(defn cross-group "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
-  [color x y] (groups/group (sshapes/set-color color (std/horizontal-line y)) (sshapes/set-color color (std/vertical-line  x)))  )
-
-
-(defn ogee-group "An ogee shape" [resolution stretch style]
-  (let [o-group (into [] (layouts/four-mirror (groups/group ( std/ogee resolution stretch style))))        
-        o0 (get (get o-group 0) :points)
-        o1 (get (get o-group 1) :points)
-        o2 (get (get o-group 2) :points)
-        o3 (get (get o-group 3) :points)
-        top (tie-together o0 o1)
-        bottom (tie-together o2 o3) ]
-    (groups/group (->SShape style ( tie-together top bottom))) )  )
 
 (defn spoke-flake-group "The thing from my 'Bouncing' Processing sketch"
   [style]

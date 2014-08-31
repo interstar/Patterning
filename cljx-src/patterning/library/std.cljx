@@ -1,8 +1,8 @@
 (ns patterning.library.std
   (:require [patterning.maths :as maths]
-            [patterning.sshapes :refer [rotate-shape close-shape ->SShape ]]
+            [patterning.sshapes :refer [rotate-shape close-shape ->SShape set-color tie-together ]]
             [patterning.groups :refer [group]]
-            [patterning.layouts :refer [stack]])
+            [patterning.layouts :refer [stack four-mirror]])
   (#+clj :require #+cljs :require-macros 
          [patterning.macros :refer [optional-styled-primitive]])
   )
@@ -48,7 +48,7 @@
 
 (def diamond (optional-styled-primitive [] (close-shape [[-1 0] [0 -1] [1 0] [0 1]] )))
 
-(def ogee (optional-styled-primitive [resolution stretch]
+(def quarter-ogee (optional-styled-primitive [resolution stretch]
                                      (let [ogee (fn [x] (/ x (maths/sqrt (+ 1 (* x x)))))
                                            points (into []
                                                         (map (fn [x] [x (ogee (* stretch x))])
@@ -56,6 +56,28 @@
                                        (rotate-shape (/ maths/PI 2) points)   ) ))
 
 
+
+;; Complex patterns made as groups (these have several disjoint sshapes)
+
+(defn cross "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
+  [color x y] (group (set-color color (horizontal-line y)) (set-color color (vertical-line  x)))  )
+
+
+(defn ogee "An ogee shape" [resolution stretch style]
+  (let [o-group (into [] (four-mirror (group (quarter-ogee resolution stretch style))))        
+        o0 (get (get o-group 0) :points)
+        o1 (get (get o-group 1) :points)
+        o2 (get (get o-group 2) :points)
+        o3 (get (get o-group 3) :points)
+        top (tie-together o0 o1)
+        bottom (tie-together o2 o3) ]
+    (group (->SShape style ( tie-together top bottom))) )  )
+
+
+
+
+
+;; Others
 (defn background [color pattern]
   (stack (group (square {:fill color}))
          pattern))

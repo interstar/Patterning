@@ -29,8 +29,7 @@
 ;; assign to "final-pattern" the result of creating a pattern,
 
 
-
-(def final-pattern interactive/test3)
+(def final-pattern interactive/test4)
 
 
 (def my-width 700)

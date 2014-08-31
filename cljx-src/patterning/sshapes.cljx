@@ -61,7 +61,7 @@
 
 ;; SShape (styled shape)
 ;; SShape, is a shape with a style attached ({:points points :style style}
-;; style is a dictionary of style hints eg. color
+;; style is a dictionary of style hints eg. stroke, fill and stroke-weight
 
 (defrecord SShape [style points])
 

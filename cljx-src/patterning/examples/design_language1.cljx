@@ -1,21 +1,25 @@
 (ns patterning.examples.design_language1
   (:require [patterning.maths :as maths] 
             [patterning.sshapes :refer [add-style ->SShape set-weight set-color h-reflect]]
-            [patterning.library.std :refer [poly square diamond drunk-line]]
+            [patterning.library.std :refer [poly square diamond drunk-line cross ogee]]
             [patterning.groups :refer [group rotate stretch scale] ]
             [patterning.groups :as groups]
             [patterning.layouts :refer [clock-rotate nested-stack stack diamond-layout v-mirror random-turn-groups
                                         superimpose-layout half-drop-grid-layout framed random-grid-layout four-round
                                         alt-rows-grid-layout checked-layout four-mirror grid-layout ]]
-            [patterning.library.complex_elements :refer [petal-pair-group cross-group spoke-flake-group
-                                                         face-group ogee-group polyflower-group]]
+            [patterning.library.complex_elements :refer [petal-pair-group  spoke-flake-group
+                                                         face-group polyflower-group]]
 
             [patterning.color :refer [p-color setup-colors mod-styles color-to-fill color-seq]])  
   )
 
+;; ELEMENTS I'M USING TO MAKE PATTERNS. IF YOU WANT TO START
+;; WITH YOUR OWN "DESIGN LANGUAGE" YOU CAN KILL ALL THESE 
+
+
 
 ;; The palette
-(def x 4)
+
 (def my-green (p-color 100 250 130 ))
 (def my-purple (p-color 150 100 200))
 (def my-blue (p-color 100 100 255 ))
@@ -65,7 +69,7 @@
   ([] (complex-ogee (take 5 (cycle [my-purple my-blue my-green])) ) )
   ([colours] 
      (nested-stack (mod-styles color-to-fill (color-seq colours))
-                   (ogee-group 0.1 3 {:stroke-weight 2})
+                   (ogee 0.1 3 {:stroke-weight 2})
                    (fn [x] (- x 0.2)))))
 
 
@@ -76,9 +80,6 @@
 (defn dl []
   (let [
         
-        ;; ELEMENTS I'M USING TO MAKE PATTERNS. IF YOU WANT TO START
-        ;; WITH YOUR OWN "DESIGN LANGUAGE" YOU CAN KILL ALL THESE UP
-        ;; TO THE "final-pattern" DEFINITION
 
         
 
@@ -90,8 +91,8 @@
                                                  (group (add-style
                                                          {:stroke my-purple :stroke-weight 2 } (poly (- 0.3) (- 0.5) 0.3 4) )))
                                     )
-        cross ( rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross-group my-green 0 0))
-        blue-cross (rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross-group (p-color 100 100 200) 0 0)) 
+        a-cross ( rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross my-green 0 0))
+        blue-cross (rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross (p-color 100 100 200) 0 0)) 
         clock (clock-rotate 12 (group
                                 (add-style {:stroke my-yellow :stroke-weight 2 :fill my-green}
                                                    (poly (rand 1) (rand 1)  0.12 4))
@@ -117,7 +118,7 @@
 
 
         complex-ogee2 (nested-stack ( color-seq (take 5 (cycle [my-purple my-red my-pink])))
-                                    (ogee-group 0.1 3 {:stroke-weight 2})
+                                    (ogee 0.1 3 {:stroke-weight 2})
                                     (fn [x] (- x 0.2)))
 
         my-style {:stroke (p-color 0) :stroke-weight 1}
@@ -134,7 +135,7 @@
         
         
         final-pattern8 (diamond-layout 7 (cycle [ (groups/scale 0.9  (clock-rotate 3  (v-mirror complex-diamond)))
-                                                  complex-ogee cross flake clock ]) )
+                                                  complex-ogee a-cross flake clock ]) )
 
 
 

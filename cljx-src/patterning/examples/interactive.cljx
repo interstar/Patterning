@@ -2,9 +2,9 @@
   (:require [patterning.maths :as maths] 
             [patterning.sshapes :refer [->SShape]]
             [patterning.groups :refer [group clip rotate scale translate h-reflect reframe over-style]]
-            [patterning.layouts :refer [clock-rotate stack flower-of-life-positions nested-stack 
+            [patterning.layouts :refer [clock-rotate stack flower-of-life-positions nested-stack diamond-layout
                                         place-groups-at-positions framed grid-layout checked-layout four-mirror]]
-            [patterning.library.std :refer [poly drunk-line]]
+            [patterning.library.std :refer [poly drunk-line ogee]]
             [patterning.library.turtle :refer [basic-turtle]]
             [patterning.library.l_systems :refer [l-system]]
             [patterning.color :refer [p-color setup-colors]]
@@ -69,4 +69,22 @@
 (def test3 (stack tutorial/m2
                   (clock-rotate 6 (group (poly 0.3 0.3 0.4 5 {:fill (p-color 120 90 160 100) })))
                   (clock-rotate 6 (group
-                      ( drunk-line 10 0.1 {:stroke (p-color 200 200 100) :stroke-weight 4})))))
+                                   ( drunk-line 10 0.1 {:stroke (p-color 200 200 100) :stroke-weight 4})))))
+
+(def previous (rotate (/ maths/PI 2)
+                      (stack
+                       (clock-rotate 6 (group (poly 0.65 0 0.25 6
+                                                    {:fill (p-color 100 90 200 100)
+                                                     :stroke (p-color 100 90 200)
+                                                     :stroke-weight 3})))
+                       (clock-rotate 6 (group
+                                        ( drunk-line 10 0.1
+                                                     {:stroke (p-color 240 200 100)
+                                                      :fill (p-color 230 150 100 100)
+                                                      :stroke-weight 4}))))))
+
+
+(def test4 (stack (diamond-layout 5
+                         (repeat (design-language/complex-ogee
+                                  [(p-color 255) (p-color 180) (p-color 120) (p-color 60) (p-color 0)]) ) )
+                  previous))
