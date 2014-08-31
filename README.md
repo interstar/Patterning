@@ -43,4 +43,5 @@ See [Alchemy Islands](http://alchemyislands.com) for more examples and discussio
 
 Copyright © 2014 Phil Jones
 
-Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
+Distributed under the [Gnu Affero General Public License](http://www.gnu.org/licenses/agpl.html) 
+either version 3.0 or (at your option) any later version.
