@@ -1,7 +1,7 @@
 (ns patterning.library.turtle-test
   (:require [clojure.test :refer :all]
             [patterning.maths :as maths]
-            [patterning.maths :refer [mol= molv=]]
+            [patterning.maths :refer [mol= molp=]]
             [patterning.sshapes :as sshapes]
             [patterning.groups :as groups]
             [patterning.color :as color]
@@ -59,7 +59,7 @@
             ps (get (first stg) :points)]
         (is (= (first ps) [0 0]))
         (is (= (get ps 1) [0.1 0.0]))
-        (is (molv= (get ps 2) [0.1  0.1]))
+        (is (molp= (get ps 2) [0.1  0.1]))
         )
       
     (let [leaf (fn [x y a] (let [] (println "in leaf function") (groups/group ( sshapes/->SShape {} [[-10 -10]]))))

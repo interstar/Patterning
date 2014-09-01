@@ -1,7 +1,7 @@
 (ns patterning.groups-test
   (:require [clojure.test :refer :all]
             [patterning.maths :as maths]
-            [patterning.maths :refer [mol= molv=]]
+            [patterning.maths :refer [mol= molp=]]
             [patterning.sshapes :as sshapes]
             [patterning.groups :as groups]
 ))
