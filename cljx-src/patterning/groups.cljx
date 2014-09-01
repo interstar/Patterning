@@ -96,3 +96,8 @@
   [p? group] (mapcat (partial clip-sshape p?) group) )
 
 
+(defn mol= "more or less equal groups"
+  [group1 group2]
+  (if (not= (count group1) (count group2)) false 
+      (let [ssmol= (fn [[ss1 ss2]] (sshapes/mol= ss1 ss2))]    
+        (every? ssmol= (map vector group1 group2) )))  )

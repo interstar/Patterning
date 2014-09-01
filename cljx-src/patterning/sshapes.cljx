@@ -57,7 +57,13 @@
 
 (defn filter-shape [f? ps] (filter f? ps))
 
-
+(defn mol=shapes "more or less equal shapes"
+  [shape1 shape2] (cond (and (empty? shape1) (empty? shape2)) true
+                        (not= (count shape1) (count shape2)) false
+                        :else
+                      (and 
+                       (maths/molp= (first shape1) (first shape2))
+                       (mol=shapes (rest shape1) (rest shape2)))  ))
 
 ;; SShape (styled shape)
 ;; SShape, is a shape with a style attached ({:points points :style style}
@@ -106,3 +112,6 @@
 (defn ss-filter [p? {:keys [style, points]}] (->SShape style (filter-shape p? points)))
 
 
+(defn mol= "more or less equal sshapes"
+  [sshape1 sshape2] (and (= (get sshape1 :style) (get sshape2 :style) )
+                         (mol=shapes (get sshape1 :points) (get sshape2 :points))) )

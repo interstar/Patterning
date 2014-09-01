@@ -6,6 +6,18 @@
             [patterning.groups :as groups]
 ))
 
+(deftest more-or-less-equal-groups
+  (let [g1 (groups/group (sshapes/->SShape {} [[0 0] [1 1]] ))
+        g2 (groups/group (sshapes/->SShape {} [[0 0] [2 2]]))]
+    (testing "more or less equal groups"
+      (is (true? (groups/mol= (groups/empty-group) (groups/empty-group))))
+      (is (false? (groups/mol= (groups/empty-group) g1) ))
+      (is (false? (groups/mol= g1 g2)))
+      (is (true? (groups/mol= g1 g1)))
+      )
+    )
+  )
+
 
 (deftest flatten-group
   (let [s1 (sshapes/->SShape {} [[0 0] [1 1]])
