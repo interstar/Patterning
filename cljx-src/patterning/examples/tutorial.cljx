@@ -25,7 +25,7 @@
 ;; poly creates a polygon, the arguments are x-centre, y-centre, radius,
 ;;number-of-sides, style
 
-(def triangles (clock-rotate 5  (poly 0.5 0.5 0.3 3 red-style) ) )
+(def triangles (clock-rotate 5 (poly 0.5 0.5 0.3 3 red-style) ) )
 
 ;; Stack 5 triangles on a blue pentagon
 ;; ------------------------------------
@@ -47,7 +47,6 @@
 ;; We have a function for that, 10 steps, each of length 0.1
 ;; (drunk-line 10 0.1)
 
-;; BUT drunk-lines come unstyled, so we need to add a style to it
 (def dline 
   (drunk-line 10 0.1 {:stroke (p-color 100 255 100) :stroke-weight 3})  )
 
