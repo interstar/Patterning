@@ -28,7 +28,6 @@
 
 ;; SVG generation
 
-
 (defn sshape-to-SVG-path [txpt sshape]
   (let [linify (fn [[x y]] (str " L " x " " y))
         bezify (fn [[x y]] (str x " " y " " ))

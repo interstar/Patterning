@@ -21,7 +21,7 @@
 (def l-system-2  (l-system [["F" "F[+F]F[-F][GF]"] ["G" "H"] ["H" "IZ"] ]))
         
 (defn sys-g2 [] (basic-turtle [0 0] 0.1 (/ maths/PI -2) (/ maths/PI 9) (l-system-2 4 "F")
-                          {\Z (fn [x y a] (let [] ( group (poly x y 0.05 8 {:fill design-language/my-red}))))}
+                              {\Z (fn [x y a] (let [] (poly x y 0.05 8 {:fill design-language/my-red})))}
                           {:stroke design-language/my-green :stroke-weight 2}  ))
 
 (defn sprey [] (translate -0.6 0 (h-reflect (reframe (sys-g2))))) 

@@ -25,13 +25,13 @@
 ;; poly creates a polygon, the arguments are x-centre, y-centre, radius,
 ;;number-of-sides, style
 
-(def triangles (clock-rotate 5 (group ( poly 0.5 0.5 0.3 3 red-style) )) )
+(def triangles (clock-rotate 5  (poly 0.5 0.5 0.3 3 red-style) ) )
 
 ;; Stack 5 triangles on a blue pentagon
 ;; ------------------------------------
 
 (def blue-style {:stroke (p-color 200 200 255)  :stroke-weight 3})
-(def pentagon (group (poly 0 0 0.7 5 blue-style)))
+(def pentagon (poly 0 0 0.7 5 blue-style))
 (def pen-tri (stack pentagon triangles))
 
 ;; Let's make a grid of these
@@ -48,7 +48,8 @@
 ;; (drunk-line 10 0.1)
 
 ;; BUT drunk-lines come unstyled, so we need to add a style to it
-(def dline (group  (add-style {:stroke (p-color 100 255 100) :stroke-weight 3} (drunk-line 10 0.1)))  )
+(def dline 
+  (drunk-line 10 0.1 {:stroke (p-color 100 255 100) :stroke-weight 3})  )
 
 ;; Why do we want a random wiggle? Well, they look a lot cooler when
 ;; we do some more things to them
@@ -86,7 +87,7 @@
 (def frame-it (framed 6 (repeat bez1)
                       (repeat
                        (stack (group (->SShape orange-style [[-0.5 -1] [-0.5 1]]))
-                              (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :stroke (p-color 255 255 200)}))) )
+                              (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :stroke (p-color 255 255 200)})) )
                       dl-clock ))
 
 ;; framed takes three arguments, a list of corner pieces (which it
@@ -98,7 +99,7 @@
 (def multi-frame
   (let [edge
         (stack (group (->SShape orange-style [[-0.5 -1] [-0.5 1]]))
-               (group (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :stroke (p-color 255 255 200)}))) ]
+               (poly -0.8 0 0.1 12 {:fill (p-color 100 100 255) :stroke (p-color 255 255 200)})) ]
     (framed 6 (repeat bez1)
             (repeat edge)
             frame-it)))

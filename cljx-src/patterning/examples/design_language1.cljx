@@ -33,9 +33,12 @@
 (def my-black (p-color 0))        
 
 
-(def simple-clock (clock-rotate 8 (group (add-style {:stroke my-orange :fill my-cream :stroke-weight 1 } (poly 0.5 0 0.2 8)))))
+(def simple-clock (clock-rotate 8 (poly 0.5 0 0.2 8
+                                        {:stroke my-orange
+                                         :fill my-cream
+                                         :stroke-weight 1 })))
         
-(def simple-diamond (group (diamond {:stroke my-red :stroke-weight 2})))
+(def simple-diamond  (diamond {:stroke my-red :stroke-weight 2}))
 
 (def flower-style {:stroke my-orange :stroke-weight 3  :bezier true})        
 (def flower (clock-rotate 5 (stack (petal-pair-group flower-style 0.5 0.7) )))
@@ -58,9 +61,10 @@
 
 (def corner (rotate maths/q-PI edge))
 
-(def red-ball (groups/group (add-style {:stroke my-red :fill my-red :stroke-weight 2} (poly 0 -0.82 0.3 8 ))))
+(def red-ball 
+  (poly 0 -0.82 0.3 8 {:stroke my-red :fill my-red :stroke-weight 2} ))
 
-(def tri (groups/group (poly 0 0 0.7 3 {:stroke (p-color 240 200 170)})))
+(def tri (poly 0 0 0.7 3 {:stroke (p-color 240 200 170)}))
 (def star (stack tri (groups/rotate maths/PI tri)))
 (def emp (groups/empty-group))
 (def star-band (grid-layout 7 (cycle [emp emp emp star emp emp emp])))
@@ -84,19 +88,18 @@
         
 
         
-        basic (superimpose-layout  (group                  
-                                    (set-weight 2 (set-color my-red (poly 0 0 0.5 3) ))
-                                     (set-color my-yellow (poly 0.3 0.6 0.2 7) ) )
-                                   (clock-rotate 6
-                                                 (group (add-style
-                                                         {:stroke my-purple :stroke-weight 2 } (poly (- 0.3) (- 0.5) 0.3 4) )))
-                                    )
+        basic (superimpose-layout  (stack
+                                    (poly 0 0 0.5 3 {:stroke my-red :stroke-weight 2}) 
+                                    (poly 0.3 0.6 0.2 7 {:stroke my-yellow}) )
+                                   (clock-rotate
+                                    6 (poly (- 0.3) (- 0.5) 0.3 4
+                                            {:stroke my-purple :stroke-weight 2 } )  )  )
+        
         a-cross ( rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross my-green 0 0))
         blue-cross (rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross (p-color 100 100 200) 0 0)) 
-        clock (clock-rotate 12 (group
-                                (add-style {:stroke my-yellow :stroke-weight 2 :fill my-green}
-                                                   (poly (rand 1) (rand 1)  0.12 4))
-                                       (add-style {:stroke my-red :fill my-blue :stroke-weight 3 } (drunk-line 9 0.2))))
+        clock (clock-rotate 12 (stack 
+                                (poly (rand 1) (rand 1)  0.12 4 {:stroke my-yellow :stroke-weight 2 :fill my-green})               
+                                (drunk-line 9 0.2 {:stroke my-red :fill my-blue :stroke-weight 3 })))
         flake (spoke-flake-group {:stroke my-orange :stroke-weight 1 })
         face (groups/scale 0.8 (face-group [20 my-burgundy] [5 my-blue] [3 my-purple]  [8 my-red]))
         
@@ -112,7 +115,7 @@
 
         
         complex-square (nested-stack [{:stroke my-red} {:stroke my-blue} {:stroke my-pink} {:stroke my-cream}]
-                                     (groups/group square) (fn [x] (- x 0.2)))
+                                     square (fn [x] (- x 0.2)))
 
 
 
@@ -146,7 +149,7 @@
         final-pattern5 (diamond-layout 6 (cycle [ complex-diamond complex-square]))
         
         final-pattern4 (groups/scale 1  (superimpose-layout
-                                        (half-drop-grid-layout 7 (repeat (groups/group square))) 
+                                         (half-drop-grid-layout 7 (repeat square)) 
                                         (half-drop-grid-layout 7
                                                                (random-turn-groups (repeat test-shape) )))
                                     )

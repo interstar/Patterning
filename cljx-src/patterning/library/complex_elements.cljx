@@ -16,20 +16,20 @@
         inner-radius (* 2.01 outer-radius)
         arm-radius (* 4.2 inner-radius)
 
-        inner-circle (sshapes/add-style style (std/poly 0 0 inner-radius 30))
+        inner-circle (std/poly 0 0 inner-radius 30 style)
         sp1 [0 inner-radius]
         sp2 [0 (+ inner-radius arm-radius)]
       
         one-spoke (groups/group (->SShape style [sp1 sp2 sp1 sp2])
-                         (sshapes/add-style style (std/poly 0 (+ outer-radius (last sp2)) outer-radius 25)))
+                                (std/poly 0 (+ outer-radius (last sp2)) outer-radius 25 style )  )
       ]
-    (into [] (concat (groups/group (sshapes/add-style style (std/poly 0 0 inner-radius 35)))
+    (into [] (concat (std/poly 0 0 inner-radius 35 style)
                      (layouts/clock-rotate 8 one-spoke)       ) ) ) )
 
 
 (defn polyflower-group "number of polygons rotated and superimosed"
   ( [sides-per-poly no-polies radius style]
-      (layouts/clock-rotate no-polies (groups/group (sshapes/add-style style (std/poly 0 0 radius sides-per-poly)))))
+      (layouts/clock-rotate no-polies (std/poly 0 0 radius sides-per-poly style)))
   
   ( [sides-per-poly no-polies radius] (polyflower-group sides-per-poly no-polies radius {})))
 
@@ -37,19 +37,19 @@
 
 (defn face-group "[head, eyes, nose and mouth] each argument is a pair to describe a poly [no-sides color]"
   ( [[ head-sides head-color] [ eye-sides eye-color] [ nose-sides nose-color] [ mouth-sides mouth-color]] 
-      (let [left-eye (sshapes/stretch 1.3 1 (sshapes/add-style { :stroke eye-color } (std/poly -0.3 -0.1 0.1 eye-sides)))
-            right-eye (sshapes/h-reflect left-eye)
+      (let [left-eye (groups/stretch 1.3 1 (std/poly -0.3 -0.1 0.1 eye-sides { :stroke eye-color }))
+            right-eye (groups/h-reflect left-eye)
             ]
                 
-        (groups/group (sshapes/add-style {:stroke head-color } (std/poly 0 0 0.8 head-sides))
-               (sshapes/stretch 1.3 0.4 (sshapes/add-style {:stroke mouth-color } (std/poly 0 1.3 0.2 mouth-sides)))
-               (sshapes/translate 0 0.1
-                                  (sshapes/stretch
-                                   0.6 1.1
-                                   (sshapes/rotate
-                                    (/ maths/PI 2) (sshapes/add-style {:stroke nose-color } (std/poly 0 0 0.2 nose-sides)))))
-               left-eye
-               right-eye) ) ) )
+        (std/poly 0 0 0.8 head-sides {:stroke head-color } )
+        (groups/stretch 1.3 0.4 (std/poly 0 1.3 0.2 mouth-sides {:stroke mouth-color }))
+        (groups/translate 0 0.1
+                           (groups/stretch
+                            0.6 1.1
+                            (groups/rotate
+                             (/ maths/PI 2) (std/poly 0 0 0.2 nose-sides {:stroke nose-color}))))
+        left-eye
+        right-eye ) ) )
 
 
 (defn petal-group "Using bezier curves" [style dx dy]

@@ -60,11 +60,11 @@
 ;; Complex patterns made as groups (these have several disjoint sshapes)
 
 (defn cross "A cross, can only be made as a group (because sshapes are continuous lines) which is why we only define it now"
-  [color x y] (group (set-color color (horizontal-line y)) (set-color color (vertical-line  x)))  )
+  [color x y] (stack (horizontal-line y {:stroke color})  (vertical-line x {:stroke color}))  )
 
 
 (defn ogee "An ogee shape" [resolution stretch style]
-  (let [o-group (into [] (four-mirror (group (quarter-ogee resolution stretch style))))        
+  (let [o-group (into [] (four-mirror (quarter-ogee resolution stretch style)))        
         o0 (get (get o-group 0) :points)
         o1 (get (get o-group 1) :points)
         o2 (get (get o-group 2) :points)
@@ -79,5 +79,4 @@
 
 ;; Others
 (defn background [color pattern]
-  (stack (group (square {:fill color}))
-         pattern))
+  (stack (square {:fill color}) pattern))

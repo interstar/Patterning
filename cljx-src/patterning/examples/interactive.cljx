@@ -29,7 +29,7 @@
         
 (defn draw-it [da]
   (basic-turtle [0 0] 0.1 (/ maths/PI -2) (/ maths/PI da) (l-sys 4 "F")
-                {\Z (fn [x y a] (let [] ( group (poly x y 0.05 8 {:fill design-language/my-red}))))}
+                {\Z (fn [x y a] (let []  (poly x y 0.05 8 {:fill design-language/my-red})))}
                 {:stroke design-language/my-green :stroke-weight 2}  ))
 
 (defn _spray [da] (translate -0.6 0 (h-reflect (reframe (draw-it da)))))
@@ -67,21 +67,21 @@
 
 
 (def test3 (stack tutorial/m2
-                  (clock-rotate 6 (group (poly 0.3 0.3 0.4 5 {:fill (p-color 120 90 160 100) })))
-                  (clock-rotate 6 (group
-                                   ( drunk-line 10 0.1 {:stroke (p-color 200 200 100) :stroke-weight 4})))))
+                  (clock-rotate 6  (poly 0.3 0.3 0.4 5 {:fill (p-color 120 90 160 100) }))
+                  (clock-rotate 6 
+                                (drunk-line 10 0.1 {:stroke (p-color 200 200 100) :stroke-weight 4}))))
 
 (def previous (rotate (/ maths/PI 2)
                       (stack
-                       (clock-rotate 6 (group (poly 0.65 0 0.25 6
-                                                    {:fill (p-color 100 90 200 100)
-                                                     :stroke (p-color 100 90 200)
-                                                     :stroke-weight 3})))
-                       (clock-rotate 6 (group
-                                        ( drunk-line 10 0.1
-                                                     {:stroke (p-color 240 200 100)
-                                                      :fill (p-color 230 150 100 100)
-                                                      :stroke-weight 4}))))))
+                       (clock-rotate 6 (poly 0.65 0 0.25 6
+                                             {:fill (p-color 100 90 200 100)
+                                              :stroke (p-color 100 90 200)
+                                              :stroke-weight 3}))
+                       (clock-rotate 6 (drunk-line
+                                        10 0.1
+                                        {:stroke (p-color 240 200 100)
+                                         :fill (p-color 230 150 100 100)
+                                         :stroke-weight 4})))))
 
 
 (def test4 (stack (diamond-layout 5

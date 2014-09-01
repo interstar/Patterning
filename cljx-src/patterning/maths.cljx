@@ -23,8 +23,8 @@
 
 
 (defn mol= "more or less equal" [x y] (< (Math/abs (- x y)) 0.0000001) )
-(defn molv= "more or less equal vectors" [[x1 y1] [x2 y2]] (and (mol= x1 x2) (mol= y1 y2)))
-
+;;(defn molv= "more or less equal vectors" [v1 v2] (and (mol= (first v1) (first v2)) (molv= (rest v1) (rest v2))))
+(defn molv= [[x1 y1] [x2 y2]] (and (mol= x1 x2) (mol= y1 y2)))
 
 ;; Point geometry
 
