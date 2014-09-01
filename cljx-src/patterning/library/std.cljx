@@ -1,6 +1,7 @@
 (ns patterning.library.std
   (:require [patterning.maths :as maths]
             [patterning.sshapes :refer [rotate-shape close-shape ->SShape set-color tie-together ]]
+            [patterning.sshapes :as sshapes]
             [patterning.groups :refer [group]]
             [patterning.layouts :refer [stack four-mirror]])
   (#+clj :require #+cljs :require-macros 
@@ -73,7 +74,9 @@
     (group (->SShape style ( tie-together top bottom))) )  )
 
 
-
+(defn bez-curve
+  ([points style] (group (sshapes/bez-curve style points))  )
+  ([points] (bez-curve points {})) )
 
 
 ;; Others
