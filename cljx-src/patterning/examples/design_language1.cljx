@@ -81,19 +81,15 @@
                                          [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]]))
                         less-complex-diamond simple-clock  ))
 
+(def basic (stack
+            (clock-rotate 6
+             (stack
+              (poly 0.3 0.6 0.2 7 {:stroke my-pink})
+              (poly (- 0.4) (- 0.5) 0.2 4
+                    {:stroke my-purple :stroke-weight 2 } ))  ))  )
+
 (defn dl []
   (let [
-        
-
-        
-
-        
-        basic (superimpose-layout  (stack
-                                    (poly 0 0 0.5 3 {:stroke my-red :stroke-weight 2}) 
-                                    (poly 0.3 0.6 0.2 7 {:stroke my-yellow}) )
-                                   (clock-rotate
-                                    6 (poly (- 0.3) (- 0.5) 0.3 4
-                                            {:stroke my-purple :stroke-weight 2 } )  )  )
         
         a-cross ( rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross my-green 0 0))
         blue-cross (rotate (- (rand (/ maths/PI 2)) (/ maths/PI 4)) (cross (p-color 100 100 200) 0 0)) 
