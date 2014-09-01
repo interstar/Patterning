@@ -1,9 +1,9 @@
 (ns patterning.examples.tutorial
-  (:require [patterning.sshapes :refer [->SShape  bez-curve add-style  close-shape]] 
+  (:require [patterning.sshapes :refer [->SShape  add-style  close-shape]] 
             [patterning.groups :refer [group scale over-style]]
             [patterning.layouts :refer [stack clock-rotate grid-layout checked-layout four-mirror framed
                                         half-drop-grid-layout]]
-            [patterning.library.std :refer [poly drunk-line]]
+            [patterning.library.std :refer [poly drunk-line bez-curve]]
             [patterning.library.complex_elements :as complex_elements]
 
             [patterning.color :refer [p-color]]
@@ -80,7 +80,7 @@
 ;; Bezier curves? We got 'em
 
 (def orange-style  {:stroke (p-color 255 128 64) :stroke-weight 4})
-(def bez1 (group (bez-curve orange-style [[-0.9 0] [0.8 0.8] [-0.5 -0.8] [0.6 -0.5]])))
+(def bez1 (bez-curve [[-0.9 0] [0.8 0.8] [-0.5 -0.8] [0.6 -0.5]] orange-style )  )
 
 ;; Perhaps that would makethe corners of a nice frame
 (def frame-it (framed 6 (repeat bez1)
