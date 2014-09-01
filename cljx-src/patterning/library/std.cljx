@@ -14,8 +14,7 @@
                                      (let [x2 (+ x w) y2 (+ y h)]
                                        [[x y] [x2 y] [x2 y2] [x y2] [x y]] ) ))
 
-(def square (optional-styled-primitive []
-                                       ([[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]] ) ))
+(def square (optional-styled-primitive [] [[-1 -1] [-1 1] [1 1] [1 -1] [-1 -1]]  ))
 
 (def poly (optional-styled-primitive [cx cy radius no-sides]
              (let [ make-point (fn [a] (maths/add-points [cx cy] (maths/pol-to-rec [radius a])))]
