@@ -19,6 +19,7 @@
   (:require [patterning.library.symbols :as symbols])
 
   (:require [patterning.examples.interactive :as interactive])
+  (:require [patterning.examples.testing :as testing])  
   
   (:require [quil.core :refer :all])
   (:require [patterning.quil.quilview :refer :all]) )
@@ -29,7 +30,7 @@
 ;; assign to "final-pattern" the result of creating a pattern,
 
 
-(def final-pattern interactive/test4)
+(def final-pattern testing/testing)
 
 
 (def my-width 700)
@@ -41,14 +42,19 @@
   (stroke-weight 1)
   (color 0)
   (no-fill)
-  (background 0)
+  (background 255)
 
   ;; THIS IS WHERE WE ACTUALLY DRAW THE PATTERN ON THE SCREEN
   ;; note we call the function make-txpt which creates a mapping
   ;; function from our co-ordinate system to the actual window
   ;; draw-group uses this to transform all points in our pattern
-  (draw-group (make-txpt [-1 -1 1 1] [0 0 my-width my-height]) final-pattern) 
-  ;;(display-filter 11)
+  (draw-group (make-txpt [-1 -1 1 1] [0 0 my-width my-height]) final-pattern)
+
+  ;; Write to a file
+  (save "out.png")  
+
+  ;; Write the pattern data-structure to a file
+  (spit "out.patdat" final-pattern )
   
   ;; AND THIS IS WHERE WE WRITE IT TO out.svg
   (write-svg 800 800 final-pattern)
