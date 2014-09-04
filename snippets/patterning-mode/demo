@@ -1,0 +1,49 @@
+# name: Patterning Demo
+# key: demo
+# --
+(ns demo.$1
+  (:require [quil.core :as q]
+            [quil.middleware :as m]
+            [patterning.view :refer [make-txpt]]
+            [patterning.quil.quilview :refer [draw-group]]       
+            [patterning.maths :as maths]
+            [patterning.color :refer [p-color]]
+            [patterning.color :as color]
+            [patterning.sshapes :as sshapes]
+            [patterning.groups :as groups]
+            [patterning.layouts :as layouts]
+            [patterning.layouts :refer [stack]]
+            [patterning.library.std :as std]
+            [patterning.library.turtle :refer [basic-turtle]]
+            [patterning.library.l_systems :refer [l-system]]    
+            [patterning.library.complex_elements :as complex]
+            [patterning.examples.design_language1 :as dl]
+            [patterning.examples.framedplant :as framedplant]
+            [patterning.library.symbols :as symbols]
+            [patterning.examples.tutorial :as tutorial]))
+
+(def my-width 700)
+(def my-height 700)
+
+;; Your pattern here ...
+
+(def pattern $0)
+
+
+(defn setup []  (q/no-fill))
+(defn update [state] )
+
+(defn draw [state]
+  (q/background 0)
+  (draw-group (make-txpt [-1 -1 1 1] [0 0 my-width my-height]) pattern)  
+)
+
+(q/defsketch demo
+  :title "Patterning Polies"
+  :size [my-width my-height]
+  :setup setup
+  :update update
+
+  :draw draw
+  :middleware [m/fun-mode]
+  )

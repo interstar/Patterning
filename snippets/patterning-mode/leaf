@@ -1,0 +1,6 @@
+# name: Leaf
+# key: leaf
+# --
+;; {\char (fn [x y a] (body which draws something based on a position x y and an angle))}
+{\\$1 (fn [x y a] $2)} $0
+

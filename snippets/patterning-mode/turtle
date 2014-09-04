@@ -1,0 +1,5 @@
+# name: Turtle
+# key: turtle
+# --
+;; (basic-turtle [start-x start-y] forward-dist init-angle d-angle string leaf-map style)
+(basic-turtle [$1 $2] $3 $4 $5 "$6" {} {$7})

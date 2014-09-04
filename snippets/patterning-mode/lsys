@@ -1,0 +1,8 @@
+# name: LSys
+# key: lsys
+# --
+; (def l-system-name (l-system [["F" "F+G++G-F--FF-G+"]
+;                            ["G" "-F+GG++G+F--F-G"]]))
+
+(def $1 (l-system [$2 
+                  ]))
