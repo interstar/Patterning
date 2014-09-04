@@ -19,6 +19,14 @@
   )
 
 
+(deftest simple-transforms
+  (let [g1 (groups/group (sshapes/->SShape {} [[0 0] [1 1]] ) (sshapes/->SShape {} [[-1 -1]] ) )
+        g2 (groups/group (sshapes/->SShape {} [[1 1] [2 2]] ) (sshapes/->SShape {} [[0 0]] ) ) ]
+    (testing "translate"
+      (is (groups/mol= (groups/translate 1 1 g1) g2)))
+    )
+  )
+
 (deftest flatten-group
   (let [s1 (sshapes/->SShape {} [[0 0] [1 1]])
         s2 (sshapes/->SShape {} [[2 2] [3 3]])
