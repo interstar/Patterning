@@ -4,7 +4,7 @@
             [patterning.sshapes :as sshapes]
             [patterning.groups :refer [group]]
             [patterning.layouts :refer [stack four-mirror]])
-  (#+clj :require #+cljs :require-macros 
+  (#+clj :require #+cljs :require-macros
          [patterning.macros :refer [optional-styled-primitive]])
   )
 
@@ -56,6 +56,14 @@
                                        (rotate-shape (/ maths/PI 2) points)   ) ))
 
 
+(defn spiral-points [a da r dr]
+  (map maths/pol-to-rec
+       (map vector
+            (iterate (partial + da) a)
+            (iterate (partial + dr) r))))
+
+(def spiral (optional-styled-primitive [n a da r dr]
+                                       (take n (spiral-points a da r dr))))
 
 ;; Complex patterns made as groups (these have several disjoint sshapes)
 
@@ -64,7 +72,7 @@
 
 
 (defn ogee "An ogee shape" [resolution stretch style]
-  (let [o-group (into [] (four-mirror (quarter-ogee resolution stretch style)))        
+  (let [o-group (into [] (four-mirror (quarter-ogee resolution stretch style)))
         o0 (get (get o-group 0) :points)
         o1 (get (get o-group 1) :points)
         o2 (get (get o-group 2) :points)
