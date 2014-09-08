@@ -14,7 +14,7 @@
 
 (defn nested-stack "superimpose smaller copies of a shape"
   [styles group reducer]
-  (let [gen-next (fn [[style x]] (groups/over-style style (groups/scale x group)))]    
+  (let [gen-next (fn [[style x]] (groups/over-style style (groups/scale x group)))]
     (into [] (stack (mapcat gen-next (map vector styles (iterate reducer 1 )))))  ))
 
 
@@ -44,12 +44,12 @@
         inc-y (fn [y] (+ offset y))
         in-x (float (/ offset 2))
         in-y (float (/ offset 2))
-        
+
         init-x1 (- in-x 1)
         init-x2 (- in-x (- 1 offset))
         init-y1 (- in-y 1)
         init-y2 (- in-y (+ 1 ( / offset 2)))
-        
+
         h1-iterator (take (if (even? n2) n2 (+ 1 n2)) (iterate inc-x init-x1))
         v1-iterator (take number (iterate inc-y init-y1))
         h2-iterator (take n2 (iterate inc-x init-x2))
@@ -69,13 +69,13 @@
         inc-y (fn [y] (+ offset y))
         in-x (float (/ offset 2))
         in-y (float (/ offset 2))
-        
+
         init-x1 (- in-x (+ 1 (/ offset 2)))
         ;;        init-x2 (- in-x (- 1 offset))
         init-x2 (+ init-x1 (/ offset 2) )
         init-y1 (- in-y 1)
         init-y2 (- in-y (+ 1 ( / offset 2)))
-        
+
         h1-iterator (take (+ 0 (if (even? n2) n2 (+ 1 n2))) (iterate inc-x init-x1))
         v1-iterator (take number (iterate inc-y init-y1))
         h2-iterator (take n2 (iterate inc-x init-x2))
@@ -88,7 +88,7 @@
 
 (defn place-groups-at-positions "Takes a list of groups and a list of positions and puts one of the groups at each position"
   [groups positions]
-  (concat ( mapcat (fn [[ [x y] group]] (groups/translate x y group)) (map vector positions groups) ) )) 
+  (concat ( mapcat (fn [[ [x y] group]] (groups/translate x y group)) (map vector positions groups) ) ))
 
 (defn scale-group-stream [n groups] (map (partial groups/scale (/ 1 n)) groups))
 
@@ -143,7 +143,7 @@
    Makes an n X n square where row or col i is from group-stream2 and everything else is group-stream1"
   [n i f groups1 groups2]
   (let [the-seq (concat (take (* n i) groups1) (take n groups2) (take (* n (- n i)) groups1) )
-        layout-positions (map vector (scale-group-stream n the-seq) (grid-layout-positions n))        
+        layout-positions (map vector (scale-group-stream n the-seq) (grid-layout-positions n))
         ]
      (concat (mapcat f layout-positions))
     )
@@ -192,7 +192,7 @@
 (defn clock-rotate "Circular layout. Returns n copies in a rotation"
   [n group]
   (let [angs (maths/clock-angles n)]
-    (concat (mapcat (fn [a] (groups/rotate a group)) angs )) 
+    (concat (mapcat (fn [a] (groups/rotate a group)) angs ))
    ))
 
 
@@ -200,7 +200,7 @@
   (let [scaled (groups/scale (float (/ 1 2)) group)
         p2 (float (/ maths/PI 2))
         nw (groups/translate (- 0.5) (- 0.5) scaled )
-        ne (groups/translate 0.5 (- 0.5) (q1-rot-group scaled)) 
+        ne (groups/translate 0.5 (- 0.5) (q1-rot-group scaled))
         se (groups/translate (- 0.5) 0.5 (q3-rot-group scaled))
         sw (groups/translate 0.5 0.5 (q2-rot-group scaled) )
         ]
@@ -232,8 +232,8 @@
 
 ;; Flower of Life layout ... these are recursive developments of circles
 (defn flower-of-life-positions [r depth [cx cy]]
-  (if (= depth 0) [[cx cy]]      
+  (if (= depth 0) [[cx cy]]
       (let [round-points (map (fn [a] (maths/rotate-point a [(+ cx 0) (+ cy r)])) (maths/clock-angles 6) )
-            rec-points (mapcat (partial flower-of-life-positions r (- depth 1)) round-points)]        
+            rec-points (mapcat (partial flower-of-life-positions r (- depth 1)) round-points)]
         (set (conj rec-points [cx cy]))
         ))  )
