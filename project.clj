@@ -1,4 +1,4 @@
-(defproject patterning "0.1.0-SNAPSHOT"
+(defproject net.synaesmedia/patterning "0.2.0-SNAPSHOT"
   :description "Generating Patterns with Clojure / Quil"
   :url "http://synaesmedia.net/patterning"
   :license {:name "Eclipse Public License"
@@ -10,7 +10,9 @@
                  ]
 
   :plugins [[com.keminglabs/cljx "0.4.0"]
-            [lein-cljsbuild "1.0.3"] ]
+            [lein-cljsbuild "1.0.3"]
+            [lein-localrepo "0.4.0"]
+            ]
 
   :cljx {:builds [{:source-paths ["cljx-src"]
                  :output-path "target/classes"
