@@ -1,6 +1,20 @@
 # Patterning
 
-A Clojure / Quil system for generating patterns, both at the small scale and the "layout" of smaller units. Units can be recursively nested.
+*A Clojure / Quil system for generating patterns, both at the small scale and the "layout" of smaller units. Units can be recursively nested.*
+
+Note : this Patterning repository is getting deprecated. I'm refactoring Patterning into separate projects :
+
+- a core which is purely Clojure (cljx) that has no Quil or Processing dependencies. This can be used to build the Patterning library in either Java or Javascript. [It's here](https://github.com/interstar/Patterning-Core). Or you can just incorporate a compiled jar from Clojars [here](https://clojars.org/com.alchemyislands/patterning/versions/0.3.0-SNAPSHOT).
+
+- a Quil / Processing wrapper. The project with quilview.clj is moving [here](https://github.com/interstar/Patterning-Quil).
+
+- a Java wrapper designed to be used to call Patterning from Processing itself. Allows artists who are familiar with the Processing language and environment to engage Patterning.
+
+- a way to build interactive browser-based Javascript apps. that use Patterning.
+
+More info [here](http://sdi.thoughtstorms.info/?p=901).
+
+If, today, you just want to check out Patterning, you might still download and play with this project. But all new development will be taking place in those new projects, so fork / watch them rather than this.
 
 ## Quick Start
 Make sure you have [Clojure](http://clojure.org/), [Leiningen](http://leiningen.org/) and [Quil](https://github.com/quil/) installed.
