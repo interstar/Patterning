@@ -1,20 +1,22 @@
 # Patterning
 
-*A Clojure / Quil system for generating patterns, both at the small scale and the "layout" of smaller units. Units can be recursively nested.*
+**Note : this Patterning repository is now deprecated**
 
-Note : this Patterning repository is getting deprecated. I'm refactoring Patterning into separate projects :
+Please look at the following links to learn more about and start using Patterning.
 
-- a core which is purely Clojure (cljx) that has no Quil or Processing dependencies. This can be used to build the Patterning library in either Java or Javascript. [It's here](https://github.com/interstar/Patterning-Core). Or you can just incorporate a compiled jar from Clojars [here](https://clojars.org/com.alchemyislands/patterning/versions/0.3.0-SNAPSHOT).
+- [Patterning Core](https://github.com/interstar/Patterning-Core). The core library for generating patterns in your Clojure / ClojureScript projects. (The code is in cljx)
 
-- a Quil / Processing wrapper. The project with quilview.clj is moving [here](https://github.com/interstar/Patterning-Quil).
+- Alternatively, you can just incorporate a compiled jar from Clojars [here](https://clojars.org/com.alchemyislands/patterning/versions/0.3.0-SNAPSHOT) in your own Clojure project.
 
-- a Java wrapper designed to be used to call Patterning from Processing itself. Allows artists who are familiar with the Processing language and environment to engage Patterning.
+- [a Quil / Processing wrapper](https://github.com/interstar/Patterning-Quil). This project shows how to write a short  Clojure program that uses Quil to render the patterns. This is the best place to start if you just want to use Patterning in your own Clojure projects.
 
-- a way to build interactive browser-based Javascript apps. that use Patterning.
+- Allows artists who are more familiar with Processing itself and want to write Java in the Processing environment can now use [Patterning for Processing](https://github.com/interstar/Patterning-for-Processing). That project is the source-code for building a Processing Library that wraps Patterning.
+
 
 More info [here](http://sdi.thoughtstorms.info/?p=901).
 
-If, today, you just want to check out Patterning, you might still download and play with this project. But all new development will be taking place in those new projects, so fork / watch them rather than this.
+# DEPRECATED OLD README #
+
 
 ## Quick Start
 Make sure you have [Clojure](http://clojure.org/), [Leiningen](http://leiningen.org/) and [Quil](https://github.com/quil/) installed.
