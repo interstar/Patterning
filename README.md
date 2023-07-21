@@ -4,7 +4,7 @@
 
 See [Patterning Core](https://github.com/interstar/Patterning-Core). 
 
-This is the up-to-date repository of the core library for generating patterns in your Clojure / ClojureScript projects. Its README also has links to other important resources and ways of using Patterning.
+That is the up-to-date repository of the core library for generating patterns in your Clojure / ClojureScript projects. Its README also has links to other important resources and ways of using Patterning.
 
 More info [here](http://sdi.thoughtstorms.info/?p=901).
 
