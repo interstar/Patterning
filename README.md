@@ -1,17 +1,10 @@
 # Patterning
 
-**Note : this Patterning repository is now deprecated**
+## **Note : this Patterning repository is now deprecated**
 
-Please look at the following links to learn more about and start using Patterning.
+See [Patterning Core](https://github.com/interstar/Patterning-Core). 
 
-- [Patterning Core](https://github.com/interstar/Patterning-Core). The core library for generating patterns in your Clojure / ClojureScript projects. (The code is in cljx)
-
-- Alternatively, you can just incorporate a compiled jar from Clojars [here](https://clojars.org/com.alchemyislands/patterning/versions/0.3.0-SNAPSHOT) in your own Clojure project.
-
-- [a Quil / Processing wrapper](https://github.com/interstar/Patterning-Quil). This project shows how to write a short  Clojure program that uses Quil to render the patterns. This is the best place to start if you just want to use Patterning in your own Clojure projects.
-
-- Allows artists who are more familiar with Processing itself and want to write Java in the Processing environment can now use [Patterning for Processing](https://github.com/interstar/Patterning-for-Processing). That project is the source-code for building a Processing Library that wraps Patterning.
-
+This is the up-to-date repository of the core library for generating patterns in your Clojure / ClojureScript projects. Its README also has links to other important resources and ways of using Patterning.
 
 More info [here](http://sdi.thoughtstorms.info/?p=901).
 
